@@ -84,7 +84,8 @@ class OidcAuthProvider extends AuthProvider {
 
   @override
   Future<void> logout() async {
-    await _authManager.logout();
+    // await _authManager.logout();
+    await _authManager.forgetUser();
   }
 
   @override
