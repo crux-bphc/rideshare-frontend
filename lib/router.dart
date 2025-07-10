@@ -1,8 +1,8 @@
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
-import 'package:rideshare_frontend/providers/auth/auth_provider.dart';
-import 'package:rideshare_frontend/screens/home_page.dart';
-import 'package:rideshare_frontend/screens/sign_in_page.dart';
+import 'package:rideshare/providers/auth/auth_provider.dart';
+import 'package:rideshare/screens/home_page.dart';
+import 'package:rideshare/screens/sign_in_page.dart';
 
 final router = GoRouter(
   redirect: (context, state) {

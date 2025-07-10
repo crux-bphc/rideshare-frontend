@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:rideshare_frontend/providers/auth/auth_provider.dart';
-import 'package:rideshare_frontend/providers/auth/oidc_auth.dart';
-import 'package:rideshare_frontend/router.dart';
+import 'package:rideshare/providers/auth/auth_provider.dart';
+import 'package:rideshare/providers/auth/oidc_auth.dart';
+import 'package:rideshare/router.dart';
 
 void main() async {
   await _prelaunchTasks();
@@ -14,7 +14,7 @@ Future<void> _prelaunchTasks() async {
   final getIt = GetIt.instance;
 
   getIt.registerSingletonAsync<AuthProvider>(
-        () async {
+    () async {
       final auth = OidcAuthProvider();
       await auth.initialise();
       return auth;

@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:get_it/get_it.dart';
 import 'package:oidc/oidc.dart';
 import 'package:oidc_default_store/oidc_default_store.dart';
 import 'package:signals_flutter/signals_core.dart';
@@ -38,19 +37,20 @@ class OidcAuthProvider extends AuthProvider {
   );
 
   OidcAuthProvider()
-      : _authManager = OidcUserManager.lazy(
-    discoveryDocumentUri: Uri.parse(_cruxDiscoveryUrl),
-    clientCredentials:
-    const OidcClientAuthentication.none(clientId: _clientId),
-    store: OidcDefaultStore(),
-    settings: OidcUserManagerSettings(
-      redirectUri: Uri.parse(_getRedirectUri()),
-      scope: ['openid', 'profile', 'email', 'offline_access'],
-      prompt: ['consent'],
-      // strictJwtVerification: true,
-      options: _platformSpecificOptions,
-    ),
-  );
+    : _authManager = OidcUserManager.lazy(
+        discoveryDocumentUri: Uri.parse(_cruxDiscoveryUrl),
+        clientCredentials: const OidcClientAuthentication.none(
+          clientId: _clientId,
+        ),
+        store: OidcDefaultStore(),
+        settings: OidcUserManagerSettings(
+          redirectUri: Uri.parse(_getRedirectUri()),
+          scope: ['openid', 'profile', 'email', 'offline_access'],
+          prompt: ['consent'],
+          // strictJwtVerification: true,
+          options: _platformSpecificOptions,
+        ),
+      );
 
   @override
   Future<void> initialise() async {

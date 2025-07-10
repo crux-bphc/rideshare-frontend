@@ -1,4 +1,4 @@
-package com.cruxbphc.rideshare_frontend
+package com.cruxbphc.rideshare
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:rideshare_frontend/providers/auth/auth_provider.dart';
+import 'package:rideshare/providers/auth/auth_provider.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
