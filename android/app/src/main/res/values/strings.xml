@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="flutter_web_auth_2_redirect_scheme">com.crux-bphc.rideshare</string>
+</resources>
