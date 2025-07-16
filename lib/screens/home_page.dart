@@ -18,7 +18,6 @@ class HomePage extends StatelessWidget {
             icon: const Icon(Icons.logout),
             onPressed: () {
               authProvider.logout();
-              GoRouter.of(context).go('/');
             },
             tooltip: 'Logout',
           ),
