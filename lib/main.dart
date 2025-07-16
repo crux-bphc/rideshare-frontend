@@ -1,21 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:rideshare/providers/auth/auth_provider.dart';
-import 'package:rideshare/providers/auth/oidc_auth.dart';
+import 'package:rideshare/providers/auth/logto_auth.dart';
 import 'package:rideshare/router.dart';
 
 void main() async {
-  await _prelaunchTasks();
+  WidgetsFlutterBinding.ensureInitialized();
+  _prelaunchTasks();
+  await GetIt.instance.allReady();
   runApp(const MyApp());
 }
 
 Future<void> _prelaunchTasks() async {
-  WidgetsFlutterBinding.ensureInitialized();
   final getIt = GetIt.instance;
 
   getIt.registerSingletonAsync<AuthProvider>(
-    () async {
-      final auth = OidcAuthProvider();
+        () async {
+      final auth = LogtoAuthProvider();
       await auth.initialise();
       return auth;
     },
@@ -40,10 +41,7 @@ class _AppState extends State<MyApp> {
     _getItReady();
   }
 
-  void _getItReady() async {
-    await getIt.allReady();
-
-    if (!mounted) return;
+  void _getItReady() {
     final isLoggedIn = getIt<AuthProvider>().isLoggedIn;
     _dispose = isLoggedIn.subscribe((_) {
       router.refresh();

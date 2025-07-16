@@ -1,23 +1,13 @@
-import 'package:dio/dio.dart';
-import 'package:oidc/oidc.dart';
 
 class AuthUser {
-  final Dio _client;
-  Dio get bearerClient => _client;
-
-  final String? refreshToken;
-  final String? idToken;
   final String? uid;
+  final String? name;
+  final String? email;
+  final String? picture;
 
-  AuthUser.fromOidcUser(OidcUser user)
-      : refreshToken = user.token.refreshToken,
-        idToken = user.token.idToken,
-        uid = user.uid,
-        _client = Dio(
-          BaseOptions(
-            headers: {
-              "Authorization": "Bearer ${user.token.accessToken}",
-            },
-          ),
-        );
+  AuthUser.fromJwtClaims(Map<String, dynamic>? claims)
+      : uid = claims?['sub'] as String?,
+        name = claims?['name'] as String?,
+        email = claims?['email'] as String?,
+        picture = claims?['picture'] as String?;
 }

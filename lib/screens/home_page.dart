@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:rideshare/providers/auth/auth_provider.dart';
 
 class HomePage extends StatelessWidget {
@@ -17,6 +18,7 @@ class HomePage extends StatelessWidget {
             icon: const Icon(Icons.logout),
             onPressed: () {
               authProvider.logout();
+              GoRouter.of(context).go('/');
             },
             tooltip: 'Logout',
           ),
