@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:rideshare/widgets/custom_elevated_button.dart';
 import 'package:signals_flutter/signals_flutter.dart';
 
 import '../providers/auth/auth_provider.dart';
@@ -11,7 +10,7 @@ class SignInPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF1E2128),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -50,14 +49,14 @@ class _LoginWidget extends StatelessWidget {
           duration: const Duration(milliseconds: 300),
           child: isLoading
               ? const CircularProgressIndicator(color: Colors.white)
-              : CustomElevatedButton(
+              : ElevatedButton.icon(
                   onPressed: () {
                     GetIt.instance<AuthProvider>().login();
                   },
-                  text: 'Sign in with Google',
-                  icon: const Icon(
+                  label: const Text('Sign in with Google'),
+                  icon: Icon(
                     Icons.login_rounded,
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.onPrimary,
                   ),
                 ),
         );

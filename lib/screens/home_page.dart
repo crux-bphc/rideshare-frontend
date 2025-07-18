@@ -1,42 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:rideshare/widgets/custom_elevated_button.dart';
+
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // final authProvider = GetIt.instance<AuthProvider>();
-
     return Scaffold(
-      backgroundColor: Colors.black,
-      // appBar: AppBar(
-      //   title: const Text('RideShare'),
-      //   actions: [
-      //     IconButton(
-      //       icon: const Icon(Icons.logout, color: Colors.white), // White icon
-      //       onPressed: () {
-      //         authProvider.logout();
-      //       },
-      //       tooltip: 'Logout',
-      //     ),
-      //   ],
-      // ),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             RichText(
-              text: TextSpan(
-                style: TextStyle(
-                  fontSize: 36,
-                  fontWeight: FontWeight.bold,
-                ),
-                children: <TextSpan>[
-                  TextSpan(text: 'Ride', style: TextStyle(color: Colors.white)),
-                  TextSpan(text: 'share.', style: TextStyle(color: Color(0xFF777FE4))),
-                ],
-              ),
-            ),
+               text: TextSpan(
+                 style: Theme.of(context).textTheme.displayLarge,
+                 children: <TextSpan>[
+                   TextSpan(text: 'Ride', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+                   TextSpan(text: 'share.', style: TextStyle(color: Theme.of(context).colorScheme.primary)),
+                 ],
+               ),
+             ),
             SizedBox(height: 50),
             Image.asset(
               'assets/logo.png',
@@ -46,23 +29,23 @@ class HomePage extends StatelessWidget {
             SizedBox(height: 30),
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.8,
-              child: CustomElevatedButton(
+              child: ElevatedButton.icon(
                 onPressed: () {
                   //todo: implement search
                 },
-                text: 'Search available rides',
+                label: const Text('Search available rides'),
                 icon: const Icon(Icons.search),
-                bgColor: const Color(0xFF373b46),
+                style: Theme.of(context).elevatedButtonTheme.style,
               ),
             ),
             SizedBox(height: 20),
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.8,
-              child: CustomElevatedButton(
+              child: ElevatedButton.icon(
                 onPressed: () {
                   //todo: implement view rides
                 },
-                text: 'Your rides',
+                label: const Text('Your rides'),
                 icon: const Icon(Icons.directions_car),
               ),
             ),

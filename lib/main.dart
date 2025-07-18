@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:rideshare/providers/auth/auth_provider.dart';
 import 'package:rideshare/providers/auth/logto_auth.dart';
 import 'package:rideshare/router.dart';
+import 'package:rideshare/theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -53,7 +54,7 @@ class _AppState extends State<MyApp> {
     return MaterialApp.router(
       routerConfig: router,
       title: "RideShare",
-      theme: ThemeData.dark(),
+      theme: appTheme,
     );
   }
 
