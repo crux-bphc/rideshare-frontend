@@ -24,9 +24,9 @@ final ThemeData appTheme = ThemeData(
     foregroundColor: Colors.white,
   ),
   bottomNavigationBarTheme: BottomNavigationBarThemeData(
-    backgroundColor: _backgroundColor, 
-    selectedItemColor: Colors.white,
-    unselectedItemColor: Colors.white70,
+    backgroundColor: Colors.black,
+    selectedItemColor: _primaryColor,
+    unselectedItemColor: _primaryColor,
   ),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(

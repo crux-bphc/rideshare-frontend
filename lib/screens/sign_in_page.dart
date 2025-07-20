@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
-import 'package:signals_flutter/signals_flutter.dart';
-
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:rideshare/providers/auth/logto_auth.dart';
 import '../providers/auth/auth_provider.dart';
 
 class SignInPage extends StatelessWidget {
@@ -35,32 +34,34 @@ class SignInPage extends StatelessWidget {
   }
 }
 
-class _LoginWidget extends StatelessWidget {
+class _LoginWidget extends ConsumerWidget {
   const _LoginWidget();
 
   @override
-  Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: GetIt.instance.allReady(),
-      builder: (context, snapshot) {
-        final isReady = snapshot.connectionState == ConnectionState.done;
-        final isLoading = !isReady || GetIt.instance<AuthProvider>().isLoggedIn.watch(context);
-        return AnimatedSwitcher(
-          duration: const Duration(milliseconds: 300),
-          child: isLoading
-              ? const CircularProgressIndicator(color: Colors.white)
+  Widget build(BuildContext context, WidgetRef ref) {
+    final authState = ref.watch(authNotifierProvider);
+    final isLoading = authState.isLoading;
+    final isAuthenticated = authState.hasValue && (authState.value?.isAuthenticated ?? false);
+
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 300),
+      child: isLoading
+          ? const CircularProgressIndicator(color: Colors.white)
+          : isAuthenticated
+              ? const SizedBox.shrink() // hide button if already authenticated
               : ElevatedButton.icon(
-                  onPressed: () {
-                    GetIt.instance<AuthProvider>().login();
-                  },
-                  label: const Text('Sign in with Google'),
-                  icon: Icon(
-                    Icons.login_rounded,
-                    color: Theme.of(context).colorScheme.onPrimary,
-                  ),
-                ),
-        );
-      },
+              onPressed: () async {
+                     final authProvider = ref.read(logtoAuthProvider);
+                     final authNotifier = ref.read(authNotifierProvider.notifier);
+                     final authUser = await authProvider.login();
+                     authNotifier.setUser(authUser);
+                   },
+              label: const Text('Sign in with Google'),
+              icon: Icon(
+                Icons.login_rounded,
+                color: Theme.of(context).colorScheme.onPrimary,
+              ),
+            ),
     );
   }
 }

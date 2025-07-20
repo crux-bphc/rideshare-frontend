@@ -1,58 +1,42 @@
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rideshare/providers/auth/auth_provider.dart';
 import 'package:rideshare/providers/auth/logto_auth.dart';
-import 'package:rideshare/router.dart';
-import 'package:rideshare/theme.dart';
+import 'package:rideshare/utils/router.dart';
+import 'package:rideshare/utils/theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  _prelaunchTasks();
-  await GetIt.instance.allReady();
-  runApp(const MyApp());
+  runApp(const ProviderScope(child: MyApp()));
 }
 
-Future<void> _prelaunchTasks() async {
-  final getIt = GetIt.instance;
 
-  getIt.registerSingletonAsync<AuthProvider>(
-        () async {
-      final auth = LogtoAuthProvider();
-      await auth.initialise();
-      return auth;
-    },
-    dispose: (auth) => auth.dispose(),
-  );
-}
 
-class MyApp extends StatefulWidget {
+class MyApp extends ConsumerStatefulWidget {
   const MyApp({super.key});
 
   @override
-  State<MyApp> createState() => _AppState();
+  ConsumerState<MyApp> createState() => _AppState();
 }
 
-class _AppState extends State<MyApp> {
-  final getIt = GetIt.instance;
-  void Function()? _dispose;
-
+class _AppState extends ConsumerState<MyApp> {
   @override
   void initState() {
     super.initState();
-    _getItReady();
+    _initialiseAuth();
   }
 
-  void _getItReady() {
-    final isLoggedIn = getIt<AuthProvider>().isLoggedIn;
-    _dispose = isLoggedIn.subscribe((_) {
-      router.refresh();
-    });
+  Future<void> _initialiseAuth() async {
+    final authProvider = ref.read(logtoAuthProvider);
+    final authUser = await authProvider.initialise();
+    final authNotifier = ref.read(authNotifierProvider.notifier);
+    authNotifier.setUser(authUser);
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      routerConfig: router,
+      routerConfig: ref.watch(goRouterProvider),
       title: "RideShare",
       theme: appTheme,
     );
@@ -61,6 +45,5 @@ class _AppState extends State<MyApp> {
   @override
   void dispose() {
     super.dispose();
-    _dispose?.call();
   }
 }

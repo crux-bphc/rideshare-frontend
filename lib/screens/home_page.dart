@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
@@ -20,13 +21,13 @@ class HomePage extends StatelessWidget {
                  ],
                ),
              ),
-            SizedBox(height: 50),
+            SizedBox(height: 40),
             Image.asset(
               'assets/logo.png',
               height: 200,
             ),
             SizedBox(height: 20),
-            SizedBox(height: 30),
+            SizedBox(height: 10),
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.8,
               child: ElevatedButton.icon(
