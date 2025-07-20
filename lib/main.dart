@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:rideshare/providers/auth/auth_provider.dart';
 import 'package:rideshare/providers/auth/logto_auth.dart';
 import 'package:rideshare/router.dart';
+import 'package:rideshare/shared/theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,7 +17,7 @@ Future<void> _prelaunchTasks() async {
   final getIt = GetIt.instance;
 
   getIt.registerSingletonAsync<AuthProvider>(
-        () async {
+    () async {
       final auth = LogtoAuthProvider();
       await auth.initialise();
       return auth;
@@ -50,10 +52,12 @@ class _AppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      routerConfig: router,
-      title: "RideShare",
-      theme: ThemeData.dark(),
+    return ProviderScope(
+      child: MaterialApp.router(
+        routerConfig: router,
+        title: "RideShare",
+        theme: appTheme,
+      ),
     );
   }
 
