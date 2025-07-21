@@ -32,24 +32,40 @@ final router = GoRouter(
       path: '/',
       builder: (context, state) => const SignInPage(),
     ),
-    ShellRoute(
+    StatefulShellRoute.indexedStack(
       builder: (context, state, child) => MainApp(child: child),
-      routes: [
-        GoRoute(
-          path: '/home',
-          builder: (context, state) => const HomePage(),
+      branches: [
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/home',
+              builder: (context, state) => const HomePage(),
+            ),
+          ],
         ),
-        GoRoute(
-          path: '/rides',
-          builder: (context, state) => const RidesScreen(),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/rides',
+              builder: (context, state) => const RidesScreen(),
+            ),
+          ],
         ),
-        GoRoute(
-          path: '/inbox',
-          builder: (context, state) => const InboxScreen(),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/inbox',
+              builder: (context, state) => const InboxScreen(),
+            ),
+          ],
         ),
-        GoRoute(
-          path: '/profile',
-          builder: (context, state) => const ProfileScreen(),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/profile',
+              builder: (context, state) => const ProfileScreen(),
+            ),
+          ],
         ),
       ],
     ),
