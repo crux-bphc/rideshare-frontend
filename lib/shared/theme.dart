@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class AppColors {
   static const Color surface = Color(0xFF111317);
@@ -13,28 +14,34 @@ class AppColors {
   static const Color navbar = Color(0xFF1A1C23);
 }
 
-final ThemeData appTheme = ThemeData(
-  fontFamily: 'Raleway',
-  brightness: Brightness.dark,
-  colorScheme: ColorScheme.dark(
-    primary: AppColors.primary,
-    secondary: AppColors.accent,
-    surface: AppColors.surface,
-    error: AppColors.error,
-    onPrimary: AppColors.buttonText,
-    onSecondary: AppColors.textPrimary,
-    onSurface: AppColors.textPrimary,
-    onError: AppColors.buttonText,
-  ),
+final colorScheme = ColorScheme.dark(
+  primary: AppColors.primary,
+  secondary: AppColors.accent,
+  surface: AppColors.surface,
+  error: AppColors.error,
+  onPrimary: AppColors.buttonText,
+  onSecondary: AppColors.textPrimary,
+  onSurface: AppColors.textPrimary,
+  onError: AppColors.buttonText,
+);
+
+final _theme = ThemeData.from(
+  colorScheme: colorScheme,
+  useMaterial3: true,
+);
+
+final ThemeData appTheme = _theme.copyWith(
+  textTheme: GoogleFonts.ralewayTextTheme(_theme.textTheme),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
       backgroundColor: const Color(0xFF777FE4),
       foregroundColor: Colors.white,
-      padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 16),
-      textStyle: const TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.bold,
+      shape: RoundedSuperellipseBorder(
+        borderRadius: BorderRadius.circular(12),
       ),
+      padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 16),
+      textStyle: GoogleFonts.raleway(fontWeight: FontWeight.w700, fontSize: 16),
+      iconSize: 24,
     ),
   ),
 );
