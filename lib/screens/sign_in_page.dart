@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:rideshare/shared/theme.dart';
-import 'package:rideshare/widgets/custom_elevated_button.dart';
 import 'package:signals_flutter/signals_flutter.dart';
 import '../providers/auth/auth_provider.dart';
 
@@ -57,11 +56,11 @@ class _LoginWidget extends StatelessWidget {
           duration: const Duration(milliseconds: 300),
           child: isLoading
               ? const CircularProgressIndicator(color: Colors.white)
-              : CustomElevatedButton(
+              : ElevatedButton.icon(
                   onPressed: () {
                     GetIt.instance<AuthProvider>().login();
                   },
-                  text: 'Sign in with Google',
+                  label: const Text('Sign in with Google'),
                   icon: const Icon(
                     Icons.login_rounded,
                     color: Colors.white,

@@ -26,4 +26,15 @@ final ThemeData appTheme = ThemeData(
     onSurface: AppColors.textPrimary,
     onError: AppColors.buttonText,
   ),
+  elevatedButtonTheme: ElevatedButtonThemeData(
+    style: ElevatedButton.styleFrom(
+      backgroundColor: const Color(0xFF777FE4),
+      foregroundColor: Colors.white,
+      padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 16),
+      textStyle: const TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.bold,
+      ),
+    ),
+  ),
 );
