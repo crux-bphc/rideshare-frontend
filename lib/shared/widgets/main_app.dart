@@ -13,41 +13,11 @@ class MainApp extends ConsumerStatefulWidget {
   ConsumerState<MainApp> createState() => _MainAppState();
 }
 
-class _MainAppState extends ConsumerState<MainApp>
-    with TickerProviderStateMixin {
-  late AnimationController _animationController;
-  late Animation<double> _fadeAnimation;
-  int _previousIndex = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 300),
-      vsync: this,
-    );
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
-    );
-    _animationController.value = 1.0;
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
-  }
-
+class _MainAppState extends ConsumerState<MainApp> {
   @override
   Widget build(BuildContext context) {
     final currentTab = ref.watch(navigationNotifierProvider);
     final navigationNotifier = ref.read(navigationNotifierProvider.notifier);
-    final currentIndex = currentTab.index;
-
-    if (currentIndex != _previousIndex) {
-      _animationController.forward(from: 0.0);
-      _previousIndex = currentIndex;
-    }
 
     return Scaffold(
       body: widget.child,
@@ -146,39 +116,29 @@ class _MainAppState extends ConsumerState<MainApp>
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            AnimatedSwitcher(
-              duration: const Duration(milliseconds: 200),
-              child: Icon(
-                isSelected ? filledIcon : outlinedIcon,
-                key: ValueKey(isSelected),
-                color: isSelected
-                    ? AppColors.primary
-                    : AppColors.primary.withValues(alpha: 0.8),
-                size: 34,
-              ),
+            Icon(
+              isSelected ? filledIcon : outlinedIcon,
+              color: AppColors.primary,
+              size: 34,
             ),
-            if (isSelected) ...[
-              const SizedBox(width: 8),
-              AnimatedBuilder(
-                animation: _fadeAnimation,
-                builder: (context, child) {
-                  return Opacity(
-                    opacity: _fadeAnimation.value,
-                    child: Transform.translate(
-                      offset: Offset(10 * (1 - _fadeAnimation.value), 0),
+            const SizedBox(width: 2),
+            AnimatedSize(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+              child: isSelected
+                  ? Padding(
+                      padding: const EdgeInsets.only(left: 4),
                       child: Text(
                         label,
                         style: const TextStyle(
                           color: AppColors.primary,
                           fontSize: 14,
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
-                    ),
-                  );
-                },
-              ),
-            ],
+                    )
+                  : const SizedBox.shrink(),
+            ),
           ],
         ),
       ),
