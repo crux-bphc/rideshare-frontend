@@ -1,8 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:rideshare/shared/theme.dart';
 
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+class HomePage extends StatefulWidget {
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    )..forward();
+    _animation = Tween<double>(
+      begin: 0.5,
+      end: 1.2,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,9 +61,15 @@ class HomePage extends StatelessWidget {
               ),
             ),
             SizedBox(height: size.height * 0.05),
-            Image.asset(
-              'assets/logo.png',
-              height: 200,
+            AnimatedBuilder(
+              animation: _animation,
+              builder: (context, child) {
+                return Transform.scale(scale: _animation.value, child: child);
+              },
+              child: Image.asset(
+                'assets/logo.png',
+                height: 200,
+              ),
             ),
             SizedBox(height: size.height * 0.05),
             SizedBox(
@@ -49,7 +81,9 @@ class HomePage extends StatelessWidget {
                 label: const Text('Search available rides'),
                 icon: const Icon(Icons.search),
                 style: Theme.of(context).elevatedButtonTheme.style?.copyWith(
-                  backgroundColor: WidgetStateProperty.all<Color>(Color(0xFF373b46)),
+                  backgroundColor: WidgetStateProperty.all<Color>(
+                    Color(0xFF373b46),
+                  ),
                 ),
               ),
             ),
@@ -62,7 +96,7 @@ class HomePage extends StatelessWidget {
                 },
                 label: const Text('Your rides'),
                 icon: const Icon(Icons.directions_car),
-                style: Theme.of(context).elevatedButtonTheme.style
+                style: Theme.of(context).elevatedButtonTheme.style,
               ),
             ),
           ],
