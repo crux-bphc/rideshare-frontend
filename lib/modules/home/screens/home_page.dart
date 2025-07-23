@@ -20,7 +20,7 @@ class _HomePageState extends State<HomePage>
     )..forward();
     _animation = Tween<double>(
       begin: 0.5,
-      end: 1.2,
+      end: 1.0,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
@@ -51,7 +51,7 @@ class _HomePageState extends State<HomePage>
                     ),
                   ),
                   TextSpan(
-                    text: 'share.',
+                    text: 'share',
                     style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: Theme.of(context).colorScheme.primary,
@@ -68,7 +68,6 @@ class _HomePageState extends State<HomePage>
               },
               child: Image.asset(
                 'assets/logo.png',
-                height: 200,
               ),
             ),
             SizedBox(height: size.height * 0.05),
