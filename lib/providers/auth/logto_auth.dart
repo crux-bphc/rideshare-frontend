@@ -9,12 +9,10 @@ final String _appId = const String.fromEnvironment("CLIENT_ID");
 final String _endpoint = const String.fromEnvironment("AUTH_DISCOVERY_URL");
 
 class LogtoAuthProvider extends AuthProvider {
-  
   late final LogtoClient _logtoClient;
 
   @override
   late final Dio dioClient;
-
   static const redirectScheme = 'com.crux-bphc.rideshare';
   static const redirectUri = 'com.crux-bphc.rideshare://callback';
   static const postLogoutRedirectUri = 'com.crux-bphc.rideshare://callback';

@@ -2,15 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rideshare/providers/auth/auth_provider.dart';
 import 'package:rideshare/providers/auth/logto_auth.dart';
-import 'package:rideshare/utils/router.dart';
-import 'package:rideshare/utils/theme.dart';
+import 'package:rideshare/router.dart';
+import 'package:rideshare/shared/theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(const ProviderScope(child: MyApp()));
 }
-
-
 
 class MyApp extends ConsumerStatefulWidget {
   const MyApp({super.key});
@@ -20,6 +18,8 @@ class MyApp extends ConsumerStatefulWidget {
 }
 
 class _AppState extends ConsumerState<MyApp> {
+  void Function()? _dispose;
+
   @override
   void initState() {
     super.initState();
@@ -35,8 +35,9 @@ class _AppState extends ConsumerState<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    final router = ref.watch(goRouterProvider);
     return MaterialApp.router(
-      routerConfig: ref.watch(goRouterProvider),
+      routerConfig: router,
       title: "RideShare",
       theme: appTheme,
     );
@@ -45,5 +46,6 @@ class _AppState extends ConsumerState<MyApp> {
   @override
   void dispose() {
     super.dispose();
+    _dispose?.call();
   }
 }
