@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:get_it/get_it.dart';
 import 'package:rideshare/providers/auth/auth_provider.dart';
 import 'package:rideshare/providers/auth/logto_auth.dart';
 import 'package:rideshare/router.dart';
@@ -8,56 +7,39 @@ import 'package:rideshare/shared/theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  _prelaunchTasks();
-  await GetIt.instance.allReady();
-  runApp(const MyApp());
+  runApp(const ProviderScope(child: MyApp()));
 }
 
-Future<void> _prelaunchTasks() async {
-  final getIt = GetIt.instance;
-
-  getIt.registerSingletonAsync<AuthProvider>(
-    () async {
-      final auth = LogtoAuthProvider();
-      await auth.initialise();
-      return auth;
-    },
-    dispose: (auth) => auth.dispose(),
-  );
-}
-
-class MyApp extends StatefulWidget {
+class MyApp extends ConsumerStatefulWidget {
   const MyApp({super.key});
 
   @override
-  State<MyApp> createState() => _AppState();
+  ConsumerState<MyApp> createState() => _AppState();
 }
 
-class _AppState extends State<MyApp> {
-  final getIt = GetIt.instance;
+class _AppState extends ConsumerState<MyApp> {
   void Function()? _dispose;
 
   @override
   void initState() {
     super.initState();
-    _getItReady();
+    _initialiseAuth();
   }
 
-  void _getItReady() {
-    final isLoggedIn = getIt<AuthProvider>().isLoggedIn;
-    _dispose = isLoggedIn.subscribe((_) {
-      router.refresh();
-    });
+  Future<void> _initialiseAuth() async {
+    final authProvider = ref.read(logtoAuthProvider);
+    final authUser = await authProvider.initialise();
+    final authNotifier = ref.read(authNotifierProvider.notifier);
+    authNotifier.setUser(authUser);
   }
 
   @override
   Widget build(BuildContext context) {
-    return ProviderScope(
-      child: MaterialApp.router(
-        routerConfig: router,
-        title: "RideShare",
-        theme: appTheme,
-      ),
+    final router = ref.watch(goRouterProvider);
+    return MaterialApp.router(
+      routerConfig: router,
+      title: "RideShare",
+      theme: appTheme,
     );
   }
 

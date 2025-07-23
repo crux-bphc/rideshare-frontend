@@ -1,4 +1,4 @@
-import 'package:get_it/get_it.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rideshare/modules/home/screens/home_page.dart';
 import 'package:rideshare/providers/auth/auth_provider.dart';
@@ -8,25 +8,26 @@ import 'package:rideshare/modules/inbox/screens/inbox_screen.dart';
 import 'package:rideshare/modules/profile/screens/profile_screen.dart';
 import 'package:rideshare/shared/widgets/main_app.dart';
 
-final router = GoRouter(
-  redirect: (context, state) {
-    final getIt = GetIt.instance;
+final goRouterProvider = Provider<GoRouter>((ref) {
+  final authState = ref.watch(authNotifierProvider);
 
-    if (!getIt.allReadySync()) {
-      return '/';
-    }
+  return GoRouter(
+    redirect: (context, state) {
+      final isAuthenticated = authState.when(
+        data: (state) => state.isAuthenticated,
+        loading: () => false,
+        error: (_, __) => false,
+      );
 
-    final isLoggedIn = getIt<AuthProvider>().isLoggedIn();
+      if (!isAuthenticated) {
+        return '/';
+      }
 
-    if (!isLoggedIn) {
-      return '/';
-    }
-
-    if (isLoggedIn && state.matchedLocation == '/') {
-      return '/home';
-    }
-    return null;
-  },
+      if (isAuthenticated && state.matchedLocation == '/') {
+        return '/home';
+      }
+      return null;
+    },
   routes: [
     GoRoute(
       path: '/',
@@ -39,7 +40,7 @@ final router = GoRouter(
           routes: [
             GoRoute(
               path: '/home',
-              builder: (context, state) => const HomePage(),
+              builder: (context, state) => HomePage(),
             ),
           ],
         ),
@@ -70,4 +71,5 @@ final router = GoRouter(
       ],
     ),
   ],
-);
+  );
+});
