@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:rideshare/providers/auth/logto_auth.dart';
 import '../providers/auth/auth_provider.dart';
 import '../shared/theme.dart';
 
@@ -24,7 +23,7 @@ class LoginScreenState extends State<SignInPage> {
               'assets/logo.png',
               height: 150,
             ),
-            // const SizedBox(height: 24),
+            const SizedBox(height: 24),
             Text(
               'RideShare',
               style: Theme.of(context).textTheme.headlineLarge?.copyWith(
@@ -47,26 +46,26 @@ class _LoginWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authNotifierProvider);
     final isLoading = authState.isLoading;
-    final isAuthenticated = authState.hasValue && (authState.value?.isAuthenticated ?? false);
-    
+
+    final ButtonStyle baseButtonStyle = ElevatedButton.styleFrom(
+      textStyle: Theme.of(context).textTheme.labelLarge,
+    );
+
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 300),
       child: isLoading
-          ? const CircularProgressIndicator(color: Colors.white)
-          : isAuthenticated
-              ? const SizedBox.shrink() // Hide button if already authenticated
+        ? const Center(key: ValueKey('progress'), child: CircularProgressIndicator())
               : ElevatedButton.icon(
+        key: const ValueKey('button'),
                   onPressed: () async {
-                    final authProvider = ref.read(logtoAuthProvider);
-                    final authNotifier = ref.read(authNotifierProvider.notifier);
-                    final authUser = await authProvider.login();
-                    authNotifier.setUser(authUser);
+                    ref.read(authNotifierProvider.notifier).login();
                   },
                   label: const Text('Sign in with Google'),
                   icon: const Icon(
                     Icons.login_rounded,
                     color: Colors.white,
                   ),
+        style: baseButtonStyle
                 ),
     );
   }

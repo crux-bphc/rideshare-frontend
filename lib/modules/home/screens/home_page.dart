@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rideshare/shared/theme.dart';
+import 'package:go_router/go_router.dart';
 
-class HomePage extends StatefulWidget {
+import '../../../providers/auth/auth_provider.dart';
+
+class HomePage extends ConsumerStatefulWidget {
+  const HomePage({super.key});
+
   @override
-  State<HomePage> createState() => _HomePageState();
+  ConsumerState<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage>
+class _HomePageState extends ConsumerState<HomePage>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
@@ -33,8 +39,32 @@ class _HomePageState extends State<HomePage>
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
+    final ButtonStyle baseButtonStyle = ElevatedButton.styleFrom(
+      textStyle: Theme.of(context).textTheme.titleMedium,
+    );
     return Scaffold(
       backgroundColor: AppColors.surface,
+      appBar: AppBar(
+        title: Text(
+          'Home',
+          style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
+        ),
+        backgroundColor: AppColors.surface,
+        elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () async {
+              ref.read(authNotifierProvider.notifier).logout();
+              GoRouter.of(context).go('/');
+            },
+            tooltip: 'Logout',
+          ),
+        ],
+      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -79,9 +109,9 @@ class _HomePageState extends State<HomePage>
                 },
                 label: const Text('Search available rides'),
                 icon: const Icon(Icons.search),
-                style: Theme.of(context).elevatedButtonTheme.style?.copyWith(
+                style: baseButtonStyle.copyWith(
                   backgroundColor: WidgetStateProperty.all<Color>(
-                    Color(0xFF373b46),
+                    const Color(0xFF373b46),
                   ),
                 ),
               ),
@@ -95,7 +125,7 @@ class _HomePageState extends State<HomePage>
                 },
                 label: const Text('Your rides'),
                 icon: const Icon(Icons.directions_car),
-                style: Theme.of(context).elevatedButtonTheme.style,
+                  style: baseButtonStyle,
               ),
             ),
           ],
