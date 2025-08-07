@@ -1,4 +1,3 @@
-
 class AuthUser {
   final String? uid;
   final String? name;
@@ -6,8 +5,8 @@ class AuthUser {
   final String? picture;
 
   AuthUser.fromJwtClaims(Map<String, dynamic>? claims)
-      : uid = claims?['sub'] as String?,
-        name = claims?['name'] as String?,
-        email = claims?['email'] as String?,
-        picture = claims?['picture'] as String?;
+    : uid = claims?['sub'] as String?,
+      name = claims?['name'] as String?,
+      email = claims?['email'] as String?,
+      picture = claims?['picture'] as String?;
 }

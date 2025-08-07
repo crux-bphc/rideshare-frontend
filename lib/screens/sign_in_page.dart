@@ -54,19 +54,22 @@ class _LoginWidget extends ConsumerWidget {
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 300),
       child: isLoading
-        ? const Center(key: ValueKey('progress'), child: CircularProgressIndicator())
-              : ElevatedButton.icon(
-        key: const ValueKey('button'),
-                  onPressed: () async {
-                    ref.read(authNotifierProvider.notifier).login();
-                  },
-                  label: const Text('Sign in with Google'),
-                  icon: const Icon(
-                    Icons.login_rounded,
-                    color: Colors.white,
-                  ),
-        style: baseButtonStyle
-                ),
+          ? const Center(
+              key: ValueKey('progress'),
+              child: CircularProgressIndicator(),
+            )
+          : ElevatedButton.icon(
+              key: const ValueKey('button'),
+              onPressed: () async {
+                ref.read(authNotifierProvider.notifier).login();
+              },
+              label: const Text('Sign in with Google'),
+              icon: const Icon(
+                Icons.login_rounded,
+                color: Colors.white,
+              ),
+              style: baseButtonStyle,
+            ),
     );
   }
 }

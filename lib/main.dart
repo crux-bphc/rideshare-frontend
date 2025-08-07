@@ -5,7 +5,7 @@ import 'package:rideshare/router.dart';
 import 'package:rideshare/shared/theme.dart';
 import 'package:rideshare/modules/splash/splash_page.dart';
 
-void main()  {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(const ProviderScope(child: MyApp()));
 }

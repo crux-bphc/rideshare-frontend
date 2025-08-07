@@ -5,6 +5,7 @@ import 'package:rideshare/providers/auth/logto_auth.dart';
 
 abstract class AuthProvider {
   Dio get dioClient;
+
   /// To be called before the app is in a usable state
   Future<AuthUser?> initialise();
   Future<AuthUser?> login();

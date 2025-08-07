@@ -26,57 +26,56 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         if (isGoingToSplash || isGoingToLogin) {
           return '/home';
         }
-      }
-      else {
+      } else {
         if (!isGoingToLogin && !isGoingToSplash) {
           return '/';
         }
       }
       return null;
     },
-  routes: [
-    GoRoute(
-      path: '/',
-      builder: (context, state) => const SignInPage(),
-    ),
-    GoRoute(path: '/splash', builder: (context, state) => const SplashPage()),
-    StatefulShellRoute.indexedStack(
-      builder: (context, state, child) => MainApp(child: child),
-      branches: [
-        StatefulShellBranch(
-          routes: [
-            GoRoute(
-              path: '/home',
-              builder: (context, state) => HomePage(),
-            ),
-          ],
-        ),
-        StatefulShellBranch(
-          routes: [
-            GoRoute(
-              path: '/rides',
-              builder: (context, state) => const RidesScreen(),
-            ),
-          ],
-        ),
-        StatefulShellBranch(
-          routes: [
-            GoRoute(
-              path: '/inbox',
-              builder: (context, state) => const InboxScreen(),
-            ),
-          ],
-        ),
-        StatefulShellBranch(
-          routes: [
-            GoRoute(
-              path: '/profile',
-              builder: (context, state) => const ProfileScreen(),
-            ),
-          ],
-        ),
-      ],
-    ),
-  ],
+    routes: [
+      GoRoute(
+        path: '/',
+        builder: (context, state) => const SignInPage(),
+      ),
+      GoRoute(path: '/splash', builder: (context, state) => const SplashPage()),
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, child) => MainApp(child: child),
+        branches: [
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/home',
+                builder: (context, state) => HomePage(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/rides',
+                builder: (context, state) => const RidesScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/inbox',
+                builder: (context, state) => const InboxScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/profile',
+                builder: (context, state) => const ProfileScreen(),
+              ),
+            ],
+          ),
+        ],
+      ),
+    ],
   );
 });

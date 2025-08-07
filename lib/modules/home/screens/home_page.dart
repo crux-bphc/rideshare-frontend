@@ -37,7 +37,7 @@ class _HomePageState extends ConsumerState<HomePage>
 
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
+    final size = MediaQuery.sizeOf(context);
     final ButtonStyle baseButtonStyle = ElevatedButton.styleFrom(
       textStyle: Theme.of(context).textTheme.titleMedium,
     );
@@ -101,7 +101,7 @@ class _HomePageState extends ConsumerState<HomePage>
             ),
             SizedBox(height: size.height * 0.05),
             SizedBox(
-              width: MediaQuery.of(context).size.width * 0.8,
+              width: size.width * 0.8,
               child: ElevatedButton.icon(
                 onPressed: () {
                   //todo: implement search
@@ -117,14 +117,14 @@ class _HomePageState extends ConsumerState<HomePage>
             ),
             SizedBox(height: size.height * 0.015),
             SizedBox(
-              width: MediaQuery.of(context).size.width * 0.8,
+              width: size.width * 0.8,
               child: ElevatedButton.icon(
                 onPressed: () {
                   //todo: implement view rides
                 },
                 label: const Text('Your rides'),
                 icon: const Icon(Icons.directions_car),
-                  style: baseButtonStyle,
+                style: baseButtonStyle,
               ),
             ),
           ],

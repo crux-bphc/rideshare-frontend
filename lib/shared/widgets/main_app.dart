@@ -25,7 +25,7 @@ class _MainAppState extends ConsumerState<MainApp> {
         decoration: BoxDecoration(
           color: AppColors.navbar,
         ),
-        child: SafeArea(  
+        child: SafeArea(
           child: Stack(
             children: [
               Padding(

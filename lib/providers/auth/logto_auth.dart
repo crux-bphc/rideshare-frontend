@@ -78,4 +78,3 @@ final logtoAuthProvider = Provider<LogtoAuthProvider>((ref) {
   });
   return authProvider;
 });
-
