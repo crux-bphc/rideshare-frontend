@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'auth_user.dart';
-import 'logto_auth.dart';
+import 'package:rideshare/providers/auth/auth_user.dart';
+import 'package:rideshare/providers/auth/logto_auth.dart';
 
 abstract class AuthProvider {
   Dio get dioClient;

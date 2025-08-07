@@ -1,6 +1,5 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-
-part 'navigation_provider.g.dart';
+part 'package:rideshare/shared/providers/navigation_provider.g.dart';
 
 enum NavigationTab {
   home,

@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rideshare/shared/theme.dart';
 import 'package:go_router/go_router.dart';
-
-import '../../../providers/auth/auth_provider.dart';
+import 'package:rideshare/providers/auth/auth_provider.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});

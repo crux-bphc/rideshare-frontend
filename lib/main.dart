@@ -3,8 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rideshare/providers/auth/auth_provider.dart';
 import 'package:rideshare/router.dart';
 import 'package:rideshare/shared/theme.dart';
-
-import 'modules/splash/splash_page.dart';
+import 'package:rideshare/modules/splash/splash_page.dart';
 
 void main()  {
   WidgetsFlutterBinding.ensureInitialized();

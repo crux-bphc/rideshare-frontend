@@ -2,8 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:logto_dart_sdk/logto_dart_sdk.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'auth_provider.dart';
-import 'auth_user.dart';
+import 'package:rideshare/providers/auth/auth_provider.dart';
+import 'package:rideshare/providers/auth/auth_user.dart';
 
 final String _appId = const String.fromEnvironment("CLIENT_ID");
 final String _endpoint = const String.fromEnvironment("AUTH_DISCOVERY_URL");

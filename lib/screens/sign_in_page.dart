@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../providers/auth/auth_provider.dart';
-import '../shared/theme.dart';
+import 'package:rideshare/providers/auth/auth_provider.dart';
+import 'package:rideshare/shared/theme.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
