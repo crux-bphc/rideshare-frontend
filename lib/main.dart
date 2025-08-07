@@ -1,51 +1,53 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rideshare/providers/auth/auth_provider.dart';
-import 'package:rideshare/providers/auth/logto_auth.dart';
 import 'package:rideshare/router.dart';
 import 'package:rideshare/shared/theme.dart';
+import 'package:rideshare/modules/splash/splash_page.dart';
 
-void main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(const ProviderScope(child: MyApp()));
 }
 
-class MyApp extends ConsumerStatefulWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
-  ConsumerState<MyApp> createState() => _AppState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    ref.listen(authNotifierProvider, (_, __) {
+      final router = ref.watch(goRouterProvider);
+      router.refresh();
+    });
 
-class _AppState extends ConsumerState<MyApp> {
-  void Function()? _dispose;
+    final authState = ref.watch(authNotifierProvider);
 
-  @override
-  void initState() {
-    super.initState();
-    _initialiseAuth();
-  }
-
-  Future<void> _initialiseAuth() async {
-    final authProvider = ref.read(logtoAuthProvider);
-    final authUser = await authProvider.initialise();
-    final authNotifier = ref.read(authNotifierProvider.notifier);
-    authNotifier.setUser(authUser);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final router = ref.watch(goRouterProvider);
-    return MaterialApp.router(
-      routerConfig: router,
-      title: "RideShare",
-      theme: appTheme,
+    return authState.when(
+      loading: () {
+        return MaterialApp(
+          home: const SplashPage(),
+          theme: appTheme,
+          debugShowCheckedModeBanner: false,
+        );
+      },
+      error: (error, stackTrace) {
+        final router = ref.watch(goRouterProvider);
+        return MaterialApp.router(
+          routerConfig: router,
+          title: "RideShare",
+          theme: appTheme,
+          debugShowCheckedModeBanner: false,
+        );
+      },
+      data: (initialAuthState) {
+        final router = ref.watch(goRouterProvider);
+        return MaterialApp.router(
+          routerConfig: router,
+          title: "RideShare",
+          theme: appTheme,
+          debugShowCheckedModeBanner: false,
+        );
+      },
     );
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _dispose?.call();
   }
 }

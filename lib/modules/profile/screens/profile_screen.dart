@@ -16,7 +16,6 @@ class ProfileScreen extends StatelessWidget {
           ),
         ),
       ),
-      
     );
   }
 }
