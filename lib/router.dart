@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rideshare/modules/home/screens/home_page.dart';
@@ -36,9 +37,22 @@ final goRouterProvider = Provider<GoRouter>((ref) {
     routes: [
       GoRoute(
         path: '/',
-        builder: (context, state) => const SignInPage(),
+        pageBuilder: (context, state) {
+          return _buildPageWithFadeTransition(
+            path: state.matchedLocation,
+            child: const SignInPage(),
+          );
+        },
       ),
-      GoRoute(path: '/splash', builder: (context, state) => const SplashPage()),
+      GoRoute(
+        path: '/splash',
+        pageBuilder: (context, state) {
+          return _buildPageWithFadeTransition(
+            path: state.matchedLocation,
+            child: const SplashPage(),
+          );
+        },
+      ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, child) => MainApp(child: child),
         branches: [
@@ -46,7 +60,12 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/home',
-                builder: (context, state) => HomePage(),
+                pageBuilder: (context, state) {
+                  return _buildPageWithFadeTransition(
+                    path: state.matchedLocation,
+                    child: const HomePage(),
+                  );
+                },
               ),
             ],
           ),
@@ -54,7 +73,12 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/rides',
-                builder: (context, state) => const RidesScreen(),
+                pageBuilder: (context, state) {
+                  return _buildPageWithFadeTransition(
+                    path: state.matchedLocation,
+                    child: const RidesScreen(),
+                  );
+                },
               ),
             ],
           ),
@@ -62,7 +86,12 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/inbox',
-                builder: (context, state) => const InboxScreen(),
+                pageBuilder: (context, state) {
+                  return _buildPageWithFadeTransition(
+                    path: state.matchedLocation,
+                    child: const InboxScreen(),
+                  );
+                },
               ),
             ],
           ),
@@ -70,7 +99,12 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/profile',
-                builder: (context, state) => const ProfileScreen(),
+                pageBuilder: (context, state) {
+                  return _buildPageWithFadeTransition(
+                    path: state.matchedLocation,
+                    child: const ProfileScreen(),
+                  );
+                },
               ),
             ],
           ),
@@ -79,3 +113,22 @@ final goRouterProvider = Provider<GoRouter>((ref) {
     ],
   );
 });
+
+CustomTransitionPage<void> _buildPageWithFadeTransition({
+  required String path,
+  required Widget child,
+}) {
+  return CustomTransitionPage<void>(
+    key: ValueKey(path),
+    child: child,
+    transitionsBuilder:
+        (context, animation, secondaryAnimation, child) =>
+        FadeTransition(
+          opacity: CurvedAnimation(
+            parent: animation,
+            curve: Curves.easeInOut,
+          ),
+          child: child,
+        ),
+  );
+}
