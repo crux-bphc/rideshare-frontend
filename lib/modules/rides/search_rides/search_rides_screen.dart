@@ -1,12 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:rideshare/modules/rides/widgets/date_picker.dart';
+import 'package:rideshare/modules/rides/widgets/time_picker.dart';
+import 'package:rideshare/providers/rides/ridedata_provider.dart';
 
 class SearchRidesScreen extends ConsumerWidget {
   const SearchRidesScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final rideDate = ref.watch(selectedDateProvider);
+    final departureTime = ref.watch(departureTimeProvider);
+    final arrivalTime = ref.watch(arrivalTimeProvider);
+    final seats = ref.watch(seatProvider);
+    final rideDateController = TextEditingController(
+      text: rideDate != null ? "${rideDate.day}/${rideDate.month}/${rideDate.year}" : "",
+    );
+    final departureTimeController = TextEditingController(
+      text: departureTime !=null ? "${departureTime.hour} : ${departureTime.minute}" : ""
+    );
+    final arrivalTimeController = TextEditingController(
+      text: arrivalTime !=null ? "${arrivalTime.hour} : ${arrivalTime.minute}" : ""
+    );
     return Column(
       children: [
         Padding(
@@ -22,7 +38,7 @@ class SearchRidesScreen extends ConsumerWidget {
         ),
         Expanded(
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.fromLTRB(16, 40, 16, 16),
             child: Column(
               children: [
                 TextField(
@@ -39,26 +55,19 @@ class SearchRidesScreen extends ConsumerWidget {
                   ),
                 ),
                 SizedBox(height: 16.0),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton.icon(
-                    onPressed: () {
-                      // TODO: Implement add stops functionality
-                    },
-                    icon: Icon(Icons.add),
-                    label: Text('Add stops'),
-                  ),
-                ),
-                SizedBox(height: 16.0),
                 TextField(
                   decoration: InputDecoration(
                     labelText: 'Ride Date',
                     hintText: 'Enter Date',
                     suffixIcon: Icon(Icons.calendar_today),
                   ),
+                  controller: rideDateController,
                   readOnly: true,
-                  onTap: () {
-                    // TODO: Implement date picker
+                  onTap: () async {
+                    final picked = await showCustomDatePicker(context, initialDate: rideDate);
+                    if (picked != null) {
+                      ref.read(selectedDateProvider.notifier).setDate(picked);
+                    }
                   },
                 ),
                 SizedBox(height: 16.0),
@@ -71,8 +80,12 @@ class SearchRidesScreen extends ConsumerWidget {
                           suffixIcon: Icon(Icons.access_time),
                         ),
                         readOnly: true,
-                        onTap: () {
-                          // TODO: Implement time picker
+                        controller: departureTimeController,
+                        onTap: () async{
+                          final picked = await showCustomTimePicker(context, initialTime: TimeOfDay.now());
+                          if (picked != null) {
+                            ref.read(departureTimeProvider.notifier).setTime(picked);
+                          }
                         },
                       ),
                     ),
@@ -84,8 +97,12 @@ class SearchRidesScreen extends ConsumerWidget {
                           suffixIcon: Icon(Icons.access_time),
                         ),
                         readOnly: true,
-                        onTap: () {
-                          // TODO: Implement time picker
+                        controller: arrivalTimeController,
+                        onTap: () async{
+                          final picked = await showCustomTimePicker(context, initialTime: TimeOfDay.now());
+                          if (picked != null) {
+                            ref.read(arrivalTimeProvider.notifier).setTime(picked);
+                          }
                         },
                       ),
                     ),
@@ -101,14 +118,14 @@ class SearchRidesScreen extends ConsumerWidget {
                         IconButton(
                           icon: Icon(Icons.remove_circle_outline),
                           onPressed: () {
-                            // TODO: Implement decrement seats
+                            ref.read(seatProvider.notifier).decreaseSeats(seats);
                           },
                         ),
-                        Text('4'),
+                        Text(seats.toString()),
                         IconButton(
                           icon: Icon(Icons.add_circle_outline),
                           onPressed: () {
-                            // TODO: Implement increment seats
+                            ref.read(seatProvider.notifier).increaseSeats(seats);
                           },
                         ),
                       ],
