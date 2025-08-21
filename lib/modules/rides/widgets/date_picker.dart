@@ -13,13 +13,13 @@ Future<DateTime?> showCustomDatePicker(BuildContext context,
         data: Theme.of(context).copyWith(
           
           colorScheme: ColorScheme.light(
-            primary: AppColors.primary, // Header & selected date
-            onPrimary: AppColors.textPrimary, // Header text color
-            onSurface: AppColors.surface, // Body text color
+            primary: AppColors.primary,
+            onPrimary: AppColors.textPrimary,
+            onSurface: AppColors.surface,
           ),
           textButtonTheme: TextButtonThemeData(
             style: TextButton.styleFrom(
-              foregroundColor: AppColors.primary, // Action buttons
+              foregroundColor: AppColors.primary,
             ),
           ),
           dialogTheme: DialogThemeData(

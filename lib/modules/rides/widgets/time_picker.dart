@@ -9,11 +9,11 @@ Future<TimeOfDay?> showCustomTimePicker(BuildContext context, {TimeOfDay? initia
       return Theme(
         data: Theme.of(context).copyWith(
           colorScheme: ColorScheme.light(
-            primary: AppColors.surface,        // Dial hand & header background
-            onPrimary: AppColors.textPrimary,  // Header text & dial text when selected
-            surface: AppColors.surface,        // Dialog background
-            onSurface: AppColors.textSecondary,// Unselected text (hours, minutes, AM/PM)
-            secondary: AppColors.textPrimary,      // Used by AM/PM selected
+            primary: AppColors.surface,
+            onPrimary: AppColors.textPrimary,
+            surface: AppColors.surface,
+            onSurface: AppColors.textSecondary,
+            secondary: AppColors.textPrimary,
           ),
 
           // Theme specifically for TimePicker
@@ -24,7 +24,7 @@ Future<TimeOfDay?> showCustomTimePicker(BuildContext context, {TimeOfDay? initia
             dialBackgroundColor: AppColors.surface,
             entryModeIconColor: AppColors.primary,
 
-            dayPeriodTextColor: AppColors.textPrimary, // AM/PM text color
+            dayPeriodTextColor: AppColors.textPrimary,
             dayPeriodColor: AppColors.primary,
             dayPeriodShape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
@@ -34,7 +34,7 @@ Future<TimeOfDay?> showCustomTimePicker(BuildContext context, {TimeOfDay? initia
 
           textButtonTheme: TextButtonThemeData(
             style: TextButton.styleFrom(
-              foregroundColor: AppColors.primary,   // OK / CANCEL button text
+              foregroundColor: AppColors.primary,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
