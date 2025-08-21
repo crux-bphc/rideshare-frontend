@@ -7,41 +7,34 @@ class RideService {
 
   RideService(this._dio);
 
-  Future<List<Ride>> searchRidesByLocation(String searchQuery) async {
+  Future<void> createRide(DateTime departureStartTime, DateTime departureEndTime, String? comments, int seats, String rideStart, String rideEnd) async {
     try {
-      final response = await _dio.get(
-        '${dotenv.env['BACKEND_API_URL']}/rides/search/location/',
-        queryParameters: {'search_query': searchQuery},
+      final response = await _dio.post(
+        '${dotenv.env['BACKEND_API_URL']}rides/',
+        data: {
+          "departureStartTime": departureStartTime.toIso8601String(),
+          "departureEndTime": departureEndTime.toIso8601String(),
+          "comments": comments ?? '',
+          "maxMemberCount": seats,
+          "rideStart": rideStart,
+          "rideEnd": rideEnd,
+        },
       );
-      if (response.statusCode == 200) {
-        return (response.data as List)
-            .map((json) => Ride.fromJson(json))
-            .toList();
-      } else {
-        throw Exception('Failed to search rides by location');
-      }
+      print('Ride created successfully: ${response.data}');
     } catch (e) {
-      throw Exception('Failed to search rides by location: $e');
+      throw Exception('Failed to create ride: $e');
     }
   }
 
-  Future<List<Ride>> searchRidesByTime({
-    DateTime? from,
-    DateTime? by,
-  }) async {
-    if (from == null && by == null) {
-      throw ArgumentError('Either from or by must be provided.');
-    }
-    if (from != null && by != null) {
-      throw ArgumentError('Only one of from or by can be provided.');
-    }
-
+  Future<List<Ride>> searchRides(String startLocation, String endLocation, DateTime? from, DateTime? to) async {
     try {
       final response = await _dio.get(
-        '${dotenv.env['BACKEND_API_URL']}/rides/search/time/',
+        '${dotenv.env['BACKEND_API_URL']}rides/search/',
         queryParameters: {
-          if (from != null) 'from': from.toIso8601String(),
-          if (by != null) 'by': by.toIso8601String(),
+          "search_start_location": startLocation,
+          "search_end_location": endLocation,
+          "from": from?.toIso8601String(),
+          "by": to?.toIso8601String(),
         },
       );
       if (response.statusCode == 200) {
@@ -49,10 +42,10 @@ class RideService {
             .map((json) => Ride.fromJson(json))
             .toList();
       } else {
-        throw Exception('Failed to search rides by time');
+        throw Exception('Failed to search rides');
       }
     } catch (e) {
-      throw Exception('Failed to search rides by time: $e');
+      throw Exception('Failed to search rides: $e');
     }
   }
 }

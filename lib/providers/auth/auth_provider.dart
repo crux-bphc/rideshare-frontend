@@ -5,11 +5,11 @@ import 'package:rideshare/providers/auth/logto_auth.dart';
 
 abstract class AuthProvider {
   Dio get dioClient;
-
-  /// To be called before the app is in a usable state
   Future<AuthUser?> initialise();
   Future<AuthUser?> login();
   Future<void> logout();
+
+  Future<String?> getIdToken();
   void dispose();
 }
 
@@ -54,6 +54,11 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
       await authProvider.logout();
       return AuthState(user: null, isAuthenticated: false);
     });
+  }
+
+  Future<String?> getIdToken() async {
+    final authProvider = ref.read(logtoAuthProvider);
+    return await authProvider.getIdToken();
   }
 }
 

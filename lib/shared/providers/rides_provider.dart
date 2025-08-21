@@ -15,9 +15,14 @@ class RidesNotifier extends _$RidesNotifier {
   @override
   Future<List<Ride>> build() async {
     final rideService = ref.watch(rideServiceProvider);
-    return rideService.searchRidesByLocation(
-      '',
+    return rideService.searchRides(
+      '', '', null, null
     ); // Empty search query to fetch all rides
+  }
+
+  Future<void> createRide(DateTime departureStartTime, DateTime departureEndTime, String? comments, int seats, String rideStart, String rideEnd) async {
+    final rideService = ref.watch(rideServiceProvider);
+    rideService.createRide(departureStartTime, departureEndTime, comments, seats, rideStart, rideEnd);
   }
 
   Future<void> refreshRides() async {

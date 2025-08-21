@@ -4,25 +4,95 @@ import 'package:go_router/go_router.dart';
 import 'package:rideshare/modules/rides/widgets/date_picker.dart';
 import 'package:rideshare/modules/rides/widgets/time_picker.dart';
 import 'package:rideshare/providers/rides/ridedata_provider.dart';
+import 'package:rideshare/shared/providers/rides_provider.dart';
+import 'package:rideshare/shared/util/datetime_utils.dart';
 
-class SearchRidesScreen extends ConsumerWidget {
+class SearchRidesScreen extends ConsumerStatefulWidget {
   const SearchRidesScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<SearchRidesScreen> createState() => _SearchRidesScreenState();
+}
+
+class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
+  late final TextEditingController startLocationController;
+  late final TextEditingController destinationLocationController;
+  
+  @override
+  void initState() {
+    super.initState();
+    startLocationController = TextEditingController();
+    destinationLocationController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    startLocationController.dispose();
+    destinationLocationController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _selectDate() async {
+    final currentDate = ref.read(selectedDateProvider);
+    final picked = await showCustomDatePicker(context, initialDate: currentDate);
+    if (picked != null) {
+      ref.read(selectedDateProvider.notifier).setDate(picked);
+    }
+  }
+
+  Future<void> _selectDepartureTime() async {
+    final picked = await showCustomTimePicker(context, initialTime: TimeOfDay.now());
+    if (picked != null) {
+      ref.read(departureTimeProvider.notifier).setTime(picked);
+    }
+  }
+
+  Future<void> _selectArrivalTime() async {
+    final picked = await showCustomTimePicker(context, initialTime: TimeOfDay.now());
+    if (picked != null) {
+      ref.read(arrivalTimeProvider.notifier).setTime(picked);
+    }
+  }
+
+  Future<void> _createRide() async {
+    final rideDate = ref.read(selectedDateProvider);
+    final departureTime = ref.read(departureTimeProvider);
+    final arrivalTime = ref.read(arrivalTimeProvider);
+    final seats = ref.read(seatProvider);
+
+    try {
+      await ref.read(rideServiceProvider).createRide(
+        combineDateAndTime(rideDate!, departureTime!),
+        combineDateAndTime(rideDate, arrivalTime!),
+        null,
+        seats,
+        destinationLocationController.text,
+        startLocationController.text,
+      );
+    } catch (e) {
+      print('Error creating ride: $e');
+    }
+  }
+
+  bool get _canCreateRide {
+    final rideDate = ref.watch(selectedDateProvider);
+    final departureTime = ref.watch(departureTimeProvider);
+    final arrivalTime = ref.watch(arrivalTimeProvider);
+    
+    return rideDate != null && 
+           departureTime != null && 
+           arrivalTime != null &&
+           startLocationController.text.trim().isNotEmpty &&
+           destinationLocationController.text.trim().isNotEmpty;
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final rideDate = ref.watch(selectedDateProvider);
     final departureTime = ref.watch(departureTimeProvider);
     final arrivalTime = ref.watch(arrivalTimeProvider);
     final seats = ref.watch(seatProvider);
-    final rideDateController = TextEditingController(
-      text: rideDate != null ? "${rideDate.day}/${rideDate.month}/${rideDate.year}" : "",
-    );
-    final departureTimeController = TextEditingController(
-      text: departureTime !=null ? "${departureTime.hour} : ${departureTime.minute}" : ""
-    );
-    final arrivalTimeController = TextEditingController(
-      text: arrivalTime !=null ? "${arrivalTime.hour} : ${arrivalTime.minute}" : ""
-    );
+
     return Column(
       children: [
         Padding(
@@ -36,6 +106,7 @@ class SearchRidesScreen extends ConsumerWidget {
             ),
           ),
         ),
+        
         Expanded(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(16, 40, 16, 16),
@@ -46,6 +117,7 @@ class SearchRidesScreen extends ConsumerWidget {
                     labelText: 'Start Location',
                     prefixIcon: Icon(Icons.location_on),
                   ),
+                  controller: startLocationController,
                 ),
                 SizedBox(height: 16.0),
                 TextField(
@@ -53,6 +125,7 @@ class SearchRidesScreen extends ConsumerWidget {
                     labelText: 'Destination',
                     prefixIcon: Icon(Icons.location_on),
                   ),
+                  controller: destinationLocationController,
                 ),
                 SizedBox(height: 16.0),
                 TextField(
@@ -61,14 +134,9 @@ class SearchRidesScreen extends ConsumerWidget {
                     hintText: 'Enter Date',
                     suffixIcon: Icon(Icons.calendar_today),
                   ),
-                  controller: rideDateController,
+                  controller: TextEditingController(text: formatDate(rideDate)),
                   readOnly: true,
-                  onTap: () async {
-                    final picked = await showCustomDatePicker(context, initialDate: rideDate);
-                    if (picked != null) {
-                      ref.read(selectedDateProvider.notifier).setDate(picked);
-                    }
-                  },
+                  onTap: _selectDate,
                 ),
                 SizedBox(height: 16.0),
                 Row(
@@ -80,13 +148,8 @@ class SearchRidesScreen extends ConsumerWidget {
                           suffixIcon: Icon(Icons.access_time),
                         ),
                         readOnly: true,
-                        controller: departureTimeController,
-                        onTap: () async{
-                          final picked = await showCustomTimePicker(context, initialTime: TimeOfDay.now());
-                          if (picked != null) {
-                            ref.read(departureTimeProvider.notifier).setTime(picked);
-                          }
-                        },
+                        controller: TextEditingController(text: formatTime(departureTime)),
+                        onTap: _selectDepartureTime,
                       ),
                     ),
                     SizedBox(width: 16.0),
@@ -97,13 +160,8 @@ class SearchRidesScreen extends ConsumerWidget {
                           suffixIcon: Icon(Icons.access_time),
                         ),
                         readOnly: true,
-                        controller: arrivalTimeController,
-                        onTap: () async{
-                          final picked = await showCustomTimePicker(context, initialTime: TimeOfDay.now());
-                          if (picked != null) {
-                            ref.read(arrivalTimeProvider.notifier).setTime(picked);
-                          }
-                        },
+                        controller: TextEditingController(text: formatTime(arrivalTime)),
+                        onTap: _selectArrivalTime,
                       ),
                     ),
                   ],
@@ -132,7 +190,20 @@ class SearchRidesScreen extends ConsumerWidget {
                     ),
                   ],
                 ),
+                
                 SizedBox(height: 32.0),
+                if (_canCreateRide)
+                  ElevatedButton(
+                    onPressed: _createRide,
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: Size(
+                        double.infinity,
+                        50,
+                      ),
+                    ),
+                    child: const Text("Create Ride"),
+                  ),
+                SizedBox(height: 12,),
                 ElevatedButton(
                   onPressed: () {
                     GoRouter.of(context).go('/rides/available');
