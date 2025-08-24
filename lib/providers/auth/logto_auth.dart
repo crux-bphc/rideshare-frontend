@@ -22,15 +22,20 @@ class LogtoAuthProvider extends AuthProvider {
       return null;
     }
     final Map<String, dynamic> claims = JwtDecoder.decode(idToken);
+    print("Decoded JWT Claims:");
+    print(claims);
     return AuthUser.fromJwtClaims(claims);
   }
 
   @override
   Future<AuthUser?> initialise() async {
     _logtoClient = LogtoClient(
+
       config: LogtoConfig(
         appId: _appId,
         endpoint: _endpoint,
+        scopes: ['openid', 'profile', LogtoUserScope.email.value, LogtoUserScope.phone.value],
+
       ),
     );
 
