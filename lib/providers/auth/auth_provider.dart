@@ -50,11 +50,11 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
       if (user != null) {
         final userService = ref.read(userServiceProvider);
         print("Checking if user exists: ${user.uid}");
-        // final userExists = await userService.checkUserExists();
-        final userExists = false;
+        final userExists = await userService.checkUserExists();
+        // final userExists = false;
         if (!userExists) {
           print("User does not exist, prompting for phone number");
-          await completeNewUserRegistration('9667834455');
+          await completeNewUserRegistration('9667834455', user);
           // await showDialog(
           //   context: context,
           //   barrierDismissible: false,
@@ -83,18 +83,20 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
     });
   }
 
-  Future<void> completeNewUserRegistration(String phoneNumber) async {
+  Future<void> completeNewUserRegistration(String phoneNumber, AuthUser user) async {
     print("Completing new user registration with phone number: $phoneNumber");
     final userService = ref.read(userServiceProvider);
-    final user = state.value?.user;
-    if (user != null) {
-      await userService.createUser(phoneNumber, user.uid);
-      state = await AsyncValue.guard(() async {
-        print("User created successfully with phone number: $phoneNumber");
-        return AuthState(user: user, isAuthenticated: true);
-      });
-      }
-    }
+    // final user = state.value?.user;
+    print("Current user: $user");
+    // if(user == null) {
+    //   print("No authenticated user found.");
+    // }
+    await userService.createUser(phoneNumber, user.name!);
+    state = await AsyncValue.guard(() async {
+      print("User created successfully with phone number: $phoneNumber");
+      return AuthState(user: user, isAuthenticated: true);
+    });
+        }
 
 
   Future<String?> getIdToken() async {

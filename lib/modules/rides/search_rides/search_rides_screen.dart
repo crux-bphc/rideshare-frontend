@@ -17,7 +17,7 @@ class SearchRidesScreen extends ConsumerStatefulWidget {
 class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
   late final TextEditingController startLocationController;
   late final TextEditingController destinationLocationController;
-  
+
   @override
   void initState() {
     super.initState();
@@ -34,21 +34,30 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
 
   Future<void> _selectDate() async {
     final currentDate = ref.read(selectedDateProvider);
-    final picked = await showCustomDatePicker(context, initialDate: currentDate);
+    final picked = await showCustomDatePicker(
+      context,
+      initialDate: currentDate,
+    );
     if (picked != null) {
       ref.read(selectedDateProvider.notifier).setDate(picked);
     }
   }
 
   Future<void> _selectDepartureTime() async {
-    final picked = await showCustomTimePicker(context, initialTime: TimeOfDay.now());
+    final picked = await showCustomTimePicker(
+      context,
+      initialTime: TimeOfDay.now(),
+    );
     if (picked != null) {
       ref.read(departureTimeProvider.notifier).setTime(picked);
     }
   }
 
   Future<void> _selectArrivalTime() async {
-    final picked = await showCustomTimePicker(context, initialTime: TimeOfDay.now());
+    final picked = await showCustomTimePicker(
+      context,
+      initialTime: TimeOfDay.now(),
+    );
     if (picked != null) {
       ref.read(arrivalTimeProvider.notifier).setTime(picked);
     }
@@ -61,14 +70,16 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
     final seats = ref.read(seatProvider);
 
     try {
-      await ref.read(rideServiceProvider).createRide(
-        combineDateAndTime(rideDate!, departureTime!),
-        combineDateAndTime(rideDate, arrivalTime!),
-        null,
-        seats,
-        destinationLocationController.text,
-        startLocationController.text,
-      );
+      await ref
+          .read(rideServiceProvider)
+          .createRide(
+            combineDateAndTime(rideDate!, departureTime!),
+            combineDateAndTime(rideDate, arrivalTime!),
+            null,
+            seats,
+            destinationLocationController.text,
+            startLocationController.text,
+          );
     } catch (e) {
       print('Error creating ride: $e');
     }
@@ -78,12 +89,19 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
     final rideDate = ref.watch(selectedDateProvider);
     final departureTime = ref.watch(departureTimeProvider);
     final arrivalTime = ref.watch(arrivalTimeProvider);
-    
-    return rideDate != null && 
-           departureTime != null && 
-           arrivalTime != null &&
-           startLocationController.text.trim().isNotEmpty &&
-           destinationLocationController.text.trim().isNotEmpty;
+
+    print("in _canCreateRide");
+    print("departure before arrival?");
+    // print(departureTime?.isBefore(arrivalTime!));
+    print(departureTime != null && arrivalTime != null
+        ? departureTime.isBefore(arrivalTime)
+        : "null values");
+    return rideDate != null &&
+        departureTime != null &&
+        arrivalTime != null &&
+        startLocationController.text.trim().isNotEmpty &&
+        destinationLocationController.text.trim().isNotEmpty &&
+        departureTime.isBefore(arrivalTime);
   }
 
   @override
@@ -106,7 +124,7 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
             ),
           ),
         ),
-        
+
         Expanded(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(16, 40, 16, 16),
@@ -148,7 +166,9 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
                           suffixIcon: Icon(Icons.access_time),
                         ),
                         readOnly: true,
-                        controller: TextEditingController(text: formatTime(departureTime)),
+                        controller: TextEditingController(
+                          text: formatTime(departureTime),
+                        ),
                         onTap: _selectDepartureTime,
                       ),
                     ),
@@ -160,7 +180,9 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
                           suffixIcon: Icon(Icons.access_time),
                         ),
                         readOnly: true,
-                        controller: TextEditingController(text: formatTime(arrivalTime)),
+                        controller: TextEditingController(
+                          text: formatTime(arrivalTime),
+                        ),
                         onTap: _selectArrivalTime,
                       ),
                     ),
@@ -176,21 +198,25 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
                         IconButton(
                           icon: Icon(Icons.remove_circle_outline),
                           onPressed: () {
-                            ref.read(seatProvider.notifier).decreaseSeats(seats);
+                            ref
+                                .read(seatProvider.notifier)
+                                .decreaseSeats(seats);
                           },
                         ),
                         Text(seats.toString()),
                         IconButton(
                           icon: Icon(Icons.add_circle_outline),
                           onPressed: () {
-                            ref.read(seatProvider.notifier).increaseSeats(seats);
+                            ref
+                                .read(seatProvider.notifier)
+                                .increaseSeats(seats);
                           },
                         ),
                       ],
                     ),
                   ],
                 ),
-                
+
                 SizedBox(height: 32.0),
                 if (_canCreateRide)
                   ElevatedButton(
@@ -203,7 +229,9 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
                     ),
                     child: const Text("Create Ride"),
                   ),
-                SizedBox(height: 12,),
+                SizedBox(
+                  height: 12,
+                ),
                 ElevatedButton(
                   onPressed: () {
                     GoRouter.of(context).go('/rides/available');

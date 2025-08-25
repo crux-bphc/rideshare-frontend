@@ -13,8 +13,8 @@ class RideService {
     try {
 
       print("params");
-      print(departureStartTime);
-      print(departureEndTime);
+      print(departureStartTime.toUtc().toIso8601String());
+      print(departureEndTime.toUtc().toIso8601String());
       print(comments);
       print(seats);
       print(rideStart);
@@ -23,8 +23,8 @@ class RideService {
       final response = await _dio.post(
         '${dotenv.env['BACKEND_API_URL']}rides/create/',
         data: {
-          "departureStartTime": departureStartTime.toIso8601String(),
-          "departureEndTime": departureEndTime.toIso8601String(),
+          "departureStartTime": departureStartTime.toUtc().toIso8601String(),
+          "departureEndTime": departureEndTime.toUtc().toIso8601String(),
           "comments": comments ?? '',
           "maxMemberCount": seats,
           "rideStart": rideStart,
@@ -45,16 +45,16 @@ class RideService {
       print("params");
       print(startLocation);
       print(endLocation);
-      print(from?.toIso8601String());
-      print(to?.toIso8601String());
+      print(from?.toUtc().toIso8601String());
+      print(to?.toUtc().toIso8601String());
       print("params");
       final response = await _dio.get(
         '${dotenv.env['BACKEND_API_URL']}rides/search/',
         queryParameters: {
           "search_start_location": startLocation,
           "search_end_location": endLocation,
-          "from": from?.toIso8601String(),
-          "by": to?.toIso8601String(),
+          "from": from?.toUtc().toIso8601String(),
+          "by": to?.toUtc().toIso8601String(),
         },
       );
       print("response");

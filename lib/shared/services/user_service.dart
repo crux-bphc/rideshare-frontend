@@ -25,9 +25,9 @@ class UserService {
     }
   }
 
-  Future<void> createUser(String phone, String? name) async {
+  Future<void> createUser(String phone, String name) async {
     try {
-
+      print("creating new user");
       print("params");
       print(phone);
       print(name);
