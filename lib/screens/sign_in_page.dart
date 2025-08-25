@@ -61,7 +61,7 @@ class _LoginWidget extends ConsumerWidget {
           : ElevatedButton.icon(
               key: const ValueKey('button'),
               onPressed: () async {
-                ref.read(authNotifierProvider.notifier).login();
+                ref.read(authNotifierProvider.notifier).login(context);
               },
               label: const Text('Sign in with Google'),
               icon: const Icon(

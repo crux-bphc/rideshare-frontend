@@ -52,9 +52,10 @@ class _MainAppState extends ConsumerState<MainApp> {
                       NavigationTab.rides,
                       currentTab,
                       navigationNotifier,
-                      Icons.inbox_outlined,
-                      Icons.inbox,
-                      'Inbox',
+                      Icons.directions_car_filled_outlined,
+                      Icons.directions_car,
+
+                      'Rides',
                     ),
                     _buildNavItem(
                       context,
@@ -62,9 +63,9 @@ class _MainAppState extends ConsumerState<MainApp> {
                       NavigationTab.inbox,
                       currentTab,
                       navigationNotifier,
-                      Icons.directions_car_filled_outlined,
-                      Icons.directions_car,
-                      'Rides',
+                      Icons.inbox_outlined,
+                      Icons.inbox,
+                      'Inbox',
                     ),
                     _buildNavItem(
                       context,
