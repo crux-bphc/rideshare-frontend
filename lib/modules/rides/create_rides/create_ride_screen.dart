@@ -104,7 +104,10 @@ class _CreateRideScreenState extends ConsumerState<CreateRideScreen> {
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () {
+                Navigator.of(context).pop();
+                _resetForm();
+              },
               child: Text(
                 'OK',
                 style: TextStyle(
@@ -119,6 +122,15 @@ class _CreateRideScreenState extends ConsumerState<CreateRideScreen> {
     } catch (e) {
       print('Error creating ride: $e');
     }
+  }
+
+  void _resetForm() {
+    startLocationController.clear();
+    destinationLocationController.clear();
+    ref.read(selectedDateProvider.notifier).setDate(null);
+    ref.read(departureTimeProvider.notifier).setTime(null);
+    ref.read(arrivalTimeProvider.notifier).setTime(null);
+    ref.read(seatProvider.notifier).resetSeats();
   }
 
   bool get _canCreateRide {

@@ -91,6 +91,15 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
     return [];
   }
 
+  void _resetForm() {
+    startLocationController.clear();
+    destinationLocationController.clear();
+    ref.read(selectedDateProvider.notifier).setDate(null);
+    ref.read(departureTimeProvider.notifier).setTime(null);
+    ref.read(arrivalTimeProvider.notifier).setTime(null);
+    ref.read(seatProvider.notifier).resetSeats();
+  }
+
   void _validateAndSearch() async {
     setState(() {
       startLocationError = startLocationController.text.trim().isEmpty ? "Please enter Start Location" : null;
@@ -103,6 +112,7 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
     });
     if (startLocationError == null && destinationLocationError == null && dateError == null && timeError == null) {
       final rides = await _searchRide();
+      _resetForm();
       GoRouter.of(context).go('/rides/available', extra: rides);
     }
   }

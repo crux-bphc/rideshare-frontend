@@ -5,18 +5,16 @@ import 'package:rideshare/shared/theme.dart';
 
 class RideCard extends StatelessWidget {
   final Ride ride;
-  final VoidCallback onJoinRide;
 
   const RideCard({
     super.key,
     required this.ride,
-    required this.onJoinRide,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.fromLTRB(8, 6, 8, 6),
+      margin: EdgeInsets.fromLTRB(8, 6, 8, 8),
       decoration: BoxDecoration(
         color: AppColors.card,
         borderRadius: BorderRadius.circular(16),
@@ -73,7 +71,7 @@ class RideCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: onJoinRide,
+                    onPressed: () {},
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.button,
                       foregroundColor: AppColors.textPrimary,
