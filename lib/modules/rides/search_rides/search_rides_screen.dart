@@ -51,6 +51,7 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
     );
     if (picked != null) {
       ref.read(departureTimeProvider.notifier).setTime(picked);
+      ref.read(arrivalTimeProvider.notifier).setTime(null);
     }
   }
 
@@ -61,6 +62,7 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
     );
     if (picked != null) {
       ref.read(arrivalTimeProvider.notifier).setTime(picked);
+      ref.read(departureTimeProvider.notifier).setTime(null);
     }
   }
 
@@ -175,7 +177,9 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
                         onTap: _selectDepartureTime,
                       ),
                     ),
-                    SizedBox(width: 16.0),
+                    SizedBox(width: 12.0),
+                    Text("OR"),
+                    SizedBox(width: 12.0),
                     Expanded(
                       child: TextField(
                         decoration: InputDecoration(

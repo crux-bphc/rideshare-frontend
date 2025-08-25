@@ -48,21 +48,39 @@ class RideService {
       print(from?.toUtc().toIso8601String() );
       print(to?.toUtc().toIso8601String());
       print("params");
-      final response = await _dio.get(
-        '${dotenv.env['BACKEND_API_URL']}rides/search/',
-        queryParameters: {
-          "search_start_location": startLocation,
-          "search_end_location": endLocation,
-          "from": from?.toUtc().toIso8601String(),
-          "by": to?.toUtc().toIso8601String(),
-        },
-      );
-      if (response.statusCode == 200) {
-        return (response.data as List)
-            .map((json) => Ride.fromJson(json))
-            .toList();
-      } else {
-        throw Exception('Failed to search rides');
+      if (from == null){
+        final response = await _dio.get(
+          '${dotenv.env['BACKEND_API_URL']}rides/search/',
+          queryParameters: {
+            "search_start_location": startLocation,
+            "search_end_location": endLocation,
+            "by": to?.toUtc().toIso8601String(),
+          },
+        );
+        if (response.statusCode == 200) {
+          return (response.data as List)
+              .map((json) => Ride.fromJson(json))
+              .toList();
+        } else {
+          throw Exception('Failed to search rides');
+        }
+      }
+      else {
+        final response = await _dio.get(
+          '${dotenv.env['BACKEND_API_URL']}rides/search/',
+          queryParameters: {
+            "search_start_location": startLocation,
+            "search_end_location": endLocation,
+            "from": from.toUtc().toIso8601String(),
+          },
+        );
+        if (response.statusCode == 200) {
+          return (response.data as List)
+              .map((json) => Ride.fromJson(json))
+              .toList();
+        } else {
+          throw Exception('Failed to search rides');
+        }
       }
     } catch (e) {
       throw Exception('Failed to search rides: $e');
