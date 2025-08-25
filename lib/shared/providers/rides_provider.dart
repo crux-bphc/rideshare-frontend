@@ -14,10 +14,12 @@ final rideServiceProvider = Provider<RideService>((ref) {
 class RidesNotifier extends _$RidesNotifier {
   @override
   Future<List<Ride>> build() async {
+    return [];
+  }
+
+  Future<List<Ride>> searchRide(String startLocation, String endLocation, DateTime? from, DateTime? to) async {
     final rideService = ref.watch(rideServiceProvider);
-    return rideService.searchRides(
-      '', '', null, null
-    ); // Empty search query to fetch all rides
+    return rideService.searchRides(startLocation, endLocation, from, to);
   }
 
   Future<void> createRide(DateTime departureStartTime, DateTime departureEndTime, String? comments, int seats, String rideStart, String rideEnd) async {

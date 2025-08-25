@@ -31,8 +31,8 @@ class Ride {
           ? DateTime.parse(json['departureEndTime'])
           : null,
       maxMemberCount: json['maxMemberCount'],
-      rideStartLocation: json['rideStartLocation'],
-      rideEndLocation: json['rideEndLocation'],
+      rideStartLocation: json['ride_start_location'],
+      rideEndLocation: json['ride_end_location'],
     );
   }
 
@@ -44,8 +44,8 @@ class Ride {
       'departureStartTime': departureStartTime?.toIso8601String(),
       'departureEndTime': departureEndTime?.toIso8601String(),
       'maxMemberCount': maxMemberCount,
-      'rideStartLocation': rideStartLocation,
-      'rideEndLocation': rideEndLocation,
+      'ride_start_location': rideStartLocation,
+      'ride_end_location': rideEndLocation,
     };
   }
 }

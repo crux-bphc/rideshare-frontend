@@ -7,7 +7,7 @@ class SelectedDateNotifier extends Notifier<DateTime?> {
     return null;
   }
 
-  void setDate(DateTime date) {
+  void setDate(DateTime? date) {
     state = date;
   }
 }
@@ -23,7 +23,7 @@ class DepartureTimeNotifier extends Notifier<TimeOfDay?> {
     return null;
   }
 
-  void setTime(TimeOfDay time) {
+  void setTime(TimeOfDay? time) {
     state = time;
   }
 }
@@ -39,7 +39,7 @@ class ArrivalTimeNotifier extends Notifier<TimeOfDay?> {
     return null;
   }
 
-  void setTime(TimeOfDay time) {
+  void setTime(TimeOfDay? time) {
     state = time;
   }
 }

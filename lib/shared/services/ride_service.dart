@@ -45,7 +45,7 @@ class RideService {
       print("params");
       print(startLocation);
       print(endLocation);
-      print(from?.toUtc().toIso8601String());
+      print(from?.toUtc().toIso8601String() );
       print(to?.toUtc().toIso8601String());
       print("params");
       final response = await _dio.get(
@@ -54,12 +54,9 @@ class RideService {
           "search_start_location": startLocation,
           "search_end_location": endLocation,
           "from": from?.toUtc().toIso8601String(),
-          "by": to?.toUtc().toIso8601String(),
+          // "by": to?.toUtc().toIso8601String(),
         },
       );
-      print("response");
-      print(response);
-      print("response");
       if (response.statusCode == 200) {
         return (response.data as List)
             .map((json) => Ride.fromJson(json))

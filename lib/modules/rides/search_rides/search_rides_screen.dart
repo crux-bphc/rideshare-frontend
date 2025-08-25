@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:rideshare/models/ride.dart';
 import 'package:rideshare/modules/rides/widgets/date_picker.dart';
 import 'package:rideshare/modules/rides/widgets/time_picker.dart';
 import 'package:rideshare/providers/rides/ridedata_provider.dart';
@@ -73,25 +74,42 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
       await ref
           .read(rideServiceProvider)
           .createRide(
-            combineDateAndTime(rideDate!, departureTime!),
-            combineDateAndTime(rideDate, arrivalTime!),
+            combineDateAndTime(rideDate!, departureTime!)!,
+            combineDateAndTime(rideDate, arrivalTime!)!,
             null,
             seats,
-            destinationLocationController.text,
             startLocationController.text,
+            destinationLocationController.text,
           );
     } catch (e) {
       print('Error creating ride: $e');
     }
   }
 
+    Future<List<Ride>> _searchRide() async {
+    final rideDate = ref.read(selectedDateProvider);
+    final departureTime = ref.read(departureTimeProvider);
+    final arrivalTime = ref.read(arrivalTimeProvider);
+
+    try {
+      return ref
+          .read(rideServiceProvider)
+          .searchRides(
+            startLocationController.text,
+            destinationLocationController.text,
+            combineDateAndTime(rideDate, departureTime),
+            combineDateAndTime(rideDate, arrivalTime)
+          );
+    } catch (e) {
+      print('Error creating ride: $e');
+    }
+    return [];
+  }
+
   bool get _canCreateRide {
     final rideDate = ref.watch(selectedDateProvider);
     final departureTime = ref.watch(departureTimeProvider);
     final arrivalTime = ref.watch(arrivalTimeProvider);
-
-    print("in _canCreateRide");
-    print("departure before arrival?");
     // print(departureTime?.isBefore(arrivalTime!));
     print(departureTime != null && arrivalTime != null
         ? departureTime.isBefore(arrivalTime)
@@ -150,7 +168,18 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
                   decoration: InputDecoration(
                     labelText: 'Ride Date',
                     hintText: 'Enter Date',
-                    suffixIcon: Icon(Icons.calendar_today),
+                    suffixIcon: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                      IconButton(
+                        icon: Icon(Icons.clear),
+                        onPressed: () {
+                        ref.read(selectedDateProvider.notifier).setDate(null);
+                        },
+                      ),
+                      Icon(Icons.calendar_today),
+                      ],
+                    ),
                   ),
                   controller: TextEditingController(text: formatDate(rideDate)),
                   readOnly: true,
@@ -163,7 +192,18 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
                       child: TextField(
                         decoration: InputDecoration(
                           labelText: 'From',
-                          suffixIcon: Icon(Icons.access_time),
+                          suffixIcon: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                            IconButton(
+                              icon: Icon(Icons.clear),
+                              onPressed: () {
+                              ref.read(departureTimeProvider.notifier).setTime(null);
+                              },
+                            ),
+                            Icon(Icons.access_time),
+                            ],
+                          ),
                         ),
                         readOnly: true,
                         controller: TextEditingController(
@@ -177,7 +217,18 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
                       child: TextField(
                         decoration: InputDecoration(
                           labelText: 'To',
-                          suffixIcon: Icon(Icons.access_time),
+                          suffixIcon: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                            IconButton(
+                              icon: Icon(Icons.clear),
+                              onPressed: () {
+                              ref.read(arrivalTimeProvider.notifier).setTime(null);
+                              },
+                            ),
+                            Icon(Icons.access_time),
+                            ],
+                          ),
                         ),
                         readOnly: true,
                         controller: TextEditingController(
@@ -218,32 +269,24 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
                 ),
 
                 SizedBox(height: 32.0),
-                if (_canCreateRide)
-                  ElevatedButton(
-                    onPressed: _createRide,
-                    style: ElevatedButton.styleFrom(
-                      minimumSize: Size(
-                        double.infinity,
-                        50,
-                      ),
-                    ),
-                    child: const Text("Create Ride"),
-                  ),
+                ElevatedButton(
+                  onPressed: () async{
+                    final rides = await _searchRide();
+                    GoRouter.of(context).go(
+                      '/rides/available',
+                      extra: rides,
+                    );
+                  },
+                  child: const Text('Available rides'),
+                ),
                 SizedBox(
                   height: 12,
                 ),
-                ElevatedButton(
-                  onPressed: () {
-                    GoRouter.of(context).go('/rides/available');
-                  },
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: Size(
-                      double.infinity,
-                      50,
-                    ),
+                if (_canCreateRide)
+                  ElevatedButton(
+                    onPressed: _createRide,
+                    child: const Text("Create Ride"),
                   ),
-                  child: const Text('Available rides'),
-                ),
               ],
             ),
           ),
