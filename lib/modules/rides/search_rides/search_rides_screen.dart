@@ -19,6 +19,11 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
   late final TextEditingController startLocationController;
   late final TextEditingController destinationLocationController;
 
+  String? startLocationError;
+  String? destinationLocationError;
+  String? dateError;
+  String? timeError;
+
   @override
   void initState() {
     super.initState();
@@ -86,6 +91,21 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
     return [];
   }
 
+  void _validateAndSearch() async {
+    setState(() {
+      startLocationError = startLocationController.text.trim().isEmpty ? "Please enter Start Location" : null;
+      destinationLocationError = destinationLocationController.text.trim().isEmpty ? "Please enter Destination" : null;
+      dateError = ref.read(selectedDateProvider) == null ? "Please select Ride Date" : null;
+      final departureTime = ref.read(departureTimeProvider);
+      final arrivalTime = ref.read(arrivalTimeProvider);
+      timeError = (departureTime == null && arrivalTime == null)
+        ? "Select Departure or Arrival Time" : null;
+    });
+    if (startLocationError == null && destinationLocationError == null && dateError == null && timeError == null) {
+      final rides = await _searchRide();
+      GoRouter.of(context).go('/rides/available', extra: rides);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -117,6 +137,7 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
                   decoration: InputDecoration(
                     labelText: 'Start Location',
                     prefixIcon: Icon(Icons.location_on),
+                    errorText: startLocationError,
                   ),
                   controller: startLocationController,
                 ),
@@ -125,6 +146,7 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
                   decoration: InputDecoration(
                     labelText: 'Destination',
                     prefixIcon: Icon(Icons.location_on),
+                    errorText: destinationLocationError,
                   ),
                   controller: destinationLocationController,
                 ),
@@ -133,16 +155,17 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
                   decoration: InputDecoration(
                     labelText: 'Ride Date',
                     hintText: 'Enter Date',
+                    errorText: dateError,
                     suffixIcon: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                      IconButton(
-                        icon: Icon(Icons.clear),
-                        onPressed: () {
-                        ref.read(selectedDateProvider.notifier).setDate(null);
-                        },
-                      ),
-                      Icon(Icons.calendar_today),
+                        IconButton(
+                          icon: Icon(Icons.clear),
+                          onPressed: () {
+                            ref.read(selectedDateProvider.notifier).setDate(null);
+                          },
+                        ),
+                        Icon(Icons.calendar_today),
                       ],
                     ),
                   ),
@@ -157,16 +180,17 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
                       child: TextField(
                         decoration: InputDecoration(
                           labelText: 'From',
+                          errorText: timeError,
                           suffixIcon: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                            IconButton(
-                              icon: Icon(Icons.clear),
-                              onPressed: () {
-                              ref.read(departureTimeProvider.notifier).setTime(null);
-                              },
-                            ),
-                            Icon(Icons.access_time),
+                              IconButton(
+                                icon: Icon(Icons.clear),
+                                onPressed: () {
+                                  ref.read(departureTimeProvider.notifier).setTime(null);
+                                },
+                              ),
+                              Icon(Icons.access_time),
                             ],
                           ),
                         ),
@@ -184,16 +208,17 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
                       child: TextField(
                         decoration: InputDecoration(
                           labelText: 'To',
+                          errorText: timeError,
                           suffixIcon: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                            IconButton(
-                              icon: Icon(Icons.clear),
-                              onPressed: () {
-                              ref.read(arrivalTimeProvider.notifier).setTime(null);
-                              },
-                            ),
-                            Icon(Icons.access_time),
+                              IconButton(
+                                icon: Icon(Icons.clear),
+                                onPressed: () {
+                                  ref.read(arrivalTimeProvider.notifier).setTime(null);
+                                },
+                              ),
+                              Icon(Icons.access_time),
                             ],
                           ),
                         ),
@@ -237,13 +262,7 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
 
                 SizedBox(height: 32.0),
                 ElevatedButton(
-                  onPressed: () async{
-                    final rides = await _searchRide();
-                    GoRouter.of(context).go(
-                      '/rides/available',
-                      extra: rides,
-                    );
-                  },
+                  onPressed: _validateAndSearch,
                   style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4))
                   ),
