@@ -78,7 +78,7 @@ class RideCard extends StatelessWidget {
                       backgroundColor: AppColors.button,
                       foregroundColor: AppColors.textPrimary,
                       padding: const EdgeInsets.symmetric(vertical: 12),
-                      minimumSize: const Size(0, 32), // smaller height
+                      minimumSize: const Size(0, 32),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(6),
                       ),

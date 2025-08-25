@@ -4,8 +4,6 @@ import 'package:rideshare/providers/auth/auth_user.dart';
 import 'package:rideshare/shared/providers/user_provider.dart';
 import 'package:rideshare/providers/auth/logto_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:rideshare/shared/widgets/phone_number_input_dialog.dart';
-
 abstract class AuthProvider {
   Dio get dioClient;
   Future<AuthUser?> initialise();

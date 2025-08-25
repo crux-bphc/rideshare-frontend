@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rideshare/modules/home/screens/home_page.dart';
+import 'package:rideshare/modules/rides/create_rides/create_ride_screen.dart';
 import 'package:rideshare/modules/splash/splash_page.dart';
 import 'package:rideshare/providers/auth/auth_provider.dart';
 import 'package:rideshare/screens/sign_in_page.dart';
@@ -99,6 +100,15 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                       return _buildPageWithFadeTransition(
                         path: state.matchedLocation,
                         child: const AvailableRidesScreen(),
+                      );
+                    },
+                  ),
+                  GoRoute(
+                    path: 'create',
+                    pageBuilder: (context, state) {
+                      return _buildPageWithFadeTransition(
+                        path: state.matchedLocation,
+                        child: const CreateRideScreen(),
                       );
                     },
                   ),

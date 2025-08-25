@@ -54,7 +54,7 @@ class RideService {
           "search_start_location": startLocation,
           "search_end_location": endLocation,
           "from": from?.toUtc().toIso8601String(),
-          // "by": to?.toUtc().toIso8601String(),
+          "by": to?.toUtc().toIso8601String(),
         },
       );
       if (response.statusCode == 200) {
