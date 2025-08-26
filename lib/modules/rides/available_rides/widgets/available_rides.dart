@@ -11,17 +11,17 @@ class AvailableRidesList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final ridesAsyncValue = GoRouterState.of(context).extra as List<Ride>;
+    final rides = GoRouterState.of(context).extra as List<Ride>;
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Expanded(
           child: ListView.builder(
-            itemCount: ridesAsyncValue.length + 1,
+            itemCount: rides.length + 1,
             itemBuilder: (context, index) {
-              if (index < ridesAsyncValue.length) {
-                final ride = ridesAsyncValue[index];
+              if (index < rides.length) {
+                final ride = rides[index];
                 return RideCard(ride: ride);
               } else {
                 return Column(

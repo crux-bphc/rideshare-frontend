@@ -39,7 +39,7 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
     return AuthState(user: user, isAuthenticated: user != null);
   }
 
-  Future<void> login(BuildContext context) async {
+  Future<void> login() async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
       final authProvider = ref.read(logtoAuthProvider);

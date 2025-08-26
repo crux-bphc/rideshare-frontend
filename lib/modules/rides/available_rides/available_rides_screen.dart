@@ -12,13 +12,13 @@ class AvailableRidesScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final ridesAsyncValue = GoRouterState.of(context).extra as List<Ride>;
+    final rides = GoRouterState.of(context).extra as List<Ride>;
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Available Rides'),
       ),
-      body: ridesAsyncValue.isEmpty
+      body: rides.isEmpty
           ? noRideScreen()
           : AvailableRidesList()
     );
