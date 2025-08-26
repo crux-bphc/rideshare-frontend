@@ -49,7 +49,7 @@ final arrivalTimeProvider =
   return ArrivalTimeNotifier();
 });
 
-class seatProviderNotifier extends Notifier<int> {
+class SeatNotifier extends Notifier<int> {
   @override
   int build(){
     return 4;
@@ -65,6 +65,6 @@ class seatProviderNotifier extends Notifier<int> {
 }
 
 final seatProvider = 
-    NotifierProvider<seatProviderNotifier, int>(() {
-      return seatProviderNotifier();
+    NotifierProvider<SeatNotifier, int>(() {
+      return SeatNotifier();
     });

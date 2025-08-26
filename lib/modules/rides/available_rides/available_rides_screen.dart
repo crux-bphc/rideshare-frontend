@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rideshare/models/ride.dart';
-import 'package:rideshare/shared/providers/rides_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AvailableRidesScreen extends ConsumerWidget {
@@ -11,18 +10,18 @@ class AvailableRidesScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final ridesAsyncValue = GoRouterState.of(context).extra as List<Ride>;
+    final rides= GoRouterState.of(context).extra as List<Ride>;
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Available Rides'),
       ),
-      body: ridesAsyncValue.isEmpty
+      body: rides.isEmpty
           ? const Center(child: Text('No rides available.'))
           : ListView.builder(
-              itemCount: ridesAsyncValue.length,
+              itemCount: rides.length,
               itemBuilder: (context, index) {
-                final ride = ridesAsyncValue[index];
+                final ride = rides[index];
                 return Card(
                   margin: const EdgeInsets.all(8.0),
                   child: Padding(

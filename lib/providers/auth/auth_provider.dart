@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rideshare/providers/auth/auth_user.dart';
 import 'package:rideshare/shared/providers/user_provider.dart';
 import 'package:rideshare/providers/auth/logto_auth.dart';
-import 'package:flutter/material.dart';
 import 'package:rideshare/shared/widgets/phone_number_input_dialog.dart';
 
 abstract class AuthProvider {
@@ -41,7 +40,7 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
     return AuthState(user: user, isAuthenticated: user != null);
   }
 
-  Future<void> login(BuildContext context) async {
+  Future<void> login() async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
       final authProvider = ref.read(logtoAuthProvider);
