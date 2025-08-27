@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rideshare/shared/theme.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rideshare/providers/auth/auth_provider.dart';
+import 'package:rideshare/shared/providers/navigation_provider.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -105,6 +106,10 @@ class _HomePageState extends ConsumerState<HomePage>
               child: ElevatedButton.icon(
                 onPressed: () {
                   //todo: implement search
+                  ref
+                      .read(navigationNotifierProvider.notifier)
+                      .setTab(NavigationTab.rides);
+                  context.go('/rides/search');
                 },
                 label: const Text('Search available rides'),
                 icon: const Icon(Icons.search),

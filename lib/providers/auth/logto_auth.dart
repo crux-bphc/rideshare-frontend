@@ -22,6 +22,8 @@ class LogtoAuthProvider extends AuthProvider {
       return null;
     }
     final Map<String, dynamic> claims = JwtDecoder.decode(idToken);
+    print("Decoded JWT Claims:");
+    print(claims);
     return AuthUser.fromJwtClaims(claims);
   }
 
@@ -31,6 +33,12 @@ class LogtoAuthProvider extends AuthProvider {
       config: LogtoConfig(
         appId: _appId,
         endpoint: _endpoint,
+        scopes: [
+          'openid',
+          'profile',
+          LogtoUserScope.email.value,
+          LogtoUserScope.phone.value,
+        ],
       ),
     );
 
@@ -38,9 +46,9 @@ class LogtoAuthProvider extends AuthProvider {
     dioClient.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
-          final accessToken = await _logtoClient.getAccessToken();
-          if (accessToken != null) {
-            options.headers['Authorization'] = 'Bearer $accessToken';
+          final idToken = await _logtoClient.idToken;
+          if (idToken != null) {
+            options.headers['Authorization'] = 'Bearer $idToken';
           }
           return handler.next(options);
         },
@@ -66,6 +74,9 @@ class LogtoAuthProvider extends AuthProvider {
   Future<void> logout() async {
     await _logtoClient.signOut(postLogoutRedirectUri);
   }
+
+  @override
+  Future<String?> get idToken => _logtoClient.idToken;
 
   @override
   void dispose() {}
