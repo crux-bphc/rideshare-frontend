@@ -80,4 +80,15 @@ class RideService {
       throw Exception('Failed to search rides: $e');
     }
   }
+  
+  Future<void> sendRequest(rideId) async{
+    try{
+      await _dio.post(
+        '${dotenv.env['BACKEND_API_URL']}rides/request/$rideId',
+      );
+    }
+    catch(e){
+      throw Exception("Failed to send ride request");
+    }
+  }
 }
