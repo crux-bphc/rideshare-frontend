@@ -1,83 +1,104 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rideshare/models/ride.dart';
+import 'package:rideshare/modules/rides/ride_details/widgets/route_icon.dart';
+import 'package:rideshare/shared/providers/rides_provider.dart';
+import 'package:rideshare/shared/theme.dart';
+import 'package:intl/intl.dart';
 
-class RideDetailsScreen extends StatelessWidget {
+class RideDetailsScreen extends ConsumerWidget {
   final Ride ride;
   const RideDetailsScreen({super.key, required this.ride});
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
+      backgroundColor:AppColors.surface,
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: const Text(
+          'Ride Details',
+        ),
+      ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.fromLTRB(12, 0, 12, 24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Ride details',
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            SizedBox(height: 16.0),
-            Text('Created By: ${ride.createdBy}'),
-            SizedBox(height: 8.0),
-            Text('Max Members: ${ride.maxMemberCount ?? 'N/A'}'),
-            SizedBox(height: 16.0),
-            // Ride route details
             Row(
               children: [
-                Icon(Icons.location_on),
-                SizedBox(width: 8.0),
-                Text('Start: ${ride.rideStartLocation ?? 'N/A'}'),
-              ],
-            ),
-            SizedBox(height: 8.0),
-            Row(
-              children: [
-                Icon(Icons.location_on),
-                SizedBox(width: 8.0),
-                Text('End: ${ride.rideEndLocation ?? 'N/A'}'),
-              ],
-            ),
-            SizedBox(height: 8.0),
-            Text(
-              'Departure Time: ${ride.departureStartTime?.toLocal().toString() ?? 'N/A'}',
-            ),
-            SizedBox(height: 8.0),
-            Text(
-              'Arrival Time: ${ride.departureEndTime?.toLocal().toString() ?? 'N/A'}',
-            ),
-            SizedBox(height: 16.0),
-            if (ride.comments != null && ride.comments!.isNotEmpty)
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Comments',
-                    style: Theme.of(context).textTheme.titleMedium,
+                const CircleAvatar(
+                  radius: 20,
+                  backgroundColor:AppColors.iconSelected,
+                  child: Icon(Icons.person, color: Colors.white, size: 20),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Alice Jayson',
+                        style: TextStyle(
+                          color: AppColors.textPrimary,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const Text(
+                        '+91 9999999999',
+                        style: TextStyle(
+                          color: AppColors.textSecondary,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
                   ),
-                  TextField(
-                    maxLines: 3,
-                    readOnly: true,
-                    controller: TextEditingController(text: ride.comments),
-                    decoration: InputDecoration(
-                      hintText: 'No comments',
-                      border: OutlineInputBorder(),
+                ),
+              ],
+            ),
+            SizedBox(height: 24),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  (ride.departureEndTime!.day == ride.departureStartTime!.day) ?
+                   '${DateFormat("d MMM").format(ride.departureStartTime!)} ${DateFormat("HH:mm").format(ride.departureStartTime!)} - ${DateFormat("HH:mm").format(ride.departureEndTime!)}' 
+                   : '${DateFormat("d MMM HH:mm").format(ride.departureStartTime!)} - ${DateFormat("d MMM HH:mm").format(ride.departureEndTime!)}',
+                  style: TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  child: Text(
+                    ride.maxMemberCount.toString(),
+                    style: TextStyle(
+                      color: AppColors.accent,
+                      fontSize: 16,
                     ),
                   ),
-                  SizedBox(height: 16.0),
+                ),
+              ],
+            ),
+            SizedBox(height: 30),
+              Column(
+                children: [
+                  RouteIcon(icon: Icons.location_on, iconColor: AppColors.button, label: ride.rideStartLocation ?? 'N/A'),
+                  SizedBox(height: 10),
+                  RouteIcon(icon: Icons.location_on, iconColor: AppColors.button, label: ride.rideEndLocation ?? 'N/A'),
                 ],
               ),
-            Text(
-              'Others part of the ride',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            SizedBox(height: 8.0),
-            // TODO: Display other passengers if available
-            SizedBox(height: 32.0),
+            const SizedBox(height:30),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  // TODO: Implement send request to join functionality
+                  ref.read(rideServiceProvider).sendRequest(ride.id);
                 },
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 15),

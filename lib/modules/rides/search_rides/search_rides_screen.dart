@@ -49,7 +49,8 @@ class RideDateTextField extends ConsumerWidget {
 
 class DepartureTimeTextField extends ConsumerWidget {
   final VoidCallback onTap;
-  const DepartureTimeTextField({Key? key, required this.onTap}) : super(key: key);
+  const DepartureTimeTextField({Key? key, required this.onTap})
+    : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -210,7 +211,7 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
             startLocationController.text,
             destinationLocationController.text,
             combineDateAndTime(rideDate, departureTime),
-            combineDateAndTime(rideDate, arrivalTime)
+            combineDateAndTime(rideDate, arrivalTime),
           );
     } catch (e) {
       print('Error creating ride: $e');
@@ -229,15 +230,26 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
 
   void _validateAndSearch() async {
     setState(() {
-      startLocationError = startLocationController.text.trim().isEmpty ? "Please enter Start Location" : null;
-      destinationLocationError = destinationLocationController.text.trim().isEmpty ? "Please enter Destination" : null;
-      dateError = ref.read(selectedDateProvider) == null ? "Please select Ride Date" : null;
+      startLocationError = startLocationController.text.trim().isEmpty
+          ? "Please enter Start Location"
+          : null;
+      destinationLocationError =
+          destinationLocationController.text.trim().isEmpty
+          ? "Please enter Destination"
+          : null;
+      dateError = ref.read(selectedDateProvider) == null
+          ? "Please select Ride Date"
+          : null;
       final departureTime = ref.read(departureTimeProvider);
       final arrivalTime = ref.read(arrivalTimeProvider);
       timeError = (departureTime == null && arrivalTime == null)
-        ? "Select Departure or Arrival Time" : null;
+          ? "Select Departure or Arrival Time"
+          : null;
     });
-    if (startLocationError == null && destinationLocationError == null && dateError == null && timeError == null) {
+    if (startLocationError == null &&
+        destinationLocationError == null &&
+        dateError == null &&
+        timeError == null) {
       final rides = await _searchRide();
       _resetForm();
       GoRouter.of(context).go('/rides/available', extra: rides);
@@ -260,17 +272,17 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
               ),
             ),
           ),
-      
+
           Expanded(
             child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 40, 16, 16),
+              padding: const EdgeInsets.fromLTRB(16, 40, 16, 16),
               child: Column(
                 children: [
                   TextField(
                     decoration: InputDecoration(
                       labelText: 'Start Location',
                       prefixIcon: Icon(Icons.location_on),
-                    errorText: startLocationError,
+                      errorText: startLocationError,
                     ),
                     controller: startLocationController,
                   ),
@@ -279,7 +291,7 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
                     decoration: InputDecoration(
                       labelText: 'Destination',
                       prefixIcon: Icon(Icons.location_on),
-                    errorText: destinationLocationError,
+                      errorText: destinationLocationError,
                     ),
                     controller: destinationLocationController,
                   ),
@@ -289,7 +301,9 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
                   Row(
                     children: [
                       Expanded(
-                        child: DepartureTimeTextField(onTap: _selectDepartureTime),
+                        child: DepartureTimeTextField(
+                          onTap: _selectDepartureTime,
+                        ),
                       ),
                       SizedBox(width: 16.0),
                       Expanded(
@@ -299,14 +313,16 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
                   ),
                   SizedBox(height: 16.0),
                   SeatSelection(),
-      
+
                   SizedBox(height: 32.0),
                   ElevatedButton(
-                  onPressed: _validateAndSearch,
-                  style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4))
-                  ),
-                  child: const Text('Search rides'),
+                    onPressed: _validateAndSearch,
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                    child: const Text('Search rides'),
                   ),
                 ],
               ),

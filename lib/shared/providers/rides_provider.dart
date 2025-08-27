@@ -27,6 +27,10 @@ class RidesNotifier extends _$RidesNotifier {
     rideService.createRide(departureStartTime, departureEndTime, comments, seats, rideStart, rideEnd);
   }
 
+  Future<void> sendRequest(int rideId) async{
+    final rideService = ref.watch(rideServiceProvider);
+    rideService.sendRequest(rideId);
+  }
   Future<void> refreshRides() async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() => build());

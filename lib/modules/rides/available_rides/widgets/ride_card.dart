@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:rideshare/models/ride.dart';
 import 'package:intl/intl.dart';
 import 'package:rideshare/shared/theme.dart';
@@ -71,7 +72,9 @@ class RideCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      GoRouter.of(context).go("/rides/details", extra: ride);
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.button,
                       foregroundColor: AppColors.textPrimary,
