@@ -91,9 +91,8 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
             combineDateAndTime(rideDate, arrivalTime),
           );
     } catch (e) {
-      print('Error creating ride: $e');
+        return [];
     }
-    return [];
   }
 
   void _resetForm() {

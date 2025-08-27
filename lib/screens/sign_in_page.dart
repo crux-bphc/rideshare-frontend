@@ -8,8 +8,6 @@ class SignInPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    print("Building SignInPage");
-
     return Scaffold(
       backgroundColor: AppColors.surface,
       body: Center(
@@ -43,8 +41,6 @@ class _LoginWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authNotifierProvider);
     final isLoading = authState.isLoading;
-
-    print("in build for Login Widget in sign in page");
 
     final ButtonStyle baseButtonStyle = ElevatedButton.styleFrom(
       textStyle: Theme.of(context).textTheme.labelLarge,

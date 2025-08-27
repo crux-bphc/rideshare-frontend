@@ -20,15 +20,7 @@ class RideService {
     String rideEnd,
   ) async {
     try {
-      print("params");
-      print(departureStartTime.toUtc().toIso8601String());
-      print(departureEndTime.toUtc().toIso8601String());
-      print(comments);
-      print(seats);
-      print(rideStart);
-      print(rideEnd);
-      print("params");
-      final response = await _dio.post(
+      await _dio.post(
         '${dotenv.env['BACKEND_API_URL']}rides/create/',
         data: {
           "departureStartTime": departureStartTime.toUtc().toIso8601String(),
@@ -39,10 +31,6 @@ class RideService {
           "rideEnd": rideEnd,
         },
       );
-      print("response");
-      print(response);
-      print("response");
-      print('Ride created successfully: ${response.data}');
     } catch (e) {
       throw Exception('Failed to create ride: $e');
     }
@@ -55,12 +43,6 @@ class RideService {
     DateTime? to,
   ) async {
     try {
-      print("params");
-      print(startLocation);
-      print(endLocation);
-      print(from?.toUtc().toIso8601String());
-      print(to?.toUtc().toIso8601String());
-      print("params");
       if (from == null) {
         final response = await _dio.get(
           '${dotenv.env['BACKEND_API_URL']}rides/search/',

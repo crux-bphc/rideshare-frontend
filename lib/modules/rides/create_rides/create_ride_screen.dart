@@ -127,7 +127,7 @@ class _CreateRideScreenState extends ConsumerState<CreateRideScreen> {
         );
       }
     } catch (e) {
-      print('Error creating ride: $e');
+      throw Exception("Error Creating Ride");
     }
   }
 
@@ -144,11 +144,6 @@ class _CreateRideScreenState extends ConsumerState<CreateRideScreen> {
     final rideDate = ref.watch(selectedDateProvider);
     final departureTime = ref.watch(departureTimeProvider);
     final arrivalTime = ref.watch(arrivalTimeProvider);
-    print(
-      departureTime != null && arrivalTime != null
-          ? departureTime.isBefore(arrivalTime)
-          : "null values",
-    );
     return rideDate != null &&
         departureTime != null &&
         arrivalTime != null &&
