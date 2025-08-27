@@ -73,9 +73,7 @@ class LogtoAuthProvider extends AuthProvider {
   }
 
   @override
-  Future<String?> getIdToken() async {
-    return await _logtoClient.idToken;
-  }
+  Future<String?> get idToken => _logtoClient.idToken;
 
   @override
   void dispose() {}
