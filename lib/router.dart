@@ -9,6 +9,7 @@ import 'package:rideshare/screens/sign_in_page.dart';
 import 'package:rideshare/modules/rides/screens/rides_screen.dart';
 import 'package:rideshare/modules/inbox/screens/inbox_screen.dart';
 import 'package:rideshare/modules/profile/screens/profile_screen.dart';
+import 'package:rideshare/shared/providers/navigation_provider.dart';
 import 'package:rideshare/shared/widgets/main_app.dart';
 import 'package:rideshare/modules/rides/search_rides/search_rides_screen.dart';
 import 'package:rideshare/modules/rides/available_rides/available_rides_screen.dart';
@@ -17,6 +18,7 @@ import 'package:rideshare/models/ride.dart';
 
 final goRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
+    navigatorKey: navigatorKey,
     redirect: (context, state) {
       final authState = ref.read(authNotifierProvider);
       final location = state.matchedLocation;

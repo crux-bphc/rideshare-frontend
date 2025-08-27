@@ -35,7 +35,7 @@ final ThemeData appTheme = _theme.copyWith(
   textTheme: GoogleFonts.ralewayTextTheme(_theme.textTheme),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
-      backgroundColor: const Color(0xFF777FE4),
+      backgroundColor: AppColors.button,
       foregroundColor: Colors.white,
       shape: RoundedSuperellipseBorder(
         borderRadius: BorderRadius.circular(12),
