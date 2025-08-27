@@ -6,11 +6,20 @@ class RideService {
   final Dio _dio;
 
   RideService(this._dio) {
-    _dio.interceptors.add(LogInterceptor(requestBody: true, responseBody: true));
+    _dio.interceptors.add(
+      LogInterceptor(requestBody: true, responseBody: true),
+    );
   }
 
-  Future<void> createRide(DateTime departureStartTime, DateTime departureEndTime, String? comments, int seats, String rideStart, String rideEnd) async {
-    try {;
+  Future<void> createRide(
+    DateTime departureStartTime,
+    DateTime departureEndTime,
+    String? comments,
+    int seats,
+    String rideStart,
+    String rideEnd,
+  ) async {
+    try {
       await _dio.post(
         '${dotenv.env['BACKEND_API_URL']}rides/create/',
         data: {
@@ -27,9 +36,14 @@ class RideService {
     }
   }
 
-  Future<List<Ride>> searchRides(String startLocation, String endLocation, DateTime? from, DateTime? to) async {
+  Future<List<Ride>> searchRides(
+    String startLocation,
+    String endLocation,
+    DateTime? from,
+    DateTime? to,
+  ) async {
     try {
-      if (from == null){
+      if (from == null) {
         final response = await _dio.get(
           '${dotenv.env['BACKEND_API_URL']}rides/search/',
           queryParameters: {
@@ -45,8 +59,7 @@ class RideService {
         } else {
           throw Exception('Failed to search rides');
         }
-      }
-      else {
+      } else {
         final response = await _dio.get(
           '${dotenv.env['BACKEND_API_URL']}rides/search/',
           queryParameters: {
@@ -65,18 +78,6 @@ class RideService {
       }
     } catch (e) {
       throw Exception('Failed to search rides: $e');
-    }
-  }
-
-  Future<void> sendRequest(int rideId) async{
-    try{
-       _dio.post(
-        await '${dotenv.env['BACKEND_API_URL']}rides/request/$rideId',
-      );
-      print("Successfully sent request");
-    }
-    catch(e){
-      throw Exception('Failed to send request: $e');
     }
   }
 }

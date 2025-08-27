@@ -17,14 +17,33 @@ class RidesNotifier extends _$RidesNotifier {
     return [];
   }
 
-  Future<List<Ride>> searchRide(String startLocation, String endLocation, DateTime? from, DateTime? to) async {
+  Future<List<Ride>> searchRide(
+    String startLocation,
+    String endLocation,
+    DateTime? from,
+    DateTime? to,
+  ) async {
     final rideService = ref.watch(rideServiceProvider);
     return rideService.searchRides(startLocation, endLocation, from, to);
   }
 
-  Future<void> createRide(DateTime departureStartTime, DateTime departureEndTime, String? comments, int seats, String rideStart, String rideEnd) async {
+  Future<void> createRide(
+    DateTime departureStartTime,
+    DateTime departureEndTime,
+    String? comments,
+    int seats,
+    String rideStart,
+    String rideEnd,
+  ) async {
     final rideService = ref.watch(rideServiceProvider);
-    rideService.createRide(departureStartTime, departureEndTime, comments, seats, rideStart, rideEnd);
+    rideService.createRide(
+      departureStartTime,
+      departureEndTime,
+      comments,
+      seats,
+      rideStart,
+      rideEnd,
+    );
   }
 
   Future<void> sendRequest(int rideId) async{

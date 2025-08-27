@@ -105,8 +105,9 @@ class _HomePageState extends ConsumerState<HomePage>
               width: size.width * 0.8,
               child: ElevatedButton.icon(
                 onPressed: () {
-                  //todo: implement search
-                  ref.read(navigationNotifierProvider.notifier).setTab(NavigationTab.rides);
+                  ref
+                      .read(navigationNotifierProvider.notifier)
+                      .setTab(NavigationTab.rides);
                   context.go('/rides/search');
                 },
                 label: const Text('Search available rides'),

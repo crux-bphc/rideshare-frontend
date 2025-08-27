@@ -6,9 +6,9 @@ class UserService {
 
   UserService(this._dio) {
     _dio.interceptors.add(
-        LogInterceptor(requestBody: true, responseBody: true));
+      LogInterceptor(requestBody: true, responseBody: true),
+    );
   }
-
 
   Future<bool> checkUserExists() async {
     try {
@@ -27,26 +27,15 @@ class UserService {
 
   Future<void> createUser(String phone, String name) async {
     try {
-      print("creating new user");
-      print("params");
-      print(phone);
-      print(name);
-      print("params");
-      final response = await _dio.post(
+      await _dio.post(
         '${dotenv.env['BACKEND_API_URL']}user/',
         data: {
           "phone": phone,
           "name": name,
         },
       );
-      print("response");
-      print(response);
-      print("response");
-      print('User created successfully: ${response.data}');
     } catch (e) {
       throw Exception('Failed to create user: $e');
     }
   }
-
-
 }
