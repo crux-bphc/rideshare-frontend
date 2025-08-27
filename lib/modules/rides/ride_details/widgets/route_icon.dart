@@ -26,7 +26,7 @@ Widget RouteIcon({
         label[0].toUpperCase() + label.substring(1),
         style: const TextStyle(
           color: AppColors.textPrimary,
-          fontSize: 16,
+          fontSize: 18,
         ),
       ),
     ],

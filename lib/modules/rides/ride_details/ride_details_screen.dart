@@ -69,14 +69,14 @@ class RideDetailsScreen extends ConsumerWidget {
                    : '${DateFormat("d MMM HH:mm").format(ride.departureStartTime!)} - ${DateFormat("d MMM HH:mm").format(ride.departureEndTime!)}',
                   style: TextStyle(
                     color: AppColors.textPrimary,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w400,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   child: Text(
-                    ride.maxMemberCount.toString(),
+                    "${ride.maxMemberCount.toString()} seats",
                     style: TextStyle(
                       color: AppColors.accent,
                       fontSize: 16,
@@ -89,7 +89,7 @@ class RideDetailsScreen extends ConsumerWidget {
               Column(
                 children: [
                   RouteIcon(icon: Icons.location_on, iconColor: AppColors.button, label: ride.rideStartLocation ?? 'N/A'),
-                  SizedBox(height: 10),
+                  SizedBox(height: 24),
                   RouteIcon(icon: Icons.location_on, iconColor: AppColors.button, label: ride.rideEndLocation ?? 'N/A'),
                 ],
               ),
