@@ -88,11 +88,7 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
   ) async {
     print("Completing new user registration with phone number: $phoneNumber");
     final userService = ref.read(userServiceProvider);
-    // final user = state.value?.user;
     print("Current user: $user");
-    // if(user == null) {
-    //   print("No authenticated user found.");
-    // }
     await userService.createUser(phoneNumber, user.name!);
     state = await AsyncValue.guard(() async {
       print("User created successfully with phone number: $phoneNumber");
