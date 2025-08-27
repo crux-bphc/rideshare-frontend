@@ -129,7 +129,9 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
         timeError == null) {
       final rides = await _searchRide();
       _resetForm();
-      GoRouter.of(context).go('/rides/available', extra: rides);
+      if (mounted) {
+        GoRouter.of(context).go('/rides/available', extra: rides);
+      }
     }
   }
 

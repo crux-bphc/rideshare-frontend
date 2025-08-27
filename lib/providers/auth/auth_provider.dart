@@ -86,7 +86,9 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
     String phoneNumber,
     AuthUser user,
   ) async {
-    print("Completing new user registration with phone number: $phoneNumber");
+    print(
+      "Completing new user registration with phone number: $phoneNumber",
+    );
     final userService = ref.read(userServiceProvider);
     print("Current user: $user");
     await userService.createUser(phoneNumber, user.name!);

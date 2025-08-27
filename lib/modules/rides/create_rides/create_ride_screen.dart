@@ -85,45 +85,47 @@ class _CreateRideScreenState extends ConsumerState<CreateRideScreen> {
             startLocationController.text,
             destinationLocationController.text,
           );
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          backgroundColor: AppColors.card,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          title: Text(
-            'Ride Created!',
-            style: TextStyle(
-              color: AppColors.primary,
-              fontWeight: FontWeight.bold,
-              fontSize: 20,
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            backgroundColor: AppColors.card,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
             ),
-          ),
-          content: Text(
-            'Your ride has been successfully created.',
-            style: TextStyle(
-              color: AppColors.textPrimary,
-              fontSize: 16,
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                _resetForm();
-              },
-              child: Text(
-                'OK',
-                style: TextStyle(
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.bold,
-                ),
+            title: Text(
+              'Ride Created!',
+              style: TextStyle(
+                color: AppColors.primary,
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
               ),
             ),
-          ],
-        ),
-      );
+            content: Text(
+              'Your ride has been successfully created.',
+              style: TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 16,
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  _resetForm();
+                },
+                child: Text(
+                  'OK',
+                  style: TextStyle(
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      }
     } catch (e) {
       print('Error creating ride: $e');
     }
