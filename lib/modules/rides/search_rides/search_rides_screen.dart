@@ -210,7 +210,7 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
             startLocationController.text,
             destinationLocationController.text,
             combineDateAndTime(rideDate, departureTime),
-            combineDateAndTime(rideDate, arrivalTime)
+            combineDateAndTime(rideDate, arrivalTime),
           );
     } catch (e) {
       print('Error creating ride: $e');

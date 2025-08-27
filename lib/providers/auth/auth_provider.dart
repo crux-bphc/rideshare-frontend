@@ -10,7 +10,7 @@ abstract class AuthProvider {
   Future<AuthUser?> login();
   Future<void> logout();
 
-  Future<String?> getIdToken();
+  Future<String?> get idToken;
   void dispose();
 }
 
@@ -40,6 +40,7 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
   }
 
   Future<void> login() async {
+  Future<void> login() async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
       final authProvider = ref.read(logtoAuthProvider);
@@ -68,7 +69,10 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
           // );
         }
       }
-      return AuthState(user: user, isAuthenticated: user != null ? true : false);
+      return AuthState(
+        user: user,
+        isAuthenticated: user != null ? true : false,
+      );
     });
   }
 
@@ -81,7 +85,10 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
     });
   }
 
-  Future<void> completeNewUserRegistration(String phoneNumber, AuthUser user) async {
+  Future<void> completeNewUserRegistration(
+    String phoneNumber,
+    AuthUser user,
+  ) async {
     print("Completing new user registration with phone number: $phoneNumber");
     final userService = ref.read(userServiceProvider);
     // final user = state.value?.user;
@@ -94,12 +101,11 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
       print("User created successfully with phone number: $phoneNumber");
       return AuthState(user: user, isAuthenticated: true);
     });
-        }
-
+  }
 
   Future<String?> getIdToken() async {
     final authProvider = ref.read(logtoAuthProvider);
-    return await authProvider.getIdToken();
+    return await authProvider.idToken;
   }
 }
 

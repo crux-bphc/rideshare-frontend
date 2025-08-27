@@ -94,7 +94,7 @@ class _PhoneNumberInputDialogState extends State<PhoneNumberInputDialog> {
                         borderRadius: BorderRadius.circular(8.0),
                       ),
                       filled: true,
-                      fillColor: Colors.white.withAlpha((0.1*255).round()),
+                      fillColor: Colors.white.withAlpha((0.1 * 255).round()),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -113,8 +113,13 @@ class _PhoneNumberInputDialogState extends State<PhoneNumberInputDialog> {
                   child: TextButton(
                     style: TextButton.styleFrom(
                       backgroundColor: const Color(0xFF6200EE),
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 12,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
                     ),
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {

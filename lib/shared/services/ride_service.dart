@@ -6,12 +6,20 @@ class RideService {
   final Dio _dio;
 
   RideService(this._dio) {
-    _dio.interceptors.add(LogInterceptor(requestBody: true, responseBody: true));
+    _dio.interceptors.add(
+      LogInterceptor(requestBody: true, responseBody: true),
+    );
   }
 
-  Future<void> createRide(DateTime departureStartTime, DateTime departureEndTime, String? comments, int seats, String rideStart, String rideEnd) async {
+  Future<void> createRide(
+    DateTime departureStartTime,
+    DateTime departureEndTime,
+    String? comments,
+    int seats,
+    String rideStart,
+    String rideEnd,
+  ) async {
     try {
-
       print("params");
       print(departureStartTime.toUtc().toIso8601String());
       print(departureEndTime.toUtc().toIso8601String());
@@ -40,12 +48,17 @@ class RideService {
     }
   }
 
-  Future<List<Ride>> searchRides(String startLocation, String endLocation, DateTime? from, DateTime? to) async {
+  Future<List<Ride>> searchRides(
+    String startLocation,
+    String endLocation,
+    DateTime? from,
+    DateTime? to,
+  ) async {
     try {
       print("params");
       print(startLocation);
       print(endLocation);
-      print(from?.toUtc().toIso8601String() );
+      print(from?.toUtc().toIso8601String());
       print(to?.toUtc().toIso8601String());
       print("params");
       if (from == null){

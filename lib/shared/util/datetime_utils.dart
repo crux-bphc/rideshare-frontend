@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 DateTime? combineDateAndTime(DateTime? date, TimeOfDay? time) {
@@ -10,12 +9,10 @@ DateTime? combineDateAndTime(DateTime? date, TimeOfDay? time) {
       time.hour,
       time.minute,
     );
-  }
-  else {
+  } else {
     return null;
   }
 }
-
 
 String formatDate(DateTime? date) {
   if (date == null) return "";

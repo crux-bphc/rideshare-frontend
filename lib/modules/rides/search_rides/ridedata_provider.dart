@@ -12,10 +12,11 @@ class SelectedDateNotifier extends Notifier<DateTime?> {
   }
 }
 
-final selectedDateProvider =
-    NotifierProvider<SelectedDateNotifier, DateTime?>(() {
-  return SelectedDateNotifier();
-});
+final selectedDateProvider = NotifierProvider<SelectedDateNotifier, DateTime?>(
+  () {
+    return SelectedDateNotifier();
+  },
+);
 
 class DepartureTimeNotifier extends Notifier<TimeOfDay?> {
   @override
@@ -30,8 +31,8 @@ class DepartureTimeNotifier extends Notifier<TimeOfDay?> {
 
 final departureTimeProvider =
     NotifierProvider<DepartureTimeNotifier, TimeOfDay?>(() {
-  return DepartureTimeNotifier();
-});
+      return DepartureTimeNotifier();
+    });
 
 class ArrivalTimeNotifier extends Notifier<TimeOfDay?> {
   @override
@@ -44,22 +45,23 @@ class ArrivalTimeNotifier extends Notifier<TimeOfDay?> {
   }
 }
 
-final arrivalTimeProvider =
-    NotifierProvider<ArrivalTimeNotifier, TimeOfDay?>(() {
-  return ArrivalTimeNotifier();
-});
+final arrivalTimeProvider = NotifierProvider<ArrivalTimeNotifier, TimeOfDay?>(
+  () {
+    return ArrivalTimeNotifier();
+  },
+);
 
-class seatProviderNotifier extends Notifier<int> {
+class SeatNotifier extends Notifier<int> {
   @override
-  int build(){
+  int build() {
     return 4;
   }
 
-  void increaseSeats(int seats){
+  void increaseSeats(int seats) {
     state++;
   }
 
-  void decreaseSeats(int seats){
+  void decreaseSeats(int seats) {
     state--;
   }
 
@@ -68,7 +70,6 @@ class seatProviderNotifier extends Notifier<int> {
   }
 }
 
-final seatProvider = 
-    NotifierProvider<seatProviderNotifier, int>(() {
-      return seatProviderNotifier();
-    });
+final seatProvider = NotifierProvider<SeatNotifier, int>(() {
+  return SeatNotifier();
+});
