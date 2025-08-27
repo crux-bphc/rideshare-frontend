@@ -29,15 +29,25 @@ class AvailableRidesList extends ConsumerWidget {
                     SizedBox(height: 24),
                     Text(
                       "Did not find a ride you like? Create a ride instead",
-                      style: TextStyle(fontSize: 16),
+                      style: Theme.of(context).textTheme.bodyLarge,
                     ),
-                    TextButton(
+                    ElevatedButton(
                       onPressed: () {
                         GoRouter.of(context).go('/rides/create');
                       },
-                      child: Text(
-                        "Create Ride",
-                        style: TextStyle(fontSize: 18),
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: const Size(0, 32),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: const Text(
+                        'Create Ride',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ],

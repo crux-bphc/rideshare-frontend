@@ -1,38 +1,43 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-class noRideScreen extends StatelessWidget{
-  const noRideScreen({
-    super.key
-  });
+class NoRideScreen extends StatelessWidget {
+  const NoRideScreen({super.key});
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
             "No Rides Avaiable. Create a New one",
-            style: TextStyle(
-              fontSize: 14,
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+          SizedBox(
+            height: 14,
+          ),
+          ElevatedButton(
+            onPressed: () {
+              GoRouter.of(context).go('/rides/create');
+            },
+            style: ElevatedButton.styleFrom(
+              minimumSize: const Size(0, 32),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(6),
+              ),
+              elevation: 0,
+            ),
+            child: const Text(
+              'Create Ride',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
-          SizedBox(height: 14,),
-          TextButton(
-            onPressed: () {
-              GoRouter.of(context).go(
-                '/rides/create'
-              );
-            }, 
-            child: Text(
-              "Create Ride", 
-            style: TextStyle(
-              fontSize: 18,
-            ),))
         ],
       ),
     );
   }
 }
-

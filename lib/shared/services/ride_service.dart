@@ -61,7 +61,7 @@ class RideService {
       print(from?.toUtc().toIso8601String());
       print(to?.toUtc().toIso8601String());
       print("params");
-      if (from == null){
+      if (from == null) {
         final response = await _dio.get(
           '${dotenv.env['BACKEND_API_URL']}rides/search/',
           queryParameters: {
@@ -77,8 +77,7 @@ class RideService {
         } else {
           throw Exception('Failed to search rides');
         }
-      }
-      else {
+      } else {
         final response = await _dio.get(
           '${dotenv.env['BACKEND_API_URL']}rides/search/',
           queryParameters: {

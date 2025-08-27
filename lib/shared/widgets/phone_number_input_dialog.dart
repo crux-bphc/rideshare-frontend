@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:rideshare/shared/theme.dart';
 
 class PhoneNumberInputDialog extends StatefulWidget {
   final Function(String phoneNumber) onSubmit;
@@ -37,7 +37,7 @@ class _PhoneNumberInputDialogState extends State<PhoneNumberInputDialog> {
             ),
             margin: const EdgeInsets.only(top: 60.0),
             decoration: BoxDecoration(
-              color: const Color(0xFF2C2C3A),
+              color: AppColors.card,
               shape: BoxShape.rectangle,
               borderRadius: BorderRadius.circular(16.0),
               boxShadow: const [
@@ -56,7 +56,7 @@ class _PhoneNumberInputDialogState extends State<PhoneNumberInputDialog> {
                   style: TextStyle(
                     fontSize: 24.0,
                     fontWeight: FontWeight.w700,
-                    color: Colors.white,
+                    color: AppColors.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 16.0),
@@ -71,26 +71,26 @@ class _PhoneNumberInputDialogState extends State<PhoneNumberInputDialog> {
                   child: TextFormField(
                     controller: _phoneNumberController,
                     keyboardType: TextInputType.phone,
-                    style: const TextStyle(color: Colors.white),
+                    style: const TextStyle(color: AppColors.textPrimary),
                     decoration: InputDecoration(
                       labelText: 'Phone Number',
                       labelStyle: const TextStyle(color: Colors.white70),
-                      hintText: 'e.g., +1234567890',
-                      hintStyle: const TextStyle(color: Colors.white54),
+                      hintText: 'e.g., 1234567890',
+                      hintStyle: const TextStyle(color: Colors.white70),
                       enabledBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(color: Colors.white54),
+                        borderSide: const BorderSide(color: Colors.white70),
                         borderRadius: BorderRadius.circular(8.0),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(color: Colors.blueAccent),
+                        borderSide: const BorderSide(color: AppColors.primary),
                         borderRadius: BorderRadius.circular(8.0),
                       ),
                       errorBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(color: Colors.redAccent),
+                        borderSide: const BorderSide(color: AppColors.error),
                         borderRadius: BorderRadius.circular(8.0),
                       ),
                       focusedErrorBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(color: Colors.redAccent),
+                        borderSide: const BorderSide(color: AppColors.error),
                         borderRadius: BorderRadius.circular(8.0),
                       ),
                       filled: true,
@@ -110,26 +110,27 @@ class _PhoneNumberInputDialogState extends State<PhoneNumberInputDialog> {
                 const SizedBox(height: 24.0),
                 Align(
                   alignment: Alignment.bottomRight,
-                  child: TextButton(
-                    style: TextButton.styleFrom(
-                      backgroundColor: const Color(0xFF6200EE),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      textStyle: Theme.of(context).textTheme.titleMedium,
+                      backgroundColor: AppColors.button,
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 12,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
+                        horizontal: 16.0,
+                        vertical: 8.0,
                       ),
                     ),
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
                         widget.onSubmit(_phoneNumberController.text);
-                        context.go('/home');
+                        // context.go('/home');
                       }
                     },
                     child: const Text(
                       'Submit',
-                      style: TextStyle(fontSize: 18.0, color: Colors.white),
+                      style: TextStyle(
+                        fontSize: 18.0,
+                        color: AppColors.textPrimary,
+                      ),
                     ),
                   ),
                 ),
@@ -140,7 +141,7 @@ class _PhoneNumberInputDialogState extends State<PhoneNumberInputDialog> {
             left: 16.0,
             right: 16.0,
             child: CircleAvatar(
-              backgroundColor: const Color(0xFF6200EE),
+              backgroundColor: AppColors.button,
               radius: 60.0,
               child: Icon(
                 Icons.phone_android,

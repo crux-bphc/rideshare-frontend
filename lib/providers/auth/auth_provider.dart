@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rideshare/providers/auth/auth_user.dart';
 import 'package:rideshare/shared/providers/user_provider.dart';
 import 'package:rideshare/providers/auth/logto_auth.dart';
+
 abstract class AuthProvider {
   Dio get dioClient;
   Future<AuthUser?> initialise();
@@ -16,16 +17,23 @@ abstract class AuthProvider {
 class AuthState {
   final AuthUser? user;
   final bool isAuthenticated;
+  final bool needsPhoneNumber;
 
-  AuthState({this.user, this.isAuthenticated = false});
+  AuthState({
+    this.user,
+    this.isAuthenticated = false,
+    this.needsPhoneNumber = false,
+  });
 
   AuthState copyWith({
     AuthUser? user,
     bool? isAuthenticated,
+    bool? needsPhoneNumber,
   }) {
     return AuthState(
       user: user ?? this.user,
       isAuthenticated: isAuthenticated ?? this.isAuthenticated,
+      needsPhoneNumber: needsPhoneNumber ?? this.needsPhoneNumber,
     );
   }
 }
@@ -51,20 +59,11 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
         // final userExists = false;
         if (!userExists) {
           print("User does not exist, prompting for phone number");
-          await completeNewUserRegistration('9667834455', user);
-          // await showDialog(
-          //   context: context,
-          //   barrierDismissible: false,
-          //   builder: (BuildContext dialogContext) {
-          //     print("showing dialog");
-          //     return PhoneNumberInputDialog(
-          //       onSubmit: (phoneNumber) async {
-          //         await completeNewUserRegistration(phoneNumber);
-          //         Navigator.of(dialogContext).pop();
-          //       },
-          //     );
-          //   },
-          // );
+          return AuthState(
+            user: user,
+            isAuthenticated: false,
+            needsPhoneNumber: true,
+          );
         }
       }
       return AuthState(
@@ -87,17 +86,19 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
     String phoneNumber,
     AuthUser user,
   ) async {
-    print("Completing new user registration with phone number: $phoneNumber");
+    print(
+      "Completing new user registration with phone number: $phoneNumber",
+    );
     final userService = ref.read(userServiceProvider);
-    // final user = state.value?.user;
     print("Current user: $user");
-    // if(user == null) {
-    //   print("No authenticated user found.");
-    // }
     await userService.createUser(phoneNumber, user.name!);
     state = await AsyncValue.guard(() async {
       print("User created successfully with phone number: $phoneNumber");
-      return AuthState(user: user, isAuthenticated: true);
+      return AuthState(
+        user: user,
+        isAuthenticated: true,
+        needsPhoneNumber: true,
+      );
     });
   }
 

@@ -3,16 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rideshare/providers/auth/auth_provider.dart';
 import 'package:rideshare/shared/theme.dart';
 
-class SignInPage extends StatefulWidget {
+class SignInPage extends ConsumerWidget {
   const SignInPage({super.key});
 
   @override
-  LoginScreenState createState() => LoginScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    print("Building SignInPage");
 
-class LoginScreenState extends State<SignInPage> {
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.surface,
       body: Center(
@@ -46,6 +43,8 @@ class _LoginWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authNotifierProvider);
     final isLoading = authState.isLoading;
+
+    print("in build for Login Widget in sign in page");
 
     final ButtonStyle baseButtonStyle = ElevatedButton.styleFrom(
       textStyle: Theme.of(context).textTheme.labelLarge,
