@@ -10,7 +10,7 @@ abstract class AuthProvider {
   Future<AuthUser?> login();
   Future<void> logout();
 
-  Future<String?> getIdToken();
+  Future<String?> get idToken;
   void dispose();
 }
 
@@ -102,7 +102,7 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
 
   Future<String?> getIdToken() async {
     final authProvider = ref.read(logtoAuthProvider);
-    return await authProvider.getIdToken();
+    return await authProvider.idToken;
   }
 }
 

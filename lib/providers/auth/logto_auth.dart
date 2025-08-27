@@ -30,12 +30,15 @@ class LogtoAuthProvider extends AuthProvider {
   @override
   Future<AuthUser?> initialise() async {
     _logtoClient = LogtoClient(
-
       config: LogtoConfig(
         appId: _appId,
         endpoint: _endpoint,
-        scopes: ['openid', 'profile', LogtoUserScope.email.value, LogtoUserScope.phone.value],
-
+        scopes: [
+          'openid',
+          'profile',
+          LogtoUserScope.email.value,
+          LogtoUserScope.phone.value,
+        ],
       ),
     );
 
@@ -73,9 +76,7 @@ class LogtoAuthProvider extends AuthProvider {
   }
 
   @override
-  Future<String?> getIdToken() async {
-    return await _logtoClient.idToken;
-  }
+  Future<String?> get idToken => _logtoClient.idToken;
 
   @override
   void dispose() {}
