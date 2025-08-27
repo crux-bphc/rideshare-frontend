@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rideshare/providers/auth/auth_user.dart';
 import 'package:rideshare/shared/providers/user_provider.dart';
 import 'package:rideshare/providers/auth/logto_auth.dart';
-import 'package:rideshare/shared/widgets/phone_number_input_dialog.dart';
 
 abstract class AuthProvider {
   Dio get dioClient;
@@ -69,7 +68,10 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
           // );
         }
       }
-      return AuthState(user: user, isAuthenticated: user != null ? true : false);
+      return AuthState(
+        user: user,
+        isAuthenticated: user != null ? true : false,
+      );
     });
   }
 
@@ -82,7 +84,10 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
     });
   }
 
-  Future<void> completeNewUserRegistration(String phoneNumber, AuthUser user) async {
+  Future<void> completeNewUserRegistration(
+    String phoneNumber,
+    AuthUser user,
+  ) async {
     print("Completing new user registration with phone number: $phoneNumber");
     final userService = ref.read(userServiceProvider);
     // final user = state.value?.user;
@@ -95,8 +100,7 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
       print("User created successfully with phone number: $phoneNumber");
       return AuthState(user: user, isAuthenticated: true);
     });
-        }
-
+  }
 
   Future<String?> getIdToken() async {
     final authProvider = ref.read(logtoAuthProvider);

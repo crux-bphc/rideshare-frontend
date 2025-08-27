@@ -10,7 +10,7 @@ class AvailableRidesScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final rides= GoRouterState.of(context).extra as List<Ride>;
+    final rides = GoRouterState.of(context).extra as List<Ride>;
 
     return Scaffold(
       appBar: AppBar(

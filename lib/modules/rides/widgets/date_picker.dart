@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:rideshare/shared/theme.dart';
 
-Future<DateTime?> showCustomDatePicker(BuildContext context,
-    {DateTime? initialDate}) {
+Future<DateTime?> showCustomDatePicker(
+  BuildContext context, {
+  DateTime? initialDate,
+}) {
   return showDatePicker(
     context: context,
     initialDate: initialDate ?? DateTime.now(),
@@ -25,7 +27,7 @@ Future<DateTime?> showCustomDatePicker(BuildContext context,
             dayStyle: TextStyle(color: AppColors.textPrimary),
             yearStyle: TextStyle(color: AppColors.textPrimary),
           ),
-          
+
           textButtonTheme: TextButtonThemeData(
             style: TextButton.styleFrom(
               foregroundColor: AppColors.primary,
@@ -34,7 +36,7 @@ Future<DateTime?> showCustomDatePicker(BuildContext context,
               ),
             ),
           ),
-          
+
           dialogTheme: DialogThemeData(
             backgroundColor: AppColors.surface,
             shape: RoundedRectangleBorder(

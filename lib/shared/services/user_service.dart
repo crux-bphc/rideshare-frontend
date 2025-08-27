@@ -6,9 +6,9 @@ class UserService {
 
   UserService(this._dio) {
     _dio.interceptors.add(
-        LogInterceptor(requestBody: true, responseBody: true));
+      LogInterceptor(requestBody: true, responseBody: true),
+    );
   }
-
 
   Future<bool> checkUserExists() async {
     try {
@@ -47,6 +47,4 @@ class UserService {
       throw Exception('Failed to create user: $e');
     }
   }
-
-
 }

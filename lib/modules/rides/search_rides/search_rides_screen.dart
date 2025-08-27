@@ -49,7 +49,8 @@ class RideDateTextField extends ConsumerWidget {
 
 class DepartureTimeTextField extends ConsumerWidget {
   final VoidCallback onTap;
-  const DepartureTimeTextField({Key? key, required this.onTap}) : super(key: key);
+  const DepartureTimeTextField({Key? key, required this.onTap})
+    : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -226,7 +227,7 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
             startLocationController.text,
             destinationLocationController.text,
             combineDateAndTime(rideDate, departureTime),
-            combineDateAndTime(rideDate, arrivalTime)
+            combineDateAndTime(rideDate, arrivalTime),
           );
     } catch (e) {
       print('Error creating ride: $e');
@@ -238,9 +239,11 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
     final rideDate = ref.watch(selectedDateProvider);
     final departureTime = ref.watch(departureTimeProvider);
     final arrivalTime = ref.watch(arrivalTimeProvider);
-    print(departureTime != null && arrivalTime != null
-        ? departureTime.isBefore(arrivalTime)
-        : "null values");
+    print(
+      departureTime != null && arrivalTime != null
+          ? departureTime.isBefore(arrivalTime)
+          : "null values",
+    );
     return rideDate != null &&
         departureTime != null &&
         arrivalTime != null &&
@@ -265,7 +268,7 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
               ),
             ),
           ),
-      
+
           Expanded(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
@@ -292,7 +295,9 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
                   Row(
                     children: [
                       Expanded(
-                        child: DepartureTimeTextField(onTap: _selectDepartureTime),
+                        child: DepartureTimeTextField(
+                          onTap: _selectDepartureTime,
+                        ),
                       ),
                       SizedBox(width: 16.0),
                       Expanded(
@@ -302,10 +307,10 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
                   ),
                   SizedBox(height: 16.0),
                   SeatSelection(),
-      
+
                   SizedBox(height: 32.0),
                   ElevatedButton(
-                    onPressed: () async{
+                    onPressed: () async {
                       final rides = await _searchRide();
                       GoRouter.of(context).go(
                         '/rides/available',

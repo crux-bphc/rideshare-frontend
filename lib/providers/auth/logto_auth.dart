@@ -30,12 +30,15 @@ class LogtoAuthProvider extends AuthProvider {
   @override
   Future<AuthUser?> initialise() async {
     _logtoClient = LogtoClient(
-
       config: LogtoConfig(
         appId: _appId,
         endpoint: _endpoint,
-        scopes: ['openid', 'profile', LogtoUserScope.email.value, LogtoUserScope.phone.value],
-
+        scopes: [
+          'openid',
+          'profile',
+          LogtoUserScope.email.value,
+          LogtoUserScope.phone.value,
+        ],
       ),
     );
 

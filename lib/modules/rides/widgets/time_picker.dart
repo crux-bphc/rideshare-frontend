@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:rideshare/shared/theme.dart';
 
-Future<TimeOfDay?> showCustomTimePicker(BuildContext context, {TimeOfDay? initialTime}) {
+Future<TimeOfDay?> showCustomTimePicker(
+  BuildContext context, {
+  TimeOfDay? initialTime,
+}) {
   return showTimePicker(
     context: context,
     initialTime: initialTime ?? TimeOfDay.now(),
