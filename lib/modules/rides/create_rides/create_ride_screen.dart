@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rideshare/modules/rides/widgets/date_picker.dart';
 import 'package:rideshare/modules/rides/widgets/time_picker.dart';
-import 'package:rideshare/modules/rides/create_rides/ridedata_provider.dart';
+import 'package:rideshare/modules/rides/search_rides/ridedata_provider.dart';
 import 'package:rideshare/shared/providers/rides_provider.dart';
 import 'package:rideshare/shared/theme.dart';
 import 'package:rideshare/shared/util/datetime_utils.dart';

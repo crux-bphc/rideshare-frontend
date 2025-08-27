@@ -88,6 +88,18 @@ class _LocationInputRow extends StatelessWidget {
                       : Colors.transparent,
                 ),
               ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: Colors.transparent,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: Colors.transparent,
+                ),
+              ),
               filled: true,
               fillColor: AppColors.card,
             ),

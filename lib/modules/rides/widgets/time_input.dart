@@ -53,7 +53,6 @@ class TimeWindowInput extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -78,14 +77,6 @@ class TimeWindowInput extends ConsumerWidget {
             ),
           ],
         ),
-        if (errorText != null)
-          Padding(
-            padding: const EdgeInsets.only(left: 12.0),
-            child: Text(
-              errorText!,
-              style: TextStyle(color: theme.colorScheme.error, fontSize: 12),
-            ),
-          ),
       ],
     );
   }
