@@ -53,8 +53,8 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
       final user = await authProvider.login();
       if (user != null) {
         final userService = ref.read(userServiceProvider);
-        final userExists = await userService.checkUserExists();
-        if (!userExists) {
+        final userEmail= await userService.getUserEmail();
+        if (userEmail == null) {
           return AuthState(
             user: user,
             isAuthenticated: false,

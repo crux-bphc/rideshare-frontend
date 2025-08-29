@@ -1,14 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rideshare/models/ride.dart';
+import 'package:rideshare/models/user.dart';
 import 'package:rideshare/modules/rides/ride_details/widgets/route_icon.dart';
 import 'package:rideshare/shared/providers/rides_provider.dart';
+import 'package:rideshare/shared/providers/user_provider.dart';
 import 'package:rideshare/shared/theme.dart';
 import 'package:intl/intl.dart';
 
 class RideDetailsScreen extends ConsumerWidget {
   final Ride ride;
   const RideDetailsScreen({super.key, required this.ride});
+
+  Future<String?> _getEmail(WidgetRef ref) async {
+    return await ref.read(userServiceProvider).getUserEmail();
+  }
+  Future<User?> getDetails(WidgetRef ref) async {
+    String? email = await _getEmail(ref);
+    User user =  await ref.read(userServiceProvider).getUserDetails(email!);
+    return user;
+  }
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
@@ -39,15 +50,15 @@ class RideDetailsScreen extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Alice Jayson',
+                      Text(
+                        'Alice ',
                         style: TextStyle(
                           color: AppColors.textPrimary,
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                      const Text(
+                      Text(
                         '+91 9999999999',
                         style: TextStyle(
                           color: AppColors.textSecondary,
