@@ -27,8 +27,8 @@ class RideService {
           "departureEndTime": departureEndTime.toUtc().toIso8601String(),
           "comments": comments ?? '',
           "maxMemberCount": seats,
-          "rideStart": rideStart,
-          "rideEnd": rideEnd,
+          "rideStartLocation": rideStart,
+          "rideEndLocation": rideEnd,
         },
       );
     } catch (e) {
@@ -47,8 +47,8 @@ class RideService {
         final response = await _dio.get(
           '${dotenv.env['BACKEND_API_URL']}rides/search/',
           queryParameters: {
-            "search_start_location": startLocation,
-            "search_end_location": endLocation,
+            "searchStartLocation": startLocation,
+            "searchEndLocation": endLocation,
             "by": to?.toUtc().toIso8601String(),
           },
         );
@@ -63,8 +63,8 @@ class RideService {
         final response = await _dio.get(
           '${dotenv.env['BACKEND_API_URL']}rides/search/',
           queryParameters: {
-            "search_start_location": startLocation,
-            "search_end_location": endLocation,
+            "searchStartLocation": startLocation,
+            "searchEndLocation": endLocation,
             "from": from.toUtc().toIso8601String(),
           },
         );

@@ -2,18 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rideshare/models/ride.dart';
-import 'package:rideshare/modules/rides/widgets/date_picker.dart';
-import 'package:rideshare/modules/rides/widgets/time_picker.dart';
 import 'package:rideshare/modules/rides/search_rides/ridedata_provider.dart';
+import 'package:rideshare/modules/rides/widgets/styled_input_container.dart';
 import 'package:rideshare/shared/providers/rides_provider.dart';
 import 'package:rideshare/shared/theme.dart';
 import 'package:rideshare/shared/util/datetime_utils.dart';
 
 import '../../../shared/providers/navigation_provider.dart';
-import '../widgets/location_path_input.dart';
-import '../widgets/seat_selector.dart';
-import '../widgets/styled_input_container.dart';
-import '../widgets/time_input.dart';
+import '../widgets/ride_form.dart';
 
 class SearchRidesScreen extends ConsumerStatefulWidget {
   const SearchRidesScreen({super.key});
@@ -22,26 +18,11 @@ class SearchRidesScreen extends ConsumerStatefulWidget {
   ConsumerState<SearchRidesScreen> createState() => _SearchRidesScreenState();
 }
 
-class SectionHeader extends StatelessWidget {
-  final String title;
-
-  const SectionHeader({super.key, required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Text(
-      title,
-      style: theme.textTheme.titleMedium?.copyWith(
-        fontWeight: FontWeight.bold,
-      ),
-    );
-  }
-}
-
 class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
-  late final TextEditingController startLocationController;
-  late final TextEditingController destinationLocationController;
+  late final TextEditingController startLocationController =
+      TextEditingController();
+  late final TextEditingController destinationLocationController =
+      TextEditingController();
 
   String? startLocationError;
   String? destinationLocationError;
@@ -50,49 +31,10 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
   String? seatsError;
 
   @override
-  void initState() {
-    super.initState();
-    startLocationController = TextEditingController();
-    destinationLocationController = TextEditingController();
-  }
-
-  @override
   void dispose() {
     startLocationController.dispose();
     destinationLocationController.dispose();
     super.dispose();
-  }
-
-  Future<void> _selectDate() async {
-    final currentDate = ref.read(selectedDateProvider);
-    final picked = await showCustomDatePicker(
-      context,
-      initialDate: currentDate,
-    );
-    if (picked != null) {
-      ref.read(selectedDateProvider.notifier).setDate(picked);
-    }
-  }
-
-  Future<void> _selectDepartureTime() async {
-    final picked = await showCustomTimePicker(
-      context,
-      initialTime: TimeOfDay.now(),
-    );
-    if (picked != null) {
-      ref.read(departureTimeProvider.notifier).setTime(picked);
-      ref.read(arrivalTimeProvider.notifier).setTime(null);
-    }
-  }
-
-  Future<void> _selectArrivalTime() async {
-    final picked = await showCustomTimePicker(
-      context,
-      initialTime: TimeOfDay.now(),
-    );
-    if (picked != null) {
-      ref.read(arrivalTimeProvider.notifier).setTime(picked);
-    }
   }
 
   Future<List<Ride>> _searchRide() async {
@@ -110,7 +52,7 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
             combineDateAndTime(rideDate, arrivalTime),
           );
     } catch (e) {
-        return [];
+      return [];
     }
   }
 
@@ -147,14 +89,7 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
       if (departureTime != null &&
           arrivalTime != null &&
           departureTime.isAfter(arrivalTime)) {
-        //   final selectedDate = ref.read(selectedDateProvider);
-        //   if (selectedDate != null) {
-        //     final departureDateTime = combineDateAndTime(selectedDate, departureTime);
-        //     final arrivalDateTime = combineDateAndTime(selectedDate, arrivalTime);
-        //     if (departureDateTime != null && arrivalDateTime != null && departureDateTime.isAfter(arrivalDateTime)) {
         timeError = "Departure time cannot be after arrival time";
-        //   }
-        // }
       }
     });
     if (startLocationError == null &&
@@ -172,11 +107,6 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    ref.watch(selectedDateProvider);
-    ref.watch(departureTimeProvider);
-    ref.watch(arrivalTimeProvider);
-
-    final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Search Rides'),
@@ -200,59 +130,15 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              LocationPathInput(
-                startController: startLocationController,
-                endController: destinationLocationController,
-                startError: startLocationError,
-                endError: destinationLocationError,
+              RideForm(
+                startLocationController: startLocationController,
+                destinationLocationController: destinationLocationController,
+                startLocationError: startLocationError,
+                destinationLocationError: destinationLocationError,
+                dateError: dateError,
+                timeError: timeError,
+                seatsError: seatsError,
               ),
-
-              const SizedBox(height: 24),
-              SectionHeader(title: 'Ride Date'),
-              const SizedBox(height: 16),
-              RideDateTextField(onTap: _selectDate, errorText: dateError),
-              const SizedBox(height: 24),
-              SectionHeader(title: 'Departure window'),
-              const SizedBox(height: 16),
-              TimeWindowInput(
-                onDepartureTap: _selectDepartureTime,
-                onArrivalTap: _selectArrivalTime,
-                errorText: timeError,
-              ),
-
-              if (timeError != null) ...[
-                const SizedBox(height: 8),
-                Padding(
-                  padding: const EdgeInsets.only(left: 12.0),
-                  child: Text(
-                    timeError!,
-                    style: TextStyle(
-                      color: theme.colorScheme.error,
-                      fontSize: 12,
-                    ),
-                  ),
-                ),
-              ],
-
-              const SizedBox(height: 24),
-              SectionHeader(title: 'Seats Required'),
-              const SizedBox(height: 16),
-              const SeatSelection(),
-
-              if (seatsError != null) ...[
-                const SizedBox(height: 8),
-                Padding(
-                  padding: const EdgeInsets.only(left: 12.0),
-                  child: Text(
-                    seatsError!,
-                    style: TextStyle(
-                      color: theme.colorScheme.error,
-                      fontSize: 12,
-                    ),
-                  ),
-                ),
-              ],
-
               const SizedBox(height: 48),
               SizedBox(
                 width: double.infinity,
