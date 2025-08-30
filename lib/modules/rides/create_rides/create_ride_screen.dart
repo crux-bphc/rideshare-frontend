@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:rideshare/modules/rides/widgets/date_picker.dart';
 import 'package:rideshare/modules/rides/widgets/time_picker.dart';
 import 'package:rideshare/modules/rides/search_rides/ridedata_provider.dart';
@@ -136,6 +137,7 @@ class _CreateRideScreenState extends ConsumerState<CreateRideScreen> {
     ref.read(departureTimeProvider.notifier).setTime(null);
     ref.read(arrivalTimeProvider.notifier).setTime(null);
     ref.read(seatProvider.notifier).resetSeats();
+    GoRouter.of(context).go("/rides/search");
   }
 
   bool get _canCreateRide {
