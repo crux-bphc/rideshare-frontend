@@ -38,8 +38,9 @@ class StyledInputContainer extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: Colors.grey,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -52,7 +53,7 @@ class StyledInputContainer extends StatelessWidget {
                 ),
               ],
             ),
-            Icon(icon, color: Colors.grey),
+            Icon(icon, color: AppColors.primary),
           ],
         ),
       ),

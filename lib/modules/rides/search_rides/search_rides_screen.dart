@@ -9,6 +9,7 @@ import 'package:rideshare/shared/providers/rides_provider.dart';
 import 'package:rideshare/shared/theme.dart';
 import 'package:rideshare/shared/util/datetime_utils.dart';
 
+import '../../../shared/providers/navigation_provider.dart';
 import '../widgets/location_path_input.dart';
 import '../widgets/seat_selector.dart';
 import '../widgets/styled_input_container.dart';
@@ -19,6 +20,23 @@ class SearchRidesScreen extends ConsumerStatefulWidget {
 
   @override
   ConsumerState<SearchRidesScreen> createState() => _SearchRidesScreenState();
+}
+
+class SectionHeader extends StatelessWidget {
+  final String title;
+
+  const SectionHeader({super.key, required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Text(
+      title,
+      style: theme.textTheme.titleMedium?.copyWith(
+        fontWeight: FontWeight.bold,
+      ),
+    );
+  }
 }
 
 class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
@@ -146,6 +164,14 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
         backgroundColor: AppColors.surface,
         elevation: 0,
         scrolledUnderElevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+    
+            ref.read(navigationNotifierProvider.notifier).setTab(NavigationTab.home);
+            context.go('/home');
+          },
+        ),
       ),
       backgroundColor: AppColors.surface,
       body: SingleChildScrollView(
@@ -162,9 +188,12 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
               ),
 
               const SizedBox(height: 24),
+              SectionHeader(title: 'Ride Date'),
+              const SizedBox(height: 16),
               RideDateTextField(onTap: _selectDate, errorText: dateError),
               const SizedBox(height: 24),
-
+              SectionHeader(title: 'Departure window'),
+              const SizedBox(height: 16),
               TimeWindowInput(
                 onDepartureTap: _selectDepartureTime,
                 onArrivalTap: _selectArrivalTime,
@@ -186,6 +215,8 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
               ],
 
               const SizedBox(height: 24),
+              SectionHeader(title: 'Seats Required'),
+              const SizedBox(height: 16),
               const SeatSelection(),
 
               const SizedBox(height: 48),
@@ -227,7 +258,7 @@ class RideDateTextField extends ConsumerWidget {
         StyledInputContainer(
           title: 'Enter Date',
           value: formatDate(rideDate),
-          icon: Icons.calendar_today_outlined,
+          icon: Icons.calendar_today,
           onTap: onTap,
           hasError: errorText != null,
         ),
