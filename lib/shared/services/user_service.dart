@@ -35,7 +35,7 @@ class UserService {
       final response = await _dio.post(
         '${dotenv.env['BACKEND_API_URL']}user/',
         data: {
-          "phone": phone,
+          "phoneNumber": phone,
           "name": name,
         },
       );
