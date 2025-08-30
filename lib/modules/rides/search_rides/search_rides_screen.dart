@@ -47,6 +47,7 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
   String? destinationLocationError;
   String? dateError;
   String? timeError;
+  String? seatsError;
 
   @override
   void initState() {
@@ -140,11 +141,28 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
       timeError = (departureTime == null && arrivalTime == null)
           ? "Select Departure or Arrival Time"
           : null;
+
+      final selectedSeats = ref.read(seatProvider);
+      seatsError = selectedSeats < 2 ? "Minimum 2 seats required" : null;
+
+      if (departureTime != null &&
+          arrivalTime != null &&
+          departureTime.isAfter(arrivalTime)) {
+        //   final selectedDate = ref.read(selectedDateProvider);
+        //   if (selectedDate != null) {
+        //     final departureDateTime = combineDateAndTime(selectedDate, departureTime);
+        //     final arrivalDateTime = combineDateAndTime(selectedDate, arrivalTime);
+        //     if (departureDateTime != null && arrivalDateTime != null && departureDateTime.isAfter(arrivalDateTime)) {
+        timeError = "Departure time cannot be after arrival time";
+        //   }
+        // }
+      }
     });
     if (startLocationError == null &&
         destinationLocationError == null &&
         dateError == null &&
-        timeError == null) {
+        timeError == null &&
+        seatsError == null) {
       final rides = await _searchRide();
       _resetForm();
       GoRouter.of(context).go('/rides/available', extra: rides);
@@ -167,8 +185,9 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-    
-            ref.read(navigationNotifierProvider.notifier).setTab(NavigationTab.home);
+            ref
+                .read(navigationNotifierProvider.notifier)
+                .setTab(NavigationTab.home);
             context.go('/home');
           },
         ),
@@ -218,6 +237,20 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
               SectionHeader(title: 'Seats Required'),
               const SizedBox(height: 16),
               const SeatSelection(),
+
+              if (seatsError != null) ...[
+                const SizedBox(height: 8),
+                Padding(
+                  padding: const EdgeInsets.only(left: 12.0),
+                  child: Text(
+                    seatsError!,
+                    style: TextStyle(
+                      color: theme.colorScheme.error,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              ],
 
               const SizedBox(height: 48),
               SizedBox(
