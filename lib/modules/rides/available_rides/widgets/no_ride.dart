@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-class noRideScreen extends StatelessWidget {
-  const noRideScreen({super.key});
+class NoRideScreen extends StatelessWidget {
+  const NoRideScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

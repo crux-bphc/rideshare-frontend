@@ -18,9 +18,7 @@ class AvailableRidesScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Available Rides'),
       ),
-      body: rides.isEmpty
-          ? noRideScreen()
-          : AvailableRidesList()
+      body: rides.isEmpty ? NoRideScreen() : AvailableRidesList(),
     );
   }
 }

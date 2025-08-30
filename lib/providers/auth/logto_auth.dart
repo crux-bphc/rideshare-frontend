@@ -22,8 +22,6 @@ class LogtoAuthProvider extends AuthProvider {
       return null;
     }
     final Map<String, dynamic> claims = JwtDecoder.decode(idToken);
-    print("Decoded JWT Claims:");
-    print(claims);
     return AuthUser.fromJwtClaims(claims);
   }
 

@@ -110,9 +110,8 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
             combineDateAndTime(rideDate, arrivalTime),
           );
     } catch (e) {
-      print('Error creating ride: $e');
+        return [];
     }
-    return [];
   }
 
   void _resetForm() {
@@ -165,7 +164,9 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
         seatsError == null) {
       final rides = await _searchRide();
       _resetForm();
-      GoRouter.of(context).go('/rides/available', extra: rides);
+      if (mounted) {
+        GoRouter.of(context).go('/rides/available', extra: rides);
+      }
     }
   }
 
