@@ -31,6 +31,7 @@ class AvailableRidesList extends ConsumerWidget {
                       "Did not find a ride you like? Create a ride instead",
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),
+                    SizedBox(height:8),
                     ElevatedButton(
                       onPressed: () {
                         GoRouter.of(context).go('/rides/create');
@@ -38,7 +39,7 @@ class AvailableRidesList extends ConsumerWidget {
                       style: ElevatedButton.styleFrom(
                         minimumSize: const Size(0, 32),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(6),
+                          borderRadius: BorderRadius.circular(8),
                         ),
                         elevation: 0,
                       ),

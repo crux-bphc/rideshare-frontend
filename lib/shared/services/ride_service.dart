@@ -111,17 +111,22 @@ class RideService {
     }
   }
 
+
   Future<void> manageRequest(int rideId, String requestUserEmail, String status) async {
-    try{
+    try {
       await _dio.post(
         '${dotenv.env['BACKEND_API_URL']}rides/manage/requests/$rideId/',
-        queryParameters: {
+        data: {
           'requestUserEmail': requestUserEmail,
           'status': status,
-        }
+        },
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        ),
       );
-    }
-    catch(e){
+    } catch (e) {
       throw Exception("Failed to accept/decline request $e");
     }
   }
