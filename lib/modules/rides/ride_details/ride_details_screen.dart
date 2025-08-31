@@ -17,15 +17,13 @@ class RideDetailsScreen extends ConsumerWidget {
   Future<String?> _getEmail(WidgetRef ref) async {
     return await ref.read(userServiceProvider).getUserEmail();
   }
-  Future<User?> getDetails(WidgetRef ref) async {
-    String? email = await _getEmail(ref);
-    User user =  await ref.read(userServiceProvider).getUserDetails(email!);
-    return user;
+  Future<User?> getCreatorDetails(WidgetRef ref) async {
+    return await ref.read(userServiceProvider).getUserDetails(ride.createdBy);
   }
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return FutureBuilder<User?>(
-      future: getDetails(ref),
+      future: getCreatorDetails(ref),
       builder: (context, creatorSnapshot) {
         if (creatorSnapshot.connectionState == ConnectionState.waiting) {
           return const SplashPage();
