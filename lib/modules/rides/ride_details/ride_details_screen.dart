@@ -153,7 +153,7 @@ class RideDetailsScreen extends ConsumerWidget {
                               onPressed: () {
                                 try{
                                   ref.read(ridesNotifierProvider.notifier).sendRequest(ride.id);
-                                  const snackBar = SnackBar(content: Text('Succesfully joined the Ride!'), backgroundColor: AppColors.success,);
+                                  const snackBar = SnackBar(content: Text('Succesfully sent request to join the Ride!'), backgroundColor: AppColors.success,);
                                   ScaffoldMessenger.of(context).showSnackBar(snackBar);
                                 }
                                 catch(e){
