@@ -44,8 +44,8 @@ class Ride {
       'departureStartTime': departureStartTime?.toIso8601String(),
       'departureEndTime': departureEndTime?.toIso8601String(),
       'maxMemberCount': maxMemberCount,
-      'ride_start_location': rideStartLocation,
-      'ride_end_location': rideEndLocation,
+      'rideStartLocation': rideStartLocation,
+      'rideEndLocation': rideEndLocation,
     };
   }
 }

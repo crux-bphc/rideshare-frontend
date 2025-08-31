@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../shared/theme.dart';
+import 'package:rideshare/shared/theme.dart';
 
 class LocationPathInput extends StatelessWidget {
   final TextEditingController startController;

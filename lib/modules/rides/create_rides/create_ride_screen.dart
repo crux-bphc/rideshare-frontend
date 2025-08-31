@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:rideshare/modules/rides/widgets/date_picker.dart';
-import 'package:rideshare/modules/rides/widgets/time_picker.dart';
+import 'package:go_router/go_router.dart';
 import 'package:rideshare/modules/rides/search_rides/ridedata_provider.dart';
 import 'package:rideshare/shared/providers/rides_provider.dart';
 import 'package:rideshare/shared/theme.dart';
 import 'package:rideshare/shared/util/datetime_utils.dart';
-
-import '../search_rides/search_rides_screen.dart';
-import '../widgets/location_path_input.dart';
-import '../widgets/seat_selector.dart';
-import '../widgets/time_input.dart';
+import 'package:rideshare/shared/providers/navigation_provider.dart';
+import 'package:rideshare/modules/rides/widgets/ride_form.dart';
 
 class CreateRideScreen extends ConsumerStatefulWidget {
   const CreateRideScreen({super.key});
@@ -20,52 +16,22 @@ class CreateRideScreen extends ConsumerStatefulWidget {
 }
 
 class _CreateRideScreenState extends ConsumerState<CreateRideScreen> {
-  late final TextEditingController startLocationController;
-  late final TextEditingController destinationLocationController;
+  late final TextEditingController startLocationController =
+      TextEditingController();
+  late final TextEditingController destinationLocationController =
+      TextEditingController();
 
-  @override
-  void initState() {
-    super.initState();
-    startLocationController = TextEditingController();
-    destinationLocationController = TextEditingController();
-  }
+  String? startLocationError;
+  String? destinationLocationError;
+  String? dateError;
+  String? timeError;
+  String? seatsError;
 
   @override
   void dispose() {
     startLocationController.dispose();
     destinationLocationController.dispose();
     super.dispose();
-  }
-
-  Future<void> _selectDate() async {
-    final currentDate = ref.read(selectedDateProvider);
-    final picked = await showCustomDatePicker(
-      context,
-      initialDate: currentDate,
-    );
-    if (picked != null) {
-      ref.read(selectedDateProvider.notifier).setDate(picked);
-    }
-  }
-
-  Future<void> _selectDepartureTime() async {
-    final picked = await showCustomTimePicker(
-      context,
-      initialTime: TimeOfDay.now(),
-    );
-    if (picked != null) {
-      ref.read(departureTimeProvider.notifier).setTime(picked);
-    }
-  }
-
-  Future<void> _selectArrivalTime() async {
-    final picked = await showCustomTimePicker(
-      context,
-      initialTime: TimeOfDay.now(),
-    );
-    if (picked != null) {
-      ref.read(arrivalTimeProvider.notifier).setTime(picked);
-    }
   }
 
   Future<void> _createRide() async {
@@ -125,6 +91,10 @@ class _CreateRideScreenState extends ConsumerState<CreateRideScreen> {
             ],
           ),
         );
+        ref
+            .read(navigationNotifierProvider.notifier)
+            .setTab(NavigationTab.home);
+        context.go('/home');
       }
     } catch (e) {
       throw Exception("Error Creating Ride");
@@ -168,30 +138,16 @@ class _CreateRideScreenState extends ConsumerState<CreateRideScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 16),
-              LocationPathInput(
-                startController: startLocationController,
-                endController: destinationLocationController,
-                startError: null,
-                endError: null,
+              RideForm(
+                startLocationController: startLocationController,
+                destinationLocationController: destinationLocationController,
+                startLocationError: startLocationError,
+                destinationLocationError: destinationLocationError,
+                dateError: dateError,
+                timeError: timeError,
+                seatsError: seatsError,
               ),
-
-              const SizedBox(height: 24),
-              RideDateTextField(onTap: _selectDate, errorText: null),
-
-              const SizedBox(height: 24),
-
-              TimeWindowInput(
-                onDepartureTap: _selectDepartureTime,
-                onArrivalTap: _selectArrivalTime,
-                errorText: null,
-              ),
-
-              const SizedBox(height: 24),
-              const SeatSelection(),
-
               const SizedBox(height: 48),
-
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(

@@ -57,7 +57,7 @@ class RideCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 16),
-            
+
             Text(
               "${ride.rideStartLocation} - ${ride.rideEndLocation}",
               style: const TextStyle(
@@ -67,7 +67,7 @@ class RideCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            
+
             Row(
               children: [
                 Expanded(

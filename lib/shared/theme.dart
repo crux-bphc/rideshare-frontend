@@ -13,6 +13,7 @@ class AppColors {
   static const Color error = Color(0xFFFF5C5C);
   static const Color navbar = Color(0xFF1A1C23);
   static const Color textSecondary = Color(0xFFA9AFFF);
+  static const Color success = Colors.green;
 }
 
 final colorScheme = ColorScheme.dark(

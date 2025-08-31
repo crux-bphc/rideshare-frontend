@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rideshare/modules/rides/widgets/styled_input_container.dart';
-
-import '../../../shared/util/datetime_utils.dart';
-import '../search_rides/ridedata_provider.dart';
+import 'package:rideshare/shared/util/datetime_utils.dart';
+import 'package:rideshare/modules/rides/search_rides/ridedata_provider.dart';
 
 enum TimeFieldType { departure, arrival }
 

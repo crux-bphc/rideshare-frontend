@@ -2,17 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rideshare/models/ride.dart';
-import 'package:rideshare/modules/rides/widgets/date_picker.dart';
-import 'package:rideshare/modules/rides/widgets/time_picker.dart';
 import 'package:rideshare/modules/rides/search_rides/ridedata_provider.dart';
+import 'package:rideshare/modules/rides/widgets/styled_input_container.dart';
 import 'package:rideshare/shared/providers/rides_provider.dart';
 import 'package:rideshare/shared/theme.dart';
 import 'package:rideshare/shared/util/datetime_utils.dart';
 
-import '../widgets/location_path_input.dart';
-import '../widgets/seat_selector.dart';
-import '../widgets/styled_input_container.dart';
-import '../widgets/time_input.dart';
+import 'package:rideshare/shared/providers/navigation_provider.dart';
+import 'package:rideshare/modules/rides/widgets/ride_form.dart';
 
 class SearchRidesScreen extends ConsumerStatefulWidget {
   const SearchRidesScreen({super.key});
@@ -22,58 +19,22 @@ class SearchRidesScreen extends ConsumerStatefulWidget {
 }
 
 class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
-  late final TextEditingController startLocationController;
-  late final TextEditingController destinationLocationController;
+  late final TextEditingController startLocationController =
+      TextEditingController();
+  late final TextEditingController destinationLocationController =
+      TextEditingController();
 
   String? startLocationError;
   String? destinationLocationError;
   String? dateError;
   String? timeError;
-
-  @override
-  void initState() {
-    super.initState();
-    startLocationController = TextEditingController();
-    destinationLocationController = TextEditingController();
-  }
+  String? seatsError;
 
   @override
   void dispose() {
     startLocationController.dispose();
     destinationLocationController.dispose();
     super.dispose();
-  }
-
-  Future<void> _selectDate() async {
-    final currentDate = ref.read(selectedDateProvider);
-    final picked = await showCustomDatePicker(
-      context,
-      initialDate: currentDate,
-    );
-    if (picked != null) {
-      ref.read(selectedDateProvider.notifier).setDate(picked);
-    }
-  }
-
-  Future<void> _selectDepartureTime() async {
-    final picked = await showCustomTimePicker(
-      context,
-      initialTime: TimeOfDay.now(),
-    );
-    if (picked != null) {
-      ref.read(departureTimeProvider.notifier).setTime(picked);
-      ref.read(arrivalTimeProvider.notifier).setTime(null);
-    }
-  }
-
-  Future<void> _selectArrivalTime() async {
-    final picked = await showCustomTimePicker(
-      context,
-      initialTime: TimeOfDay.now(),
-    );
-    if (picked != null) {
-      ref.read(arrivalTimeProvider.notifier).setTime(picked);
-    }
   }
 
   Future<List<Ride>> _searchRide() async {
@@ -91,7 +52,7 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
             combineDateAndTime(rideDate, arrivalTime),
           );
     } catch (e) {
-        return [];
+      return [];
     }
   }
 
@@ -121,11 +82,21 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
       timeError = (departureTime == null && arrivalTime == null)
           ? "Select Departure or Arrival Time"
           : null;
+
+      final selectedSeats = ref.read(seatProvider);
+      seatsError = selectedSeats < 2 ? "Minimum 2 seats required" : null;
+
+      if (departureTime != null &&
+          arrivalTime != null &&
+          departureTime.isAfter(arrivalTime)) {
+        timeError = "Departure time cannot be after arrival time";
+      }
     });
     if (startLocationError == null &&
         destinationLocationError == null &&
         dateError == null &&
-        timeError == null) {
+        timeError == null &&
+        seatsError == null) {
       final rides = await _searchRide();
       _resetForm();
       if (mounted) {
@@ -136,17 +107,21 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    ref.watch(selectedDateProvider);
-    ref.watch(departureTimeProvider);
-    ref.watch(arrivalTimeProvider);
-
-    final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Search Rides'),
         backgroundColor: AppColors.surface,
         elevation: 0,
         scrolledUnderElevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            ref
+                .read(navigationNotifierProvider.notifier)
+                .setTab(NavigationTab.home);
+            context.go('/home');
+          },
+        ),
       ),
       backgroundColor: AppColors.surface,
       body: SingleChildScrollView(
@@ -155,40 +130,15 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              LocationPathInput(
-                startController: startLocationController,
-                endController: destinationLocationController,
-                startError: startLocationError,
-                endError: destinationLocationError,
+              RideForm(
+                startLocationController: startLocationController,
+                destinationLocationController: destinationLocationController,
+                startLocationError: startLocationError,
+                destinationLocationError: destinationLocationError,
+                dateError: dateError,
+                timeError: timeError,
+                seatsError: seatsError,
               ),
-
-              const SizedBox(height: 24),
-              RideDateTextField(onTap: _selectDate, errorText: dateError),
-              const SizedBox(height: 24),
-
-              TimeWindowInput(
-                onDepartureTap: _selectDepartureTime,
-                onArrivalTap: _selectArrivalTime,
-                errorText: timeError,
-              ),
-
-              if (timeError != null) ...[
-                const SizedBox(height: 8),
-                Padding(
-                  padding: const EdgeInsets.only(left: 12.0),
-                  child: Text(
-                    timeError!,
-                    style: TextStyle(
-                      color: theme.colorScheme.error,
-                      fontSize: 12,
-                    ),
-                  ),
-                ),
-              ],
-
-              const SizedBox(height: 24),
-              const SeatSelection(),
-
               const SizedBox(height: 48),
               SizedBox(
                 width: double.infinity,
@@ -228,7 +178,7 @@ class RideDateTextField extends ConsumerWidget {
         StyledInputContainer(
           title: 'Enter Date',
           value: formatDate(rideDate),
-          icon: Icons.calendar_today_outlined,
+          icon: Icons.calendar_today,
           onTap: onTap,
           hasError: errorText != null,
         ),
