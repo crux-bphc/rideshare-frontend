@@ -14,7 +14,6 @@ class UserService {
 
   Future<String?> getUserEmail() async {
     try {
-      // print
       final response = await _dio.get(
         '${dotenv.env['BACKEND_API_URL']}user/',
       );
