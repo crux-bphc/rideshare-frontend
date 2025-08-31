@@ -1,51 +1,20 @@
-class Ride {
-  final int id;
-  final String createdBy;
-  final String? comments;
-  final DateTime? departureStartTime;
-  final DateTime? departureEndTime;
-  final int? maxMemberCount;
-  final String? rideStartLocation;
-  final String? rideEndLocation;
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-  Ride({
-    required this.id,
-    required this.createdBy,
-    this.comments,
-    this.departureStartTime,
-    this.departureEndTime,
-    this.maxMemberCount,
-    this.rideStartLocation,
-    this.rideEndLocation,
-  });
+part 'ride.freezed.dart';
+part 'ride.g.dart';
 
-  factory Ride.fromJson(Map<String, dynamic> json) {
-    return Ride(
-      id: json['id'],
-      createdBy: json['createdBy'],
-      comments: json['comments'],
-      departureStartTime: json['departureStartTime'] != null
-          ? DateTime.parse(json['departureStartTime'])
-          : null,
-      departureEndTime: json['departureEndTime'] != null
-          ? DateTime.parse(json['departureEndTime'])
-          : null,
-      maxMemberCount: json['maxMemberCount'],
-      rideStartLocation: json['rideStartLocation'],
-      rideEndLocation: json['rideEndLocation'],
-    );
-  }
+@freezed
+abstract class Ride with _$Ride {
+  const factory Ride({
+    required int id,
+    required String createdBy,
+    String? comments,
+    DateTime? departureStartTime,
+    DateTime? departureEndTime,
+    int? maxMemberCount,
+    String? rideStartLocation,
+    String? rideEndLocation,
+  }) = _Ride;
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'createdBy': createdBy,
-      'comments': comments,
-      'departureStartTime': departureStartTime?.toIso8601String(),
-      'departureEndTime': departureEndTime?.toIso8601String(),
-      'maxMemberCount': maxMemberCount,
-      'ride_start_location': rideStartLocation,
-      'ride_end_location': rideEndLocation,
-    };
-  }
+  factory Ride.fromJson(Map<String, dynamic> json) => _$RideFromJson(json);
 }
