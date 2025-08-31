@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../../../shared/theme.dart';
+import 'package:rideshare/shared/theme.dart';
 
 class StyledInputContainer extends StatelessWidget {
   final String title;

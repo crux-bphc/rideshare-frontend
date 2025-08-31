@@ -32,7 +32,6 @@ class RideForm extends ConsumerStatefulWidget {
   ConsumerState<RideForm> createState() => _RideFormState();
 }
 
-
 class SectionHeader extends StatelessWidget {
   final String title;
 
@@ -86,10 +85,6 @@ class _RideFormState extends ConsumerState<RideForm> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
-    ref.watch(selectedDateProvider);
-    ref.watch(departureTimeProvider);
-    ref.watch(arrivalTimeProvider);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

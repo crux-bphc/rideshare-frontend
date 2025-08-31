@@ -5,9 +5,8 @@ import 'package:rideshare/modules/rides/search_rides/ridedata_provider.dart';
 import 'package:rideshare/shared/providers/rides_provider.dart';
 import 'package:rideshare/shared/theme.dart';
 import 'package:rideshare/shared/util/datetime_utils.dart';
-
-import '../../../shared/providers/navigation_provider.dart';
-import '../widgets/ride_form.dart';
+import 'package:rideshare/shared/providers/navigation_provider.dart';
+import 'package:rideshare/modules/rides/widgets/ride_form.dart';
 
 class CreateRideScreen extends ConsumerStatefulWidget {
   const CreateRideScreen({super.key});

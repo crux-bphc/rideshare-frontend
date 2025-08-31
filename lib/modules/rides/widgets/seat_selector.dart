@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../../../shared/theme.dart';
-import '../search_rides/ridedata_provider.dart';
+import 'package:rideshare/shared/theme.dart';
+import 'package:rideshare/modules/rides/search_rides/ridedata_provider.dart';
 
 class SeatSelection extends ConsumerWidget {
   const SeatSelection({super.key});
