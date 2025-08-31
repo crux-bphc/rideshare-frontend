@@ -17,13 +17,13 @@ class RideDetailsScreen extends ConsumerWidget {
   Future<String?> _getEmail(WidgetRef ref) async {
     return await ref.read(userServiceProvider).getUserEmail();
   }
-  Future<User?> getCreatorDetails(WidgetRef ref) async {
-    return await ref.read(userServiceProvider).getUserDetails(ride.createdBy);
+  Future<User?> getDetails(WidgetRef ref, String email) async {
+    return await ref.read(userServiceProvider).getUserDetails(email);
   }
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return FutureBuilder<User?>(
-      future: getCreatorDetails(ref),
+      future: getDetails(ref, ride.createdBy),
       builder: (context, creatorSnapshot) {
         if (creatorSnapshot.connectionState == ConnectionState.waiting) {
           return const SplashPage();
@@ -58,7 +58,7 @@ class RideDetailsScreen extends ConsumerWidget {
                 title: const Text('Ride Details'),
               ),
               body: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(12, 0, 12, 24),
+                padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -142,12 +142,24 @@ class RideDetailsScreen extends ConsumerWidget {
                           return const SizedBox.shrink();
                         }
                         final currentUserEmail = emailSnapshot.data;
-                        if (creator.email != currentUserEmail) {
+                        final isCurrentUserMember = currentUserEmail != null && 
+                            (members.any((member) => member.email == currentUserEmail) || 
+                             ride.createdBy == currentUserEmail);
+                        
+                        if (!isCurrentUserMember) {
                           return SizedBox(
                             width: double.infinity,
                             child: ElevatedButton(
                               onPressed: () {
-                                ref.read(rideServiceProvider).sendRequest(ride.id);
+                                try{
+                                  ref.read(ridesNotifierProvider.notifier).sendRequest(ride.id);
+                                  const snackBar = SnackBar(content: Text('Succesfully joined the Ride!'), backgroundColor: AppColors.success,);
+                                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                                }
+                                catch(e){
+                                  const snackBar = SnackBar(content: Text('Failed to Join Ride'), backgroundColor: AppColors.error,);
+                                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                                }
                               },
                               style: ElevatedButton.styleFrom(
                                 padding: const EdgeInsets.symmetric(vertical: 15),
