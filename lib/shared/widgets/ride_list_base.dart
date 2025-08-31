@@ -37,44 +37,6 @@ class RideListBase extends ConsumerWidget {
                 print(ride.rideEndLocation);
                 return RideCard(
                   ride: ride,
-                  actions: [
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.button,
-                          foregroundColor: AppColors.textPrimary,
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          minimumSize: const Size(0, 32),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          elevation: 0,
-                        ),
-                        child: const Text(
-                          'View Details',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Container(
-                      width: 40,
-                      height: 48,
-                      decoration: BoxDecoration(
-                        color: AppColors.navbar,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const Icon(
-                        Icons.bookmark_outline,
-                        color: AppColors.accent,
-                        size: 20,
-                      ),
-                    ),
-                  ],
                 );
             },
           ),

@@ -1,21 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rideshare/models/ride.dart';
+import 'package:rideshare/shared/providers/rides_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:rideshare/shared/theme.dart';
 
-class RideCard extends StatelessWidget {
+class RideCard extends ConsumerWidget {
   final Ride ride;
 
   const RideCard({
     super.key,
     required this.ride,
-    this.actions = const [],
   });
 
-  final List<Widget> actions;
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Container(
       margin: EdgeInsets.fromLTRB(8, 6, 8, 8),
       decoration: BoxDecoration(
@@ -33,7 +32,7 @@ class RideCard extends StatelessWidget {
                 Text(
                   '${DateFormat("d/MM/yy HH:mm").format(ride.departureStartTime!)} - ${DateFormat("HH:mm").format(ride.departureEndTime!)}',
                   style: const TextStyle(
-                    color: AppColors.accent,
+                    color: Colors.white,
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
                   ),
@@ -59,7 +58,7 @@ class RideCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 16),
-            
+
             Text(
               "${ride.rideStartLocation} - ${ride.rideEndLocation}",
               style: const TextStyle(
@@ -69,9 +68,73 @@ class RideCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            
+
             Row(
-              children: actions,
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.button,
+                      foregroundColor: AppColors.textPrimary,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      minimumSize: const Size(0, 32),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: const Text(
+                      'View Details',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Consumer(
+                  builder: (context, ref, child) {
+                    final rideService = ref.watch(rideServiceProvider);
+                    return FutureBuilder<List<Ride>>(
+                      future: rideService.getBookmarkedRides(),
+                      builder: (context, snapshot) {
+                        bool isBookmarked = false;
+                        if (snapshot.hasData) {
+                          isBookmarked = snapshot.data!.any(
+                            (bookmarkedRide) => bookmarkedRide.id == ride.id,
+                          );
+                        }
+                        return Container(
+                          width: 40,
+                          height: 48,
+                          decoration: BoxDecoration(
+                            color: AppColors.navbar,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: InkWell(
+                            onTap: () async {
+                              await rideService.toggleBookmark(
+                                ride.id.toString(),
+                                isBookmarked,
+                              );
+                              ref.invalidate(rideServiceProvider);
+                            },
+                            child: Icon(
+                              isBookmarked
+                                  ? Icons.bookmark
+                                  : Icons.bookmark_outline,
+                              color: AppColors.accent,
+                              size: 20,
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
+              ],
             ),
           ],
         ),

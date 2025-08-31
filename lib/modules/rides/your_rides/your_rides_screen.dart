@@ -17,13 +17,16 @@ class YourRidesScreen extends ConsumerWidget {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Your rides'),
+          title: const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+            child: Text('Your rides'),
+          ),
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(kToolbarHeight),
             child: Container(
               margin: const EdgeInsets.symmetric(
                 horizontal: 16.0,
-                vertical: 16.0,
+                vertical: 24.0,
               ),
               decoration: BoxDecoration(
                 color: AppColors.card,

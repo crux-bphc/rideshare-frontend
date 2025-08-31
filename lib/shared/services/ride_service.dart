@@ -147,4 +147,20 @@ class RideService {
       throw Exception('Failed to get bookmarked rides: $e');
     }
   }
+
+  Future<void> toggleBookmark(String rideId, bool isBookmarked) async {
+    try {
+      if (isBookmarked) {
+        // await _dio.delete(
+        //   '${dotenv.env['BACKEND_API_API_URL']}user/bookmarks/delete/$rideId',
+        // );
+      } else {
+        await _dio.post(
+          '${dotenv.env['BACKEND_API_URL']}user/bookmarks/create/$rideId',
+        );
+      }
+    } catch (e) {
+      throw Exception('Failed to toggle bookmark: $e');
+    }
+  }
 }
