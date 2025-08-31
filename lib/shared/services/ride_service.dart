@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:rideshare/models/ride.dart';
+import 'package:rideshare/models/user.dart';
 
 class RideService {
   final Dio _dio;
@@ -27,8 +28,8 @@ class RideService {
           "departureEndTime": departureEndTime.toUtc().toIso8601String(),
           "comments": comments ?? '',
           "maxMemberCount": seats,
-          "rideStart": rideStart,
-          "rideEnd": rideEnd,
+          "rideStartLocation": rideStart,
+          "rideEndLocation": rideEnd,
         },
       );
     } catch (e) {
@@ -47,8 +48,8 @@ class RideService {
         final response = await _dio.get(
           '${dotenv.env['BACKEND_API_URL']}rides/search/',
           queryParameters: {
-            "search_start_location": startLocation,
-            "search_end_location": endLocation,
+            "searchStartLocation": startLocation,
+            "searchEndLocation": endLocation,
             "by": to?.toUtc().toIso8601String(),
           },
         );
@@ -63,8 +64,8 @@ class RideService {
         final response = await _dio.get(
           '${dotenv.env['BACKEND_API_URL']}rides/search/',
           queryParameters: {
-            "search_start_location": startLocation,
-            "search_end_location": endLocation,
+            "searchStartLocation": startLocation,
+            "searchEndLocation": endLocation,
             "from": from.toUtc().toIso8601String(),
           },
         );
@@ -89,6 +90,24 @@ class RideService {
     }
     catch(e){
       throw Exception("Failed to send ride request");
+    }
+  }
+
+  Future<List<User>> getMembers(rideId) async {
+    try{
+      final response = await _dio.get(
+        '${dotenv.env['BACKEND_API_URL']}rides/members/$rideId',
+      );
+      if (response.statusCode == 200) {
+          return (response.data as List)
+              .map((json) => User.fromJson(json))
+              .toList();
+        } else {
+          throw Exception('Failed to search rides');
+        }
+    }
+    catch(e){
+      throw Exception("Failed to get members of ride ");
     }
   }
 }

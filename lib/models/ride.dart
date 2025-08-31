@@ -31,8 +31,8 @@ class Ride {
           ? DateTime.parse(json['departureEndTime'])
           : null,
       maxMemberCount: json['maxMemberCount'],
-      rideStartLocation: json['ride_start_location'],
-      rideEndLocation: json['ride_end_location'],
+      rideStartLocation: json['rideStartLocation'],
+      rideEndLocation: json['rideEndLocation'],
     );
   }
 

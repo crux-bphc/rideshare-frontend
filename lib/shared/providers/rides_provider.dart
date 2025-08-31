@@ -1,3 +1,4 @@
+import 'package:rideshare/models/user.dart';
 import 'package:rideshare/providers/auth/logto_auth.dart';
 import 'package:rideshare/models/ride.dart';
 import 'package:rideshare/shared/services/ride_service.dart';
@@ -50,6 +51,12 @@ class RidesNotifier extends _$RidesNotifier {
     final rideService = ref.watch(rideServiceProvider);
     rideService.sendRequest(rideId);
   }
+
+  Future<List<User>> getMembers(int rideId)  async{
+    final rideService = ref.watch(rideServiceProvider);
+    return rideService.getMembers(rideId);
+  }
+
   Future<void> refreshRides() async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() => build());
