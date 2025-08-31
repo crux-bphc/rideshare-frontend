@@ -13,6 +13,7 @@ class AppColors {
   static const Color error = Color(0xFFFF5C5C);
   static const Color navbar = Color(0xFF1A1C23);
   static const Color textSecondary = Color(0xFFA9AFFF);
+  static const Color success = Colors.green;
 }
 
 final colorScheme = ColorScheme.dark(
@@ -35,7 +36,7 @@ final ThemeData appTheme = _theme.copyWith(
   textTheme: GoogleFonts.ralewayTextTheme(_theme.textTheme),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
-      backgroundColor: const Color(0xFF777FE4),
+      backgroundColor: AppColors.button,
       foregroundColor: Colors.white,
       shape: RoundedSuperellipseBorder(
         borderRadius: BorderRadius.circular(12),

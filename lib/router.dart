@@ -2,12 +2,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rideshare/modules/home/screens/home_page.dart';
+import 'package:rideshare/modules/rides/create_rides/create_ride_screen.dart';
 import 'package:rideshare/modules/splash/splash_page.dart';
 import 'package:rideshare/providers/auth/auth_provider.dart';
 import 'package:rideshare/screens/sign_in_page.dart';
 import 'package:rideshare/modules/rides/screens/rides_screen.dart';
 import 'package:rideshare/modules/inbox/screens/inbox_screen.dart';
 import 'package:rideshare/modules/profile/screens/profile_screen.dart';
+import 'package:rideshare/shared/providers/navigation_provider.dart';
 import 'package:rideshare/shared/widgets/main_app.dart';
 import 'package:rideshare/modules/rides/search_rides/search_rides_screen.dart';
 import 'package:rideshare/modules/rides/available_rides/available_rides_screen.dart';
@@ -16,6 +18,7 @@ import 'package:rideshare/models/ride.dart';
 
 final goRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
+    navigatorKey: navigatorKey,
     redirect: (context, state) {
       final authState = ref.read(authNotifierProvider);
       final location = state.matchedLocation;
@@ -99,6 +102,15 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                       return _buildPageWithFadeTransition(
                         path: state.matchedLocation,
                         child: const AvailableRidesScreen(),
+                      );
+                    },
+                  ),
+                  GoRoute(
+                    path: 'create',
+                    pageBuilder: (context, state) {
+                      return _buildPageWithFadeTransition(
+                        path: state.matchedLocation,
+                        child: const CreateRideScreen(),
                       );
                     },
                   ),

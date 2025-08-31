@@ -64,6 +64,10 @@ class SeatNotifier extends Notifier<int> {
   void decreaseSeats(int seats) {
     state--;
   }
+
+  void resetSeats() {
+    state = 4;
+  }
 }
 
 final seatProvider = NotifierProvider<SeatNotifier, int>(() {

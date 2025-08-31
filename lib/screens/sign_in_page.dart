@@ -3,14 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rideshare/providers/auth/auth_provider.dart';
 import 'package:rideshare/shared/theme.dart';
 
-class SignInPage extends StatefulWidget {
+class SignInPage extends StatelessWidget {
   const SignInPage({super.key});
 
-  @override
-  LoginScreenState createState() => LoginScreenState();
-}
-
-class LoginScreenState extends State<SignInPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -3,8 +3,10 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rideshare/providers/auth/auth_provider.dart';
 import 'package:rideshare/router.dart';
+import 'package:rideshare/shared/providers/navigation_provider.dart';
 import 'package:rideshare/shared/theme.dart';
 import 'package:rideshare/modules/splash/splash_page.dart';
+import 'package:rideshare/shared/widgets/phone_number_input_dialog.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,9 +19,40 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    ref.listen(authNotifierProvider, (_, __) {
-      final router = ref.watch(goRouterProvider);
-      router.refresh();
+    ref.listen<AsyncValue<AuthState>>(authNotifierProvider, (previous, next) {
+      ref.read(goRouterProvider).refresh();
+      final wasLoading = previous?.isLoading ?? false;
+      final needsPhoneNumber = next.valueOrNull?.needsPhoneNumber ?? false;
+
+      if (wasLoading && needsPhoneNumber) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          final currentContext = navigatorKey.currentContext;
+          if (currentContext != null) {
+            showDialog(
+              context: currentContext,
+              barrierDismissible: false,
+              builder: (BuildContext dialogContext) {
+                return PhoneNumberInputDialog(
+                  onSubmit: (phoneNumber) {
+                    final user = next.value!.user!;
+                    ref
+                        .read(authNotifierProvider.notifier)
+                        .completeNewUserRegistration(phoneNumber, user);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        backgroundColor: AppColors.success,
+                        content: Text('User registered successfully!'),
+                        duration: Duration(seconds: 2),
+                      ),
+                    );
+                    Navigator.of(dialogContext).pop();
+                  },
+                );
+              },
+            );
+          }
+        });
+      }
     });
 
     final authState = ref.watch(authNotifierProvider);

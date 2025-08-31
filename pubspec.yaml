@@ -50,6 +50,7 @@ dependencies:
   riverpod_generator: ^2.6.5
   google_fonts: ^6.2.1
   flutter_dotenv: ^5.1.0
+  intl: ^0.20.2
 
 dev_dependencies:
   flutter_test:
