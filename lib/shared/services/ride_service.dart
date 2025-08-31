@@ -130,7 +130,7 @@ class RideService {
     }
   }
 
-  Future<List<Ride>> getBookmarkedRides() async{
+  Future<List<Ride>> getBookmarkedRides() async {
     try {
       final response = await _dio.get(
         '${dotenv.env['BACKEND_API_URL']}user/bookmarks/get',

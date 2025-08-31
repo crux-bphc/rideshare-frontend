@@ -12,7 +12,6 @@ class UserService {
 
   Future<bool> checkUserExists() async {
     try {
-      // print
       final response = await _dio.get(
         '${dotenv.env['BACKEND_API_URL']}user/',
       );
@@ -27,22 +26,13 @@ class UserService {
 
   Future<void> createUser(String phone, String name) async {
     try {
-      print("creating new user");
-      print("params");
-      print(phone);
-      print(name);
-      print("params");
-      final response = await _dio.post(
+      await _dio.post(
         '${dotenv.env['BACKEND_API_URL']}user/',
         data: {
           "phoneNumber": phone,
           "name": name,
         },
       );
-      print("response");
-      print(response);
-      print("response");
-      print('User created successfully: ${response.data}');
     } catch (e) {
       throw Exception('Failed to create user: $e');
     }

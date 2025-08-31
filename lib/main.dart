@@ -19,11 +19,6 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // ref.listen(authNotifierProvider, (_, __) {
-    //   final router = ref.watch(goRouterProvider);
-    //   router.refresh();
-    // });
-
     ref.listen<AsyncValue<AuthState>>(authNotifierProvider, (previous, next) {
       ref.read(goRouterProvider).refresh();
       final wasLoading = previous?.isLoading ?? false;
@@ -43,6 +38,13 @@ class MyApp extends ConsumerWidget {
                     ref
                         .read(authNotifierProvider.notifier)
                         .completeNewUserRegistration(phoneNumber, user);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        backgroundColor: AppColors.success,
+                        content: Text('User registered successfully!'),
+                        duration: Duration(seconds: 2),
+                      ),
+                    );
                     Navigator.of(dialogContext).pop();
                   },
                 );

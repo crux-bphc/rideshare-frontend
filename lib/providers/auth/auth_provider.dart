@@ -50,15 +50,11 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
       final authProvider = ref.read(logtoAuthProvider);
-      print("Attempting to login");
       final user = await authProvider.login();
       if (user != null) {
         final userService = ref.read(userServiceProvider);
-        print("Checking if user exists: ${user.uid}");
         final userExists = await userService.checkUserExists();
-        // final userExists = false;
         if (!userExists) {
-          print("User does not exist, prompting for phone number");
           return AuthState(
             user: user,
             isAuthenticated: false,
@@ -86,12 +82,9 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
     String phoneNumber,
     AuthUser user,
   ) async {
-    print("Completing new user registration with phone number: $phoneNumber");
     final userService = ref.read(userServiceProvider);
-    print("Current user: $user");
     await userService.createUser(phoneNumber, user.name!);
     state = await AsyncValue.guard(() async {
-      print("User created successfully with phone number: $phoneNumber");
       return AuthState(
         user: user,
         isAuthenticated: true,

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../../../shared/theme.dart';
+import 'package:rideshare/shared/theme.dart';
 
 class StyledInputContainer extends StatelessWidget {
   final String title;
@@ -38,8 +37,9 @@ class StyledInputContainer extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: Colors.grey,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -52,7 +52,7 @@ class StyledInputContainer extends StatelessWidget {
                 ),
               ],
             ),
-            Icon(icon, color: Colors.grey),
+            Icon(icon, color: AppColors.primary),
           ],
         ),
       ),
