@@ -16,14 +16,17 @@ class RideListBase extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    if (rides.isEmpty) {
+      return noRidesWidget;
+    }
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Expanded(
           child: ListView.builder(
-            itemCount: rides.length + 1,
+            itemCount: rides.length,
             itemBuilder: (context, index) {
-              if (index < rides.length) {
                 final ride = rides[index];
                 print("RIDE DETAILS");
                 print("ride number");
@@ -73,9 +76,6 @@ class RideListBase extends ConsumerWidget {
                     ),
                   ],
                 );
-              } else {
-                return noRidesWidget;
-              }
             },
           ),
         ),

@@ -31,7 +31,7 @@ class RideCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  '${DateFormat("d/MM/yy HH:mm").format(ride.departureStartTime!)} - ${DateFormat("d/MM/yy HH:mm").format(ride.departureEndTime!)}',
+                  '${DateFormat("d/MM/yy HH:mm").format(ride.departureStartTime!)} - ${DateFormat("HH:mm").format(ride.departureEndTime!)}',
                   style: const TextStyle(
                     color: AppColors.accent,
                     fontSize: 14,

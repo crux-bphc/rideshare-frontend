@@ -21,7 +21,10 @@ class YourRidesScreen extends ConsumerWidget {
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(kToolbarHeight),
             child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              margin: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 16.0,
+              ),
               decoration: BoxDecoration(
                 color: AppColors.card,
                 borderRadius: BorderRadius.circular(12),
@@ -32,8 +35,11 @@ class YourRidesScreen extends ConsumerWidget {
                   color: AppColors.button,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                labelColor: Colors.black,
+                labelColor: Colors.white,
                 unselectedLabelColor: Colors.white,
+                labelStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
                 dividerColor: Colors.transparent,
                 tabs: const [
                   Tab(text: 'Upcoming'),
@@ -45,40 +51,56 @@ class YourRidesScreen extends ConsumerWidget {
         ),
         body: TabBarView(
           children: [
-            Consumer(builder: (context, ref, child) {
-              final rideService = ref.read(rideServiceProvider);
-              return FutureBuilder<List<Ride>>(
-                future: rideService.getUpcomingRides(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    return Center(child: Text('Error: ${snapshot.error}'));
-                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return const Center(child: Text('No upcoming rides.'));
-                  } else {
-                    return YourRidesList(rides: snapshot.data!);
-                  }
-                },
-              );
-            }),
-            Consumer(builder: (context, ref, child) {
-              final rideService = ref.read(rideServiceProvider);
-              return FutureBuilder<List<Ride>>(
-                future: rideService.getBookmarkedRides(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    return Center(child: Text('Error: ${snapshot.error}'));
-                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return const Center(child: Text('No bookmarked rides.'));
-                  } else {
-                    return YourRidesList(rides: snapshot.data!);
-                  }
-                },
-              );
-            }),
+            Consumer(
+              builder: (context, ref, child) {
+                final rideService = ref.read(rideServiceProvider);
+                return FutureBuilder<List<Ride>>(
+                  future: rideService.getUpcomingRides(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    } else if (snapshot.hasError) {
+                      return Center(
+                        child: Text('No upcoming rides.'),
+                      );
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return const Center(
+                        child: Text('No upcoming rides.'),
+                      );
+                    } else {
+                      return YourRidesList(rides: snapshot.data!);
+                    }
+                  },
+                );
+              },
+            ),
+            Consumer(
+              builder: (context, ref, child) {
+                final rideService = ref.read(rideServiceProvider);
+                return FutureBuilder<List<Ride>>(
+                  future: rideService.getBookmarkedRides(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    } else if (snapshot.hasError) {
+                      return Center(
+                        child: Text('No bookmarked rides.'),
+                      );
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return const Center(
+                        child: Text('No bookmarked rides.'),
+                      );
+                    } else {
+                      return YourRidesList(rides: snapshot.data!);
+                    }
+                  },
+                );
+              },
+            ),
           ],
         ),
       ),
