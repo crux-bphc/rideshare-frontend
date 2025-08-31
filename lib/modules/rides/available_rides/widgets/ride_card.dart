@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rideshare/models/ride.dart';
+import 'package:rideshare/shared/providers/rides_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:rideshare/shared/theme.dart';
 
-class RideCard extends StatelessWidget {
+class RideCard extends ConsumerWidget {
   final Ride ride;
 
   const RideCard({
@@ -12,7 +14,7 @@ class RideCard extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Container(
       margin: EdgeInsets.fromLTRB(8, 6, 8, 8),
       decoration: BoxDecoration(
@@ -28,9 +30,9 @@ class RideCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  '${DateFormat("d/MM/yy HH:mm").format(ride.departureStartTime!)} - ${DateFormat("d/MM/yy HH:mm").format(ride.departureEndTime!)}',
+                  '${DateFormat("d/MM/yy HH:mm").format(ride.departureStartTime!)} - ${DateFormat("HH:mm").format(ride.departureEndTime!)}',
                   style: const TextStyle(
-                    color: AppColors.accent,
+                    color: Colors.white,
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
                   ),
@@ -92,18 +94,45 @@ class RideCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 12),
-                Container(
-                  width: 40,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: AppColors.navbar,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Icon(
-                    Icons.bookmark_outline,
-                    color: AppColors.accent,
-                    size: 20,
-                  ),
+                Consumer(
+                  builder: (context, ref, child) {
+                    final rideService = ref.watch(rideServiceProvider);
+                    return FutureBuilder<List<Ride>>(
+                      future: rideService.getBookmarkedRides(),
+                      builder: (context, snapshot) {
+                        bool isBookmarked = false;
+                        if (snapshot.hasData) {
+                          isBookmarked = snapshot.data!.any(
+                            (bookmarkedRide) => bookmarkedRide.id == ride.id,
+                          );
+                        }
+                        return Container(
+                          width: 40,
+                          height: 48,
+                          decoration: BoxDecoration(
+                            color: AppColors.navbar,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: InkWell(
+                            onTap: () async {
+                              await rideService.toggleBookmark(
+                                ride.id.toString(),
+                                isBookmarked,
+                              );
+                              ref.invalidate(rideServiceProvider);
+                            },
+                            child: Icon(
+                              isBookmarked
+                                  ? Icons.bookmark
+                                  : Icons.bookmark_outline,
+                              color: AppColors.accent,
+                              size: 20,
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
                 ),
               ],
             ),
