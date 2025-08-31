@@ -110,4 +110,19 @@ class RideService {
       throw Exception("Failed to get members of ride ");
     }
   }
+
+  Future<void> manageRequest(int rideId, String requestUserEmail, String status) async {
+    try{
+      await _dio.post(
+        '${dotenv.env['BACKEND_API_URL']}rides/manage/requests/$rideId/',
+        queryParameters: {
+          'requestUserEmail': requestUserEmail,
+          'status': status,
+        }
+      );
+    }
+    catch(e){
+      throw Exception("Failed to accept/decline request $e");
+    }
+  }
 }
