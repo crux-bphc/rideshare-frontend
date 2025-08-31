@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rideshare/models/ride.dart';
 import 'package:rideshare/modules/rides/available_rides/widgets/ride_card.dart';
-import 'package:rideshare/shared/theme.dart';
 
 class RideListBase extends ConsumerWidget {
   const RideListBase({

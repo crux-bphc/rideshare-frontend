@@ -21,8 +21,8 @@ class RideService {
   ) async {
     try {
       print("params");
-      print(departureStartTime.toUtc().toIso8601String());
-      print(departureEndTime.toUtc().toIso8601String());
+      print(departureStartTime.toIso8601String());
+      print(departureEndTime.toIso8601String());
       print(comments);
       print(seats);
       print(rideStart);
@@ -31,8 +31,8 @@ class RideService {
       final response = await _dio.post(
         '${dotenv.env['BACKEND_API_URL']}rides/create/',
         data: {
-          "departureStartTime": departureStartTime.toUtc().toIso8601String(),
-          "departureEndTime": departureEndTime.toUtc().toIso8601String(),
+          "departureStartTime": departureStartTime.toIso8601String(),
+          "departureEndTime": departureEndTime.toIso8601String(),
           "comments": comments ?? '',
           "maxMemberCount": seats,
           "rideStartLocation": rideStart,
@@ -58,8 +58,8 @@ class RideService {
       print("params");
       print(startLocation);
       print(endLocation);
-      print(from?.toUtc().toIso8601String());
-      print(to?.toUtc().toIso8601String());
+      print(from?.toIso8601String());
+      print(to?.toIso8601String());
       print("params");
       if (from == null) {
         final response = await _dio.get(
@@ -67,7 +67,7 @@ class RideService {
           queryParameters: {
             "searchStartLocation": startLocation,
             "searchEndLocation": endLocation,
-            "by": to?.toUtc().toIso8601String(),
+            "by": to?.toIso8601String(),
           },
         );
         if (response.statusCode == 200) {
@@ -83,7 +83,7 @@ class RideService {
           queryParameters: {
             "searchStartLocation": startLocation,
             "searchEndLocation": endLocation,
-            "from": from.toUtc().toIso8601String(),
+            "from": from.toIso8601String(),
           },
         );
         if (response.statusCode == 200) {
