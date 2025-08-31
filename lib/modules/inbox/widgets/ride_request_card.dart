@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:rideshare/models/ride_request.dart';
+import 'package:rideshare/shared/providers/user_provider.dart';
 import 'package:rideshare/shared/theme.dart';
+import 'package:rideshare/shared/util/datetime_utils.dart';
 
 class RideCard extends StatelessWidget{
   final RideRequest rideRequest;
@@ -42,36 +44,49 @@ class RideCard extends StatelessWidget{
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
-                  child: Text(
-                    rideRequest.status == "pending"
-                      ? "${rideRequest.requestSender} requested to join"
-                      : "From: ${rideRequest.requestSender}",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
-                    ),
+                  child: FutureBuilder(
+                    future: UserNotifier().getUser(rideRequest.requestSender),
+                    builder: (context, snapshot) {
+                      String displayName = rideRequest.requestSender;
+                      if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
+                        displayName = snapshot.data?.name ?? rideRequest.requestSender;
+                      }
+                      return Text(
+                        rideRequest.status == "pending"
+                          ? "$displayName requested to join"
+                          : "From: $displayName",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textPrimary,
+                        ),
+                      );
+                    },
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 8),
-            Text(
-              rideRequest.departureStartTime != null
-                ? DateFormat('d MMM, HH:mm').format(rideRequest.departureStartTime!)
-                : '',
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.textPrimary,
-              ),
+
+            Row(
+              children: [
+                Text(
+                  rideRequest.departureStartTime != null
+                    ? "${DateFormat('d').format(rideRequest.departureStartTime!)}${getDaySuffix(rideRequest.departureStartTime!.day)} ${DateFormat('MMM').format(rideRequest.departureStartTime!)}"
+                    : '',
+                  style: TextStyle(fontSize: 14, color: AppColors.textPrimary),
+                ),
+                if (rideRequest.departureStartTime != null) ...[
+                  const SizedBox(width: 8),
+                  Text('|', style: TextStyle(fontSize: 14, color: AppColors.textPrimary)),
+                  const SizedBox(width: 8),
+                  Text(
+                    formatTimeRange(rideRequest.departureStartTime, rideRequest.departureEndTime),
+                    style: TextStyle(fontSize: 14, color: AppColors.textPrimary, fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ],
             ),
-            if (rideRequest.departureEndTime != null) ...[
-              const SizedBox(height: 4),
-              Text(
-                DateFormat('d MMM, HH:mm').format(rideRequest.departureEndTime!),
-                style: TextStyle(fontSize: 14, color: AppColors.textPrimary),
-              ),
-            ],
             const SizedBox(height: 8),
             Text(
               '${rideRequest.rideStartLocation ?? "Unknown"} - ${rideRequest.rideEndLocation ?? "Unknown"}',
