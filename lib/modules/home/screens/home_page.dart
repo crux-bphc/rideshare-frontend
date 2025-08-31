@@ -124,7 +124,10 @@ class _HomePageState extends ConsumerState<HomePage>
               width: size.width * 0.8,
               child: ElevatedButton.icon(
                 onPressed: () {
-                  //todo: implement view rides
+                  ref
+                      .read(navigationNotifierProvider.notifier)
+                      .setTab(NavigationTab.rides);
+                  context.go('/rides');
                 },
                 label: const Text('Your rides'),
                 icon: const Icon(Icons.directions_car),
