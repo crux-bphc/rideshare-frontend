@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rideshare/models/ride.dart';
-import 'package:rideshare/modules/rides/available_rides/widgets/ride_card.dart';
+import 'package:rideshare/shared/widgets/ride_list_base.dart';
 
 class AvailableRidesList extends ConsumerWidget {
   const AvailableRidesList({
@@ -13,51 +13,37 @@ class AvailableRidesList extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final rides = GoRouterState.of(context).extra as List<Ride>;
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Expanded(
-          child: ListView.builder(
-            itemCount: rides.length + 1,
-            itemBuilder: (context, index) {
-              if (index < rides.length) {
-                final ride = rides[index];
-                return RideCard(ride: ride);
-              } else {
-                return Column(
-                  children: [
-                    SizedBox(height: 24),
-                    Text(
-                      "Did not find a ride you like? Create a ride instead",
-                      style: Theme.of(context).textTheme.bodyLarge,
-                    ),
-                    SizedBox(height:8),
-                    ElevatedButton(
-                      onPressed: () {
-                        GoRouter.of(context).go('/rides/create');
-                      },
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: const Size(0, 32),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        elevation: 0,
-                      ),
-                      child: const Text(
-                        'Create Ride',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ],
-                );
-              }
-            },
+    return RideListBase(
+      rides: rides,
+      noRidesWidget: Column(
+        children: [
+          const SizedBox(height: 24),
+          Text(
+            "Did not find a ride you like? Create a ride instead",
+            style: Theme.of(context).textTheme.bodyLarge,
           ),
-        ),
-      ],
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: () {
+              GoRouter.of(context).go('/rides/create');
+            },
+            style: ElevatedButton.styleFrom(
+              minimumSize: const Size(0, 32),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(6),
+              ),
+              elevation: 0,
+            ),
+            child: const Text(
+              'Create Ride',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

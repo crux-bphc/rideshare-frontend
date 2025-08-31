@@ -6,13 +6,13 @@ import 'package:rideshare/modules/rides/create_rides/create_ride_screen.dart';
 import 'package:rideshare/modules/splash/splash_page.dart';
 import 'package:rideshare/providers/auth/auth_provider.dart';
 import 'package:rideshare/screens/sign_in_page.dart';
-import 'package:rideshare/modules/rides/screens/rides_screen.dart';
 import 'package:rideshare/modules/inbox/screens/inbox_screen.dart';
 import 'package:rideshare/modules/profile/screens/profile_screen.dart';
 import 'package:rideshare/shared/providers/navigation_provider.dart';
 import 'package:rideshare/shared/widgets/main_app.dart';
 import 'package:rideshare/modules/rides/search_rides/search_rides_screen.dart';
 import 'package:rideshare/modules/rides/available_rides/available_rides_screen.dart';
+import 'package:rideshare/modules/rides/your_rides/your_rides_screen.dart';
 import 'package:rideshare/modules/rides/ride_details/ride_details_screen.dart';
 import 'package:rideshare/models/ride.dart';
 
@@ -83,7 +83,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                 pageBuilder: (context, state) {
                   return _buildPageWithFadeTransition(
                     path: state.matchedLocation,
-                    child: const RidesScreen(),
+                    child: const YourRidesScreen(),
                   );
                 },
                 routes: [

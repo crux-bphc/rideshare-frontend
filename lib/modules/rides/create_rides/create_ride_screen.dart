@@ -108,12 +108,18 @@ class _CreateRideScreenState extends ConsumerState<CreateRideScreen> {
     ref.read(departureTimeProvider.notifier).setTime(null);
     ref.read(arrivalTimeProvider.notifier).setTime(null);
     ref.read(seatProvider.notifier).resetSeats();
+    GoRouter.of(context).go("/rides/search");
   }
 
   bool get _canCreateRide {
     final rideDate = ref.watch(selectedDateProvider);
     final departureTime = ref.watch(departureTimeProvider);
     final arrivalTime = ref.watch(arrivalTimeProvider);
+    print(
+      departureTime != null && arrivalTime != null
+          ? departureTime.isBefore(arrivalTime)
+          : "null values",
+    );
     return rideDate != null &&
         departureTime != null &&
         arrivalTime != null &&
