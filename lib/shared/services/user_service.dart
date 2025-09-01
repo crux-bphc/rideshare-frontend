@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:rideshare/models/user.dart';
 
 class UserService {
   final Dio _dio;
@@ -10,15 +11,15 @@ class UserService {
     );
   }
 
-  Future<bool> checkUserExists() async {
+  Future<String?> getUserEmail() async {
     try {
       final response = await _dio.get(
         '${dotenv.env['BACKEND_API_URL']}user/',
       );
-      return response.statusCode == 200;
+      return response.data['email'];
     } on DioException catch (e) {
       if (e.response?.statusCode == 404) {
-        return false;
+        return null;
       }
       throw Exception('Failed to check user existence: $e');
     }
@@ -35,6 +36,23 @@ class UserService {
       );
     } catch (e) {
       throw Exception('Failed to create user: $e');
+    }
+  }
+
+  Future<User> getUserDetails(String email) async{
+    try{
+      final response = await _dio.get(
+        '${dotenv.env['BACKEND_API_URL']}user/email/',
+        queryParameters: {'email' : email},
+      );
+      if (response.statusCode == 200) {
+          return User.fromJson(response.data);
+        } else {
+          throw Exception('Failed to search rides');
+        }
+    }
+    catch(e){
+      throw Exception("Failed to get user details");
     }
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:rideshare/models/ride.dart';
 import 'package:rideshare/shared/providers/rides_provider.dart';
 import 'package:intl/intl.dart';
@@ -73,7 +74,9 @@ class RideCard extends ConsumerWidget {
               children: [
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      GoRouter.of(context).go("/rides/details", extra: ride);
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.button,
                       foregroundColor: AppColors.textPrimary,

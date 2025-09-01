@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:rideshare/models/ride.dart';
+import 'package:rideshare/models/user.dart';
 
 class RideService {
   final Dio _dio;
@@ -161,6 +162,35 @@ class RideService {
       }
     } catch (e) {
       throw Exception('Failed to toggle bookmark: $e');
+    }
+  }
+  
+  Future<void> sendRequest(rideId) async{
+    try{
+      await _dio.post(
+        '${dotenv.env['BACKEND_API_URL']}rides/request/$rideId',
+      );
+    }
+    catch(e){
+      throw Exception("Failed to send ride request");
+    }
+  }
+
+  Future<List<User>> getMembers(rideId) async {
+    try{
+      final response = await _dio.get(
+        '${dotenv.env['BACKEND_API_URL']}rides/members/$rideId',
+      );
+      if (response.statusCode == 200) {
+          return (response.data as List)
+              .map((json) => User.fromJson(json))
+              .toList();
+        } else {
+          throw Exception('Failed to search rides');
+        }
+    }
+    catch(e){
+      throw Exception("Failed to get members of ride ");
     }
   }
 }
