@@ -1,3 +1,4 @@
+import 'package:rideshare/models/ride_request.dart';
 import 'package:rideshare/models/user.dart';
 import 'package:rideshare/providers/auth/logto_auth.dart';
 import 'package:rideshare/shared/services/user_service.dart';
@@ -25,5 +26,10 @@ class UserNotifier extends _$UserNotifier {
   Future<String?> getUserEmail() async{
     final userService = ref.watch(userServiceProvider);
     return  userService.getUserEmail();
+  }
+
+  Future<List<RideRequest>> getRequestsReceived() async{
+    final userService = ref.watch(userServiceProvider);
+    return userService.getRequestsReceived();
   }
 }
