@@ -100,40 +100,32 @@ class RideCard extends ConsumerWidget {
                 Consumer(
                   builder: (context, ref, child) {
                     final rideService = ref.watch(rideServiceProvider);
-                    return FutureBuilder<List<Ride>>(
-                      future: rideService.getBookmarkedRides(),
-                      builder: (context, snapshot) {
-                        bool isBookmarked = false;
-                        if (snapshot.hasData) {
-                          isBookmarked = snapshot.data!.any(
-                            (bookmarkedRide) => bookmarkedRide.id == ride.id,
+                    bool isBookmarked = ride.isBookmarked;
+                    return Container(
+                      width: 40,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: AppColors.navbar,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: InkWell(
+                        onTap: () async {
+                          await rideService.toggleBookmark(
+                            ride.id.toString(),
+                            isBookmarked,
                           );
-                        }
-                        return Container(
-                          width: 40,
-                          height: 48,
-                          decoration: BoxDecoration(
-                            color: AppColors.navbar,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: InkWell(
-                            onTap: () async {
-                              await rideService.toggleBookmark(
-                                ride.id.toString(),
-                                isBookmarked,
-                              );
-                              ref.invalidate(rideServiceProvider);
-                            },
-                            child: Icon(
-                              isBookmarked
-                                  ? Icons.bookmark
-                                  : Icons.bookmark_outline,
-                              color: AppColors.accent,
-                              size: 20,
-                            ),
-                          ),
-                        );
-                      },
+                          //todo: toggle bookmark status in model & rebuild the widget
+                          ref.invalidate(rideServiceProvider);
+                          ride.isBookmarked = !isBookmarked;
+                        },
+                        child: Icon(
+                          isBookmarked
+                              ? Icons.bookmark
+                              : Icons.bookmark_outline,
+                          color: AppColors.accent,
+                          size: 20,
+                        ),
+                      ),
                     );
                   },
                 ),

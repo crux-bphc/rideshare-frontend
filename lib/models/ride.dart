@@ -7,6 +7,7 @@ class Ride {
   final int? maxMemberCount;
   final String? rideStartLocation;
   final String? rideEndLocation;
+  bool isBookmarked;
 
   Ride({
     required this.id,
@@ -15,6 +16,7 @@ class Ride {
     this.departureStartTime,
     this.departureEndTime,
     this.maxMemberCount,
+    this.isBookmarked = false,
     this.rideStartLocation,
     this.rideEndLocation,
   });
@@ -33,6 +35,7 @@ class Ride {
       maxMemberCount: json['maxMemberCount'],
       rideStartLocation: json['rideStartLocation'],
       rideEndLocation: json['rideEndLocation'],
+      isBookmarked: json['isBookmarked'] ?? false,
     );
   }
 
@@ -46,6 +49,7 @@ class Ride {
       'maxMemberCount': maxMemberCount,
       'rideStartLocation': rideStartLocation,
       'rideEndLocation': rideEndLocation,
+      'isBookmarked': isBookmarked,
     };
   }
 }
