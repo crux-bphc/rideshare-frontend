@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:rideshare/models/ride_request.dart';
 import 'package:rideshare/models/user.dart';
 
 class UserService {
@@ -53,6 +54,23 @@ class UserService {
     }
     catch(e){
       throw Exception("Failed to get user details");
+    }
+  }
+
+  Future<List<RideRequest>> getRequestsReceived() async{
+    try{
+      final response = await _dio.get(
+        '${dotenv.env['BACKEND_API_URL']}user/requests/received',
+      );
+      if (response.statusCode == 200){
+        return (response.data as List).map((json) => RideRequest.fromJson(json)).toList();
+      }
+      else{
+        throw Exception("Failed to get Received Requests");
+      }
+    }
+    catch(e){
+      throw Exception("Failed to get Received Requests $e");
     }
   }
 }

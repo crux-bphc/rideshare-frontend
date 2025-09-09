@@ -57,6 +57,11 @@ class RidesNotifier extends _$RidesNotifier {
     return rideService.getMembers(rideId);
   }
 
+  Future<void> manageRequest(int rideId, String requestUserEmail, String status) async {
+    final rideService = ref.watch(rideServiceProvider);
+    rideService.manageRequest(rideId, requestUserEmail, status);
+  }
+
   Future<void> refreshRides() async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() => build());
