@@ -193,4 +193,22 @@ class RideService {
       throw Exception("Failed to get members of ride ");
     }
   }
+  
+  Future<List<Ride>> getCompletedRides() async {
+    try {
+      final response = await _dio.get(
+        '${dotenv.env['BACKEND_API_URL']}user/rides/completed',
+      );
+
+      if (response.statusCode == 200) {
+        return (response.data as List)
+            .map((json) => Ride.fromJson(json))
+            .toList();
+      } else {
+        throw Exception('Failed to get completed rides');
+      }
+    } catch (e) {
+      throw Exception('Failed to get completed rides: $e');
+    }
+  }
 }

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rideshare/shared/theme.dart';
 import 'package:go_router/go_router.dart';
-import 'package:rideshare/providers/auth/auth_provider.dart';
 import 'package:rideshare/shared/providers/navigation_provider.dart';
 
 class HomePage extends ConsumerStatefulWidget {
@@ -54,16 +53,16 @@ class _HomePageState extends ConsumerState<HomePage>
         ),
         backgroundColor: AppColors.surface,
         elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () async {
-              ref.read(authNotifierProvider.notifier).logout();
-              GoRouter.of(context).go('/');
-            },
-            tooltip: 'Logout',
-          ),
-        ],
+        // actions: [
+        //   IconButton(
+        //     icon: const Icon(Icons.logout),
+        //     onPressed: () async {
+        //       ref.read(authNotifierProvider.notifier).logout();
+        //       GoRouter.of(context).go('/');
+        //     },
+        //     tooltip: 'Logout',
+        //   ),
+        // ],
       ),
       body: Center(
         child: Column(
