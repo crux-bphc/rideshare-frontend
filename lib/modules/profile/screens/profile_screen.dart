@@ -31,7 +31,13 @@ class ProfileScreen extends ConsumerWidget {
   Future<List<Ride>> _getPastRides(WidgetRef ref) async {
     try {
       final rideService = ref.read(rideServiceProvider);
-      return await rideService.getCompletedRides();
+      final completedRides = await rideService.getCompletedRides();
+      completedRides.sort(
+        (a, b) => DateTime.parse(
+          b.departureEndTime.toString(),
+        ).compareTo(DateTime.parse(a.departureEndTime.toString())),
+      );
+      return completedRides.take(5).toList();
     } catch (e) {
       debugPrint('Error fetching completed rides: $e');
       return [];
