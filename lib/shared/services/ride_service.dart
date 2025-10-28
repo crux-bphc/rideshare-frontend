@@ -164,38 +164,39 @@ class RideService {
       throw Exception('Failed to toggle bookmark: $e');
     }
   }
-  
-  Future<void> sendRequest(rideId) async{
-    try{
+
+  Future<void> sendRequest(rideId) async {
+    try {
       await _dio.post(
         '${dotenv.env['BACKEND_API_URL']}rides/request/$rideId',
       );
-    }
-    catch(e){
+    } catch (e) {
       throw Exception("Failed to send ride request");
     }
   }
 
   Future<List<User>> getMembers(rideId) async {
-    try{
+    try {
       final response = await _dio.get(
         '${dotenv.env['BACKEND_API_URL']}rides/members/$rideId',
       );
       if (response.statusCode == 200) {
-          return (response.data as List)
-              .map((json) => User.fromJson(json))
-              .toList();
-        } else {
-          throw Exception('Failed to search rides');
-        }
-    }
-    catch(e){
+        return (response.data as List)
+            .map((json) => User.fromJson(json))
+            .toList();
+      } else {
+        throw Exception('Failed to search rides');
+      }
+    } catch (e) {
       throw Exception("Failed to get members of ride ");
     }
   }
 
-
-  Future<void> manageRequest(int rideId, String requestUserEmail, String status) async {
+  Future<void> manageRequest(
+    int rideId,
+    String requestUserEmail,
+    String status,
+  ) async {
     try {
       await _dio.post(
         '${dotenv.env['BACKEND_API_URL']}rides/manage/requests/$rideId/',
@@ -211,6 +212,24 @@ class RideService {
       );
     } catch (e) {
       throw Exception("Failed to accept/decline request $e");
+    }
+  }
+
+  Future<List<Ride>> getCompletedRides() async {
+    try {
+      final response = await _dio.get(
+        '${dotenv.env['BACKEND_API_URL']}user/rides/completed',
+      );
+
+      if (response.statusCode == 200) {
+        return (response.data as List)
+            .map((json) => Ride.fromJson(json))
+            .toList();
+      } else {
+        throw Exception('Failed to get completed rides');
+      }
+    } catch (e) {
+      throw Exception('Failed to get completed rides: $e');
     }
   }
 }
