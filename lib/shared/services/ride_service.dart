@@ -21,14 +21,6 @@ class RideService {
     String rideEnd,
   ) async {
     try {
-      print("params");
-      print(departureStartTime.toIso8601String());
-      print(departureEndTime.toIso8601String());
-      print(comments);
-      print(seats);
-      print(rideStart);
-      print(rideEnd);
-      print("params");
       final response = await _dio.post(
         '${dotenv.env['BACKEND_API_URL']}rides/create/',
         data: {
@@ -40,10 +32,6 @@ class RideService {
           "rideEndLocation": rideEnd,
         },
       );
-      print("response");
-      print(response);
-      print("response");
-      print('Ride created successfully: ${response.data}');
     } catch (e) {
       throw Exception('Failed to create ride: $e');
     }
@@ -56,12 +44,6 @@ class RideService {
     DateTime? to,
   ) async {
     try {
-      print("params");
-      print(startLocation);
-      print(endLocation);
-      print(from?.toIso8601String());
-      print(to?.toIso8601String());
-      print("params");
       if (from == null) {
         final response = await _dio.get(
           '${dotenv.env['BACKEND_API_URL']}rides/search/',
