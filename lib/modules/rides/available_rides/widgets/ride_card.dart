@@ -100,7 +100,7 @@ class RideCard extends ConsumerWidget {
                 Consumer(
                   builder: (context, ref, child) {
                     final rideService = ref.watch(rideServiceProvider);
-                    bool isBookmarked = ride.isBookmarked;
+                    bool isBookmarked = ride.isBookmarked!;
                     return Container(
                       width: 40,
                       height: 48,
@@ -116,7 +116,6 @@ class RideCard extends ConsumerWidget {
                           );
                           //todo: toggle bookmark status in model & rebuild the widget
                           ref.invalidate(rideServiceProvider);
-                          ride.isBookmarked = !isBookmarked;
                         },
                         child: Icon(
                           isBookmarked
