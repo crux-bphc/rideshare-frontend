@@ -47,6 +47,28 @@ class RidesNotifier extends _$RidesNotifier {
     );
   }
 
+    Future<void> editRide(
+    DateTime departureStartTime,
+    DateTime departureEndTime,
+    String? comments,
+    int seats,
+    String rideStart,
+    String rideEnd,
+    String rideId
+  ) async {
+    final rideService = ref.watch(rideServiceProvider);
+    rideService.editRide(
+      departureStartTime,
+      departureEndTime,
+      comments,
+      seats,
+      rideStart,
+      rideEnd,
+      rideId
+    );
+  }
+
+
   Future<void> sendRequest(int rideId) async{
     final rideService = ref.watch(rideServiceProvider);
     rideService.sendRequest(rideId);

@@ -27,13 +27,6 @@ class RideListBase extends ConsumerWidget {
             itemCount: rides.length,
             itemBuilder: (context, index) {
                 final ride = rides[index];
-                print("RIDE DETAILS");
-                print("ride number");
-                print(index);
-                print("locations: ");
-                print(ride.rideStartLocation);
-                print("end location: ");
-                print(ride.rideEndLocation);
                 return RideCard(
                   ride: ride,
                 );

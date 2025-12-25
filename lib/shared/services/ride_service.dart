@@ -21,8 +21,34 @@ class RideService {
     String rideEnd,
   ) async {
     try {
-      final response = await _dio.post(
+      await _dio.post(
         '${dotenv.env['BACKEND_API_URL']}rides/create/',
+        data: {
+          "departureStartTime": departureStartTime.toIso8601String(),
+          "departureEndTime": departureEndTime.toIso8601String(),
+          "comments": comments ?? '',
+          "maxMemberCount": seats,
+          "rideStartLocation": rideStart,
+          "rideEndLocation": rideEnd,
+        },
+      );
+    } catch (e) {
+      throw Exception('Failed to create ride: $e');
+    }
+  }
+
+  Future<void> editRide(
+    DateTime departureStartTime,
+    DateTime departureEndTime,
+    String? comments,
+    int seats,
+    String rideStart,
+    String rideEnd,
+    String rideId
+  ) async {
+    try {
+      await _dio.post(
+        '${dotenv.env['BACKEND_API_URL']}rides/manage/update/$rideId',
         data: {
           "departureStartTime": departureStartTime.toIso8601String(),
           "departureEndTime": departureEndTime.toIso8601String(),
