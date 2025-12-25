@@ -108,9 +108,33 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                   GoRoute(
                     path: 'create',
                     pageBuilder: (context, state) {
+                      bool isEditing = false;
+                      Ride? ride;
+                      String? rideId;
+                      
+                      if (state.extra != null && state.extra is Map<String, dynamic>) {
+                        final params = state.extra as Map<String, dynamic>;
+                        final isEditingValue = params['isEditing'];
+                        if (isEditingValue is bool) {
+                          isEditing = isEditingValue;
+                        }
+                        final rideValue = params['ride'];
+                        if (rideValue is Ride) {
+                          ride = rideValue;
+                        }
+                        final rideIdValue = params['rideId'];
+                        if (rideIdValue is String) {
+                          rideId = rideIdValue;
+                        }
+                      }
+                      
                       return _buildPageWithFadeTransition(
                         path: state.matchedLocation,
-                        child: const CreateRideScreen(),
+                        child: CreateRideScreen(
+                          isEditing: isEditing,
+                          ride: ride,
+                          rideId: rideId,
+                        ),
                       );
                     },
                   ),
