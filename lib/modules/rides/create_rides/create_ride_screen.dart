@@ -92,7 +92,7 @@ class _CreateRideScreenState extends ConsumerState<CreateRideScreen> {
             );
       } else {
         await ref
-            .read(rideServiceProvider)
+            .read(ridesNotifierProvider.notifier)
             .createRide(
               combineDateAndTime(rideDate, departureTime!)!,
               combineDateAndTime(rideDate, arrivalTime!)!,
@@ -176,6 +176,158 @@ class _CreateRideScreenState extends ConsumerState<CreateRideScreen> {
         departureTime.isBefore(arrivalTime);
   }
 
+  Future<void> _deleteRide() async {
+    if (widget.rideId == null) return;
+    
+    try {
+      await ref
+          .read(ridesNotifierProvider.notifier)
+          .deleteRide(widget.rideId!);
+      
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            backgroundColor: AppColors.card,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            title: const Text(
+              'Ride Deleted!',
+              style: TextStyle(
+                color: AppColors.primary,
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+              ),
+            ),
+            content: const Text(
+              'Your ride has been successfully deleted.',
+              style: TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 16,
+              ),
+            ),
+            actions: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  ref
+                      .read(navigationNotifierProvider.notifier)
+                      .setTab(NavigationTab.home);
+                  context.go('/home');
+                },
+                child: const Text(
+                  'OK',
+                  style: TextStyle(
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            backgroundColor: AppColors.card,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            title: const Text(
+              'Failed to Delete Ride',
+              style: TextStyle(
+                color: AppColors.error,
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+              ),
+            ),
+            content: Text(
+              'Failed to delete ride. Please try again.',
+              style: TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 16,
+              ),
+            ),
+            actions: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text(
+                  'OK',
+                  style: TextStyle(
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      }
+    }
+  }
+
+  void _showDeleteConfirmationDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.card,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: const Text(
+          'Delete Ride',
+          style: TextStyle(
+            color: AppColors.error,
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+          ),
+        ),
+        content: const Text(
+          'Are you sure you want to delete this ride? This action cannot be undone.',
+          style: TextStyle(
+            color: AppColors.textPrimary,
+            fontSize: 18,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: Text(
+              'Cancel',
+              style: TextStyle(
+                color: AppColors.textSecondary,
+                fontWeight: FontWeight.w600,
+                fontSize: 14,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              _deleteRide();
+            },
+            child: const Text(
+              'Delete',
+              style: TextStyle(
+                color: AppColors.error,
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -185,6 +337,18 @@ class _CreateRideScreenState extends ConsumerState<CreateRideScreen> {
         backgroundColor: AppColors.surface,
         elevation: 0,
         scrolledUnderElevation: 0,
+        actions: widget.isEditing
+            ? [
+                IconButton(
+                  icon: const Icon(
+                    Icons.delete,
+                    color: AppColors.error,
+                  ),
+                  onPressed: _showDeleteConfirmationDialog,
+                  tooltip: 'Delete ride',
+                ),
+              ]
+            : null,
       ),
       body: SingleChildScrollView(
         child: Padding(

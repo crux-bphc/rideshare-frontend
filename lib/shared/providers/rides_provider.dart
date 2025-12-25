@@ -37,7 +37,7 @@ class RidesNotifier extends _$RidesNotifier {
     String rideEnd,
   ) async {
     final rideService = ref.watch(rideServiceProvider);
-    rideService.createRide(
+    await rideService.createRide(
       departureStartTime,
       departureEndTime,
       comments,
@@ -45,6 +45,7 @@ class RidesNotifier extends _$RidesNotifier {
       rideStart,
       rideEnd,
     );
+    ref.invalidate(upcomingRidesProvider);
   }
 
     Future<void> editRide(
@@ -57,7 +58,7 @@ class RidesNotifier extends _$RidesNotifier {
     String rideId
   ) async {
     final rideService = ref.watch(rideServiceProvider);
-    rideService.editRide(
+    await rideService.editRide(
       departureStartTime,
       departureEndTime,
       comments,
@@ -66,6 +67,7 @@ class RidesNotifier extends _$RidesNotifier {
       rideEnd,
       rideId
     );
+    ref.invalidate(upcomingRidesProvider);
   }
 
 
@@ -84,8 +86,37 @@ class RidesNotifier extends _$RidesNotifier {
     rideService.manageRequest(rideId, requestUserEmail, status);
   }
 
+  Future<void> deleteRide(String rideId) async{
+    final rideService = ref.watch(rideServiceProvider);
+    await rideService.deleteRide(rideId);
+    ref.invalidate(upcomingRidesProvider);
+  }
+
+  Future<void> deleteRequest(String rideId) async{
+    final rideService = ref.watch(rideServiceProvider);
+    rideService.deleteRequest(rideId);
+  }
+
+  Future<void> exitRide(String rideId) async{
+    final rideService = ref.watch(rideServiceProvider);
+    await rideService.exitRide(rideId);
+    ref.invalidate(upcomingRidesProvider);
+  }
+
   Future<void> refreshRides() async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() => build());
   }
+}
+
+@riverpod
+Future<List<Ride>> upcomingRides(UpcomingRidesRef ref) async {
+  final rideService = ref.watch(rideServiceProvider);
+  return rideService.getUpcomingRides();
+}
+
+@riverpod
+Future<List<Ride>> bookmarkedRides(BookmarkedRidesRef ref) async {
+  final rideService = ref.watch(rideServiceProvider);
+  return rideService.getBookmarkedRides();
 }
