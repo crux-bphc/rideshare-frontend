@@ -170,9 +170,9 @@ class RideService {
   Future<void> toggleBookmark(String rideId, bool isBookmarked) async {
     try {
       if (isBookmarked) {
-        // await _dio.delete(
-        //   '${dotenv.env['BACKEND_API_API_URL']}user/bookmarks/delete/$rideId',
-        // );
+        await _dio.delete(
+          '${dotenv.env['BACKEND_API_URL']}user/bookmarks/delete/$rideId',
+        );
       } else {
         await _dio.post(
           '${dotenv.env['BACKEND_API_URL']}user/bookmarks/create/$rideId',

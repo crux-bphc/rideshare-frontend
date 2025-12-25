@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rideshare/models/ride.dart';
-import 'package:rideshare/shared/providers/rides_provider.dart';
+import 'package:rideshare/providers/rides/bookmarks_controller.dart';
 import 'package:intl/intl.dart';
 import 'package:rideshare/shared/theme.dart';
 
@@ -99,8 +99,18 @@ class RideCard extends ConsumerWidget {
                 const SizedBox(width: 12),
                 Consumer(
                   builder: (context, ref, child) {
-                    final rideService = ref.watch(rideServiceProvider);
-                    bool isBookmarked = ride.isBookmarked!;
+                    final isBookmarked = ref.watch(
+                      bookmarksProvider.select(
+                        (async) => async.value?.contains(ride.id) ?? false,
+                      ),
+                    );
+
+                    final isLoading = ref.watch(
+                      bookmarksProvider.select((s) => s.isLoading),
+                    );
+
+                    final controller = ref.read(bookmarksProvider.notifier);
+
                     return Container(
                       width: 40,
                       height: 48,
@@ -109,14 +119,9 @@ class RideCard extends ConsumerWidget {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: InkWell(
-                        onTap: () async {
-                          await rideService.toggleBookmark(
-                            ride.id.toString(),
-                            isBookmarked,
-                          );
-                          //todo: toggle bookmark status in model & rebuild the widget
-                          ref.invalidate(rideServiceProvider);
-                        },
+                        onTap: isLoading
+                            ? null
+                            : () => controller.toggle(ride.id),
                         child: Icon(
                           isBookmarked
                               ? Icons.bookmark

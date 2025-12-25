@@ -7,7 +7,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'rides_provider.g.dart';
 
 final rideServiceProvider = Provider<RideService>((ref) {
-  final dio = ref.watch(logtoAuthProvider).dioClient;
+  // final dio = ref.watch(logtoAuthProvider).dioClient;
+  final dio = ref.read(logtoAuthProvider).dioClient;
   return RideService(dio);
 });
 
@@ -47,17 +48,21 @@ class RidesNotifier extends _$RidesNotifier {
     );
   }
 
-  Future<void> sendRequest(int rideId) async{
+  Future<void> sendRequest(int rideId) async {
     final rideService = ref.watch(rideServiceProvider);
     rideService.sendRequest(rideId);
   }
 
-  Future<List<User>> getMembers(int rideId)  async{
+  Future<List<User>> getMembers(int rideId) async {
     final rideService = ref.watch(rideServiceProvider);
     return rideService.getMembers(rideId);
   }
 
-  Future<void> manageRequest(int rideId, String requestUserEmail, String status) async {
+  Future<void> manageRequest(
+    int rideId,
+    String requestUserEmail,
+    String status,
+  ) async {
     final rideService = ref.watch(rideServiceProvider);
     rideService.manageRequest(rideId, requestUserEmail, status);
   }
