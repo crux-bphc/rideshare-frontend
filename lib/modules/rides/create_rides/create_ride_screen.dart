@@ -8,7 +8,6 @@ import 'package:rideshare/shared/theme.dart';
 import 'package:rideshare/shared/util/datetime_utils.dart';
 import 'package:rideshare/shared/providers/navigation_provider.dart';
 import 'package:rideshare/modules/rides/widgets/ride_form.dart';
-import 'package:intl/intl.dart';
 
 class CreateRideScreen extends ConsumerStatefulWidget {
   final bool isEditing;
