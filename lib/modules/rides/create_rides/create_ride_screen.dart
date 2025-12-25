@@ -45,8 +45,6 @@ class _CreateRideScreenState extends ConsumerState<CreateRideScreen> {
       final ride = widget.ride!;
       startLocationController.text = ride.rideStartLocation ?? '';
       destinationLocationController.text = ride.rideEndLocation ?? '';
-      
-      // Delay provider modifications until after the widget tree is built
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
           if (ride.departureStartTime != null) {
@@ -81,7 +79,6 @@ class _CreateRideScreenState extends ConsumerState<CreateRideScreen> {
 
     try {
       if (widget.isEditing && widget.rideId != null) {
-        // Call editRide when editing
         await ref
             .read(ridesNotifierProvider.notifier)
             .editRide(
@@ -94,7 +91,6 @@ class _CreateRideScreenState extends ConsumerState<CreateRideScreen> {
               widget.rideId!,
             );
       } else {
-        // Call createRide when creating new ride
         await ref
             .read(rideServiceProvider)
             .createRide(
@@ -136,10 +132,6 @@ class _CreateRideScreenState extends ConsumerState<CreateRideScreen> {
                 onPressed: () {
                   Navigator.of(context).pop();
                   _resetForm();
-                  ref
-                      .read(navigationNotifierProvider.notifier)
-                      .setTab(NavigationTab.home);
-                  context.go('/home');
                 },
                 child: Text(
                   'OK',
@@ -152,6 +144,10 @@ class _CreateRideScreenState extends ConsumerState<CreateRideScreen> {
             ],
           ),
         );
+        ref
+            .read(navigationNotifierProvider.notifier)
+            .setTab(NavigationTab.home);
+        context.go('/home');
       }
     } catch (e) {
       throw Exception("Error Creating Ride");
