@@ -1,6 +1,6 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rideshare/shared/services/ride_service.dart';
 import 'package:rideshare/shared/providers/rides_provider.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 class BookmarksController extends AsyncNotifier<Set<int>> {
   late final RideService _service;
@@ -21,16 +21,16 @@ class BookmarksController extends AsyncNotifier<Set<int>> {
 
     final updated = {...current};
     isBookmarked ? updated.remove(rideId) : updated.add(rideId);
-    state = AsyncData(updated);
+    state = const AsyncLoading<Set<int>>();
 
     try {
       await _service.toggleBookmark(
         rideId.toString(),
         isBookmarked,
       );
-    } catch (e) {
+      state = AsyncData(updated);
+    } catch (e, _) {
       state = AsyncData(current);
-      rethrow;
     }
   }
 }

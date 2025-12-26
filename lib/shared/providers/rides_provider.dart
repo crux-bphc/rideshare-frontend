@@ -7,8 +7,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'rides_provider.g.dart';
 
 final rideServiceProvider = Provider<RideService>((ref) {
-  // final dio = ref.watch(logtoAuthProvider).dioClient;
-  final dio = ref.read(logtoAuthProvider).dioClient;
+  final dio = ref.watch(logtoAuthProvider).dioClient;
   return RideService(dio);
 });
 
@@ -38,7 +37,7 @@ class RidesNotifier extends _$RidesNotifier {
     String rideEnd,
   ) async {
     final rideService = ref.watch(rideServiceProvider);
-    rideService.createRide(
+    await rideService.createRide(
       departureStartTime,
       departureEndTime,
       comments,
@@ -46,6 +45,29 @@ class RidesNotifier extends _$RidesNotifier {
       rideStart,
       rideEnd,
     );
+    ref.invalidate(upcomingRidesProvider);
+  }
+
+  Future<void> editRide(
+    DateTime departureStartTime,
+    DateTime departureEndTime,
+    String? comments,
+    int seats,
+    String rideStart,
+    String rideEnd,
+    String rideId,
+  ) async {
+    final rideService = ref.watch(rideServiceProvider);
+    await rideService.editRide(
+      departureStartTime,
+      departureEndTime,
+      comments,
+      seats,
+      rideStart,
+      rideEnd,
+      rideId,
+    );
+    ref.invalidate(upcomingRidesProvider);
   }
 
   Future<void> sendRequest(int rideId) async {
@@ -67,8 +89,37 @@ class RidesNotifier extends _$RidesNotifier {
     rideService.manageRequest(rideId, requestUserEmail, status);
   }
 
+  Future<void> deleteRide(String rideId) async {
+    final rideService = ref.watch(rideServiceProvider);
+    await rideService.deleteRide(rideId);
+    ref.invalidate(upcomingRidesProvider);
+  }
+
+  Future<void> deleteRequest(String rideId) async {
+    final rideService = ref.watch(rideServiceProvider);
+    rideService.deleteRequest(rideId);
+  }
+
+  Future<void> exitRide(String rideId) async {
+    final rideService = ref.watch(rideServiceProvider);
+    await rideService.exitRide(rideId);
+    ref.invalidate(upcomingRidesProvider);
+  }
+
   Future<void> refreshRides() async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() => build());
   }
+}
+
+@riverpod
+Future<List<Ride>> upcomingRides(UpcomingRidesRef ref) async {
+  final rideService = ref.watch(rideServiceProvider);
+  return rideService.getUpcomingRides();
+}
+
+@riverpod
+Future<List<Ride>> bookmarkedRides(BookmarkedRidesRef ref) async {
+  final rideService = ref.watch(rideServiceProvider);
+  return rideService.getBookmarkedRides();
 }

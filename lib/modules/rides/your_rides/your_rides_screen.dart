@@ -56,51 +56,43 @@ class YourRidesScreen extends ConsumerWidget {
           children: [
             Consumer(
               builder: (context, ref, child) {
-                final rideService = ref.read(rideServiceProvider);
-                return FutureBuilder<List<Ride>>(
-                  future: rideService.getUpcomingRides(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    } else if (snapshot.hasError) {
-                      return Center(
-                        child: Text('No upcoming rides.'),
-                      );
-                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                final upcomingRidesAsync = ref.watch(upcomingRidesProvider);
+                return upcomingRidesAsync.when(
+                  data: (rides) {
+                    if (rides.isEmpty) {
                       return const Center(
                         child: Text('No upcoming rides.'),
                       );
-                    } else {
-                      return YourRidesList(rides: snapshot.data!);
                     }
+                    return YourRidesList(rides: rides);
                   },
+                  loading: () => const Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                  error: (error, stack) => Center(
+                    child: Text('No upcoming rides.'),
+                  ),
                 );
               },
             ),
             Consumer(
               builder: (context, ref, child) {
-                final rideService = ref.read(rideServiceProvider);
-                return FutureBuilder<List<Ride>>(
-                  future: rideService.getBookmarkedRides(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    } else if (snapshot.hasError) {
-                      return Center(
-                        child: Text('No bookmarked rides.'),
-                      );
-                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                final bookmarkedRidesAsync = ref.watch(bookmarkedRidesProvider);
+                return bookmarkedRidesAsync.when(
+                  data: (rides) {
+                    if (rides.isEmpty) {
                       return const Center(
                         child: Text('No bookmarked rides.'),
                       );
-                    } else {
-                      return YourRidesList(rides: snapshot.data!);
                     }
+                    return YourRidesList(rides: rides);
                   },
+                  loading: () => const Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                  error: (error, stack) => Center(
+                    child: Text('No bookmarked rides.'),
+                  ),
                 );
               },
             ),

@@ -21,15 +21,7 @@ class RideService {
     String rideEnd,
   ) async {
     try {
-      print("params");
-      print(departureStartTime.toIso8601String());
-      print(departureEndTime.toIso8601String());
-      print(comments);
-      print(seats);
-      print(rideStart);
-      print(rideEnd);
-      print("params");
-      final response = await _dio.post(
+      await _dio.post(
         '${dotenv.env['BACKEND_API_URL']}rides/create/',
         data: {
           "departureStartTime": departureStartTime.toIso8601String(),
@@ -40,10 +32,32 @@ class RideService {
           "rideEndLocation": rideEnd,
         },
       );
-      print("response");
-      print(response);
-      print("response");
-      print('Ride created successfully: ${response.data}');
+    } catch (e) {
+      throw Exception('Failed to create ride: $e');
+    }
+  }
+
+  Future<void> editRide(
+    DateTime departureStartTime,
+    DateTime departureEndTime,
+    String? comments,
+    int seats,
+    String rideStart,
+    String rideEnd,
+    String rideId,
+  ) async {
+    try {
+      await _dio.post(
+        '${dotenv.env['BACKEND_API_URL']}rides/manage/update/$rideId',
+        data: {
+          "departureStartTime": departureStartTime.toIso8601String(),
+          "departureEndTime": departureEndTime.toIso8601String(),
+          "comments": comments ?? '',
+          "maxMemberCount": seats,
+          "rideStartLocation": rideStart,
+          "rideEndLocation": rideEnd,
+        },
+      );
     } catch (e) {
       throw Exception('Failed to create ride: $e');
     }
@@ -56,12 +70,6 @@ class RideService {
     DateTime? to,
   ) async {
     try {
-      print("params");
-      print(startLocation);
-      print(endLocation);
-      print(from?.toIso8601String());
-      print(to?.toIso8601String());
-      print("params");
       if (from == null) {
         final response = await _dio.get(
           '${dotenv.env['BACKEND_API_URL']}rides/search/',
@@ -230,6 +238,34 @@ class RideService {
       );
     } catch (e) {
       throw Exception("Failed to accept/decline request $e");
+    }
+  }
+
+  Future<void> deleteRide(String rideId) async {
+    try {
+      await _dio.delete(
+        '${dotenv.env['BACKEND_API_URL']}rides/manage/delete/$rideId',
+      );
+    } catch (e) {
+      throw Exception('Failed to delete the ride : $e');
+    }
+  }
+
+  Future<void> deleteRequest(String rideId) async {
+    try {
+      await _dio.delete(
+        '${dotenv.env['BACKEND_API_URL']}rides/request/$rideId',
+      );
+    } catch (e) {
+      throw Exception('Failed to delete the ride request: $e');
+    }
+  }
+
+  Future<void> exitRide(String rideId) async {
+    try {
+      await _dio.delete('${dotenv.env['BACKEND_API_URL']}rides/exit/$rideId');
+    } catch (e) {
+      throw Exception('Failed to exit the ride: $e');
     }
   }
 }

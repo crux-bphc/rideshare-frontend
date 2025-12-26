@@ -5,6 +5,7 @@ import 'package:logto_dart_sdk/logto_dart_sdk.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rideshare/providers/auth/auth_provider.dart';
 import 'package:rideshare/providers/auth/auth_user.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class LogtoAuthProvider extends AuthProvider {
   late final LogtoClient _logtoClient;
@@ -25,10 +26,17 @@ class LogtoAuthProvider extends AuthProvider {
 
   @override
   Future<AuthUser?> initialise() async {
+    final appId = dotenv.env['CLIENT_ID'];
+    final endpoint = dotenv.env['AUTH_DISCOVERY_URL'];
+
+    if (appId == null || endpoint == null) {
+      throw Exception('Missing CLIENT_ID or AUTH_DISCOVERY_URL in .env');
+    }
+
     _logtoClient = LogtoClient(
       config: LogtoConfig(
-        appId: dotenv.env['CLIENT_ID']!,
-        endpoint: dotenv.env['AUTH_DISCOVERY_URL']!,
+        appId: appId,
+        endpoint: endpoint,
         scopes: [
           'openid',
           'profile',

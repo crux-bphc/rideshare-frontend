@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rideshare/models/ride.dart';
+import 'package:rideshare/providers/auth/auth_provider.dart';
 import 'package:rideshare/providers/rides/bookmarks_controller.dart';
 import 'package:intl/intl.dart';
 import 'package:rideshare/shared/theme.dart';
@@ -30,31 +31,78 @@ class RideCard extends ConsumerWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  '${DateFormat("d/MM/yy HH:mm").format(ride.departureStartTime!)} - ${DateFormat("HH:mm").format(ride.departureEndTime!)}',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppColors.card,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
+                Expanded(
                   child: Text(
-                    '${ride.maxMemberCount} seats',
+                    '${DateFormat("d/MM/yy HH:mm").format(ride.departureStartTime!)} - ${DateFormat("HH:mm").format(ride.departureEndTime!)}',
                     style: const TextStyle(
-                      color: AppColors.textPrimary,
-                      fontSize: 12,
+                      color: Colors.white,
+                      fontSize: 14,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
+                ),
+                Consumer(
+                  builder: (context, ref, child) {
+                    final authState = ref.watch(authNotifierProvider);
+                    final currentUserEmail = authState.valueOrNull?.user?.email;
+                    final isCreator =
+                        currentUserEmail != null &&
+                        ride.createdBy == currentUserEmail;
+
+                    final now = DateTime.now();
+                    final is12HoursBefore =
+                        ride.departureStartTime != null &&
+                        ride.departureStartTime!.difference(now).inHours >= 12;
+
+                    final shouldShowEditIcon = isCreator && is12HoursBefore;
+
+                    return Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (shouldShowEditIcon) ...[
+                          IconButton(
+                            icon: const Icon(
+                              Icons.edit,
+                              color: AppColors.accent,
+                              size: 20,
+                            ),
+                            onPressed: () {
+                              GoRouter.of(context).go(
+                                "/rides/create",
+                                extra: {
+                                  'isEditing': true,
+                                  'ride': ride,
+                                  'rideId': ride.id.toString(),
+                                },
+                              );
+                            },
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                            tooltip: 'Edit ride',
+                          ),
+                          const SizedBox(width: 4),
+                        ],
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.card,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            '${ride.maxMemberCount} seats',
+                            style: const TextStyle(
+                              color: AppColors.textPrimary,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ],
             ),
@@ -99,33 +147,62 @@ class RideCard extends ConsumerWidget {
                 const SizedBox(width: 12),
                 Consumer(
                   builder: (context, ref, child) {
-                    final isBookmarked = ref.watch(
-                      bookmarksProvider.select(
-                        (async) => async.value?.contains(ride.id) ?? false,
-                      ),
+                    final bookmarkedRidesAsync = ref.watch(
+                      bookmarkedRidesProvider,
                     );
-
-                    final isLoading = ref.watch(
-                      bookmarksProvider.select((s) => s.isLoading),
-                    );
-
-                    final controller = ref.read(bookmarksProvider.notifier);
-
-                    return Container(
-                      width: 40,
-                      height: 48,
-                      decoration: BoxDecoration(
-                        color: AppColors.navbar,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: InkWell(
-                        onTap: isLoading
-                            ? null
-                            : () => controller.toggle(ride.id),
+                    return bookmarkedRidesAsync.when(
+                      data: (bookmarkedRides) {
+                        final isBookmarked = bookmarkedRides.any(
+                          (bookmarkedRide) => bookmarkedRide.id == ride.id,
+                        );
+                        return Container(
+                          width: 40,
+                          height: 48,
+                          decoration: BoxDecoration(
+                            color: AppColors.navbar,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: InkWell(
+                            onTap: () async {
+                              final rideService = ref.read(rideServiceProvider);
+                              await rideService.toggleBookmark(
+                                ride.id.toString(),
+                                isBookmarked,
+                              );
+                              ref.invalidate(bookmarkedRidesProvider);
+                            },
+                            child: Icon(
+                              isBookmarked
+                                  ? Icons.bookmark
+                                  : Icons.bookmark_outline,
+                              color: AppColors.accent,
+                              size: 20,
+                            ),
+                          ),
+                        );
+                      },
+                      loading: () => Container(
+                        width: 40,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          color: AppColors.navbar,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                         child: Icon(
-                          isBookmarked
-                              ? Icons.bookmark
-                              : Icons.bookmark_outline,
+                          Icons.bookmark_outline,
+                          color: AppColors.accent,
+                          size: 20,
+                        ),
+                      ),
+                      error: (_, __) => Container(
+                        width: 40,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          color: AppColors.navbar,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Icon(
+                          Icons.bookmark_outline,
                           color: AppColors.accent,
                           size: 20,
                         ),

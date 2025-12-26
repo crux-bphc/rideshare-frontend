@@ -65,6 +65,10 @@ class SeatNotifier extends Notifier<int> {
     state--;
   }
 
+  void setSeats(int seats) {
+    state = seats;
+  }
+
   void resetSeats() {
     state = 4;
   }

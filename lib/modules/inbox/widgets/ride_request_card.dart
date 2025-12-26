@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:rideshare/models/ride_request.dart';
 import 'package:rideshare/modules/inbox/widgets/ride_card_actions.dart';
@@ -6,7 +7,7 @@ import 'package:rideshare/shared/providers/user_provider.dart';
 import 'package:rideshare/shared/theme.dart';
 import 'package:rideshare/shared/util/datetime_utils.dart';
 
-class RideCard extends StatelessWidget{
+class RideCard extends ConsumerWidget{
   final RideRequest rideRequest;
   final VoidCallback? onAccept;
   final VoidCallback? onDecline;
@@ -22,7 +23,7 @@ class RideCard extends StatelessWidget{
   });
 
     @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Container(
       width: 150,
       margin: const EdgeInsets.all(8),
@@ -46,7 +47,7 @@ class RideCard extends StatelessWidget{
               children: [
                 Expanded(
                   child: FutureBuilder(
-                    future: UserNotifier().getUser(rideRequest.requestSender),
+                    future: ref.read(userNotifierProvider.notifier).getUser(rideRequest.requestSender),
                     builder: (context, snapshot) {
                       String displayName = rideRequest.requestSender;
                       if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
