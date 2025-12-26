@@ -240,4 +240,37 @@ class RideService {
       throw Exception('Failed to get completed rides: $e');
     }
   }
+
+  Future<void> deleteRide(String rideId) async{
+    try{
+      await _dio.delete(
+        '${dotenv.env['BACKEND_API_URL']}rides/manage/delete/$rideId'
+      );
+    }
+    catch(e){
+      throw Exception('Failed to delete the ride : $e');
+    }
+  }
+
+  Future<void> deleteRequest(String rideId) async{
+    try{
+      await _dio.delete(
+        '${dotenv.env['BACKEND_API_URL']}rides/request/$rideId'
+      );
+    }
+    catch(e){
+      throw Exception('Failed to delete the ride request: $e');
+    }
+  }
+
+  Future<void> exitRide(String rideId) async{
+    try{
+      await _dio.delete(
+        '${dotenv.env['BACKEND_API_URL']}rides/exit/$rideId'
+      );
+    }
+    catch(e){
+      throw Exception('Failed to exit the ride: $e');
+    }
+  }
 }

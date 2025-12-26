@@ -145,16 +145,12 @@ class RideCard extends ConsumerWidget {
                 const SizedBox(width: 12),
                 Consumer(
                   builder: (context, ref, child) {
-                    final rideService = ref.watch(rideServiceProvider);
-                    return FutureBuilder<List<Ride>>(
-                      future: rideService.getBookmarkedRides(),
-                      builder: (context, snapshot) {
-                        bool isBookmarked = false;
-                        if (snapshot.hasData) {
-                          isBookmarked = snapshot.data!.any(
-                            (bookmarkedRide) => bookmarkedRide.id == ride.id,
-                          );
-                        }
+                    final bookmarkedRidesAsync = ref.watch(bookmarkedRidesProvider);
+                    return bookmarkedRidesAsync.when(
+                      data: (bookmarkedRides) {
+                        final isBookmarked = bookmarkedRides.any(
+                          (bookmarkedRide) => bookmarkedRide.id == ride.id,
+                        );
                         return Container(
                           width: 40,
                           height: 48,
@@ -164,11 +160,12 @@ class RideCard extends ConsumerWidget {
                           ),
                           child: InkWell(
                             onTap: () async {
+                              final rideService = ref.read(rideServiceProvider);
                               await rideService.toggleBookmark(
                                 ride.id.toString(),
                                 isBookmarked,
                               );
-                              ref.invalidate(rideServiceProvider);
+                              ref.invalidate(bookmarkedRidesProvider);
                             },
                             child: Icon(
                               isBookmarked
@@ -180,6 +177,32 @@ class RideCard extends ConsumerWidget {
                           ),
                         );
                       },
+                      loading: () => Container(
+                        width: 40,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          color: AppColors.navbar,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Icon(
+                          Icons.bookmark_outline,
+                          color: AppColors.accent,
+                          size: 20,
+                        ),
+                      ),
+                      error: (_, __) => Container(
+                        width: 40,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          color: AppColors.navbar,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Icon(
+                          Icons.bookmark_outline,
+                          color: AppColors.accent,
+                          size: 20,
+                        ),
+                      ),
                     );
                   },
                 ),
