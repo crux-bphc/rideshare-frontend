@@ -60,7 +60,6 @@ class RideDetailsScreen extends ConsumerWidget {
                   onPressed: () {
                     if (context.canPop()) {
                       context.pop();
-                      // Restore inbox tab if we're going back to inbox
                       Future.delayed(const Duration(milliseconds: 50), () {
                         if (context.mounted) {
                           final location = GoRouter.of(context).routerDelegate.currentConfiguration.uri.toString();
@@ -70,7 +69,6 @@ class RideDetailsScreen extends ConsumerWidget {
                         }
                       });
                     } else {
-                      // Fallback: go to inbox
                       ref.read(navigationNotifierProvider.notifier).setTab(NavigationTab.inbox);
                       context.go('/inbox');
                     }
@@ -258,7 +256,6 @@ class RideDetailsScreen extends ConsumerWidget {
                              ride.createdBy == currentUserEmail);
                         
                         if (!isCurrentUserMember) {
-                          // Check if user has already sent a request
                           return FutureBuilder(
                             future: ref.read(userNotifierProvider.notifier).getSentRequests(),
                             builder: (context, sentRequestsSnapshot) {
@@ -270,7 +267,7 @@ class RideDetailsScreen extends ConsumerWidget {
                               final hasSentRequest = sentRequests.any((request) => request.id == ride.id);
                               
                               if (hasSentRequest) {
-                                return const SizedBox.shrink(); // Don't show button if request already sent
+                                return const SizedBox.shrink();
                               }
                               
                               return SizedBox(
