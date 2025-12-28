@@ -43,7 +43,6 @@ class _CreateRideScreenState extends ConsumerState<CreateRideScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         if (widget.isEditing && widget.ride != null) {
-          // Populate from ride being edited
           final ride = widget.ride!;
           startLocationController.text = ride.rideStartLocation ?? '';
           destinationLocationController.text = ride.rideEndLocation ?? '';
@@ -61,24 +60,18 @@ class _CreateRideScreenState extends ConsumerState<CreateRideScreen> {
             ref.read(seatProvider.notifier).setSeats(ride.maxMemberCount!);
           }
         } else {
-          // Populate from search data (if available) - preserve search details except arrival time
           final searchStartLocation = ref.read(searchStartLocationProvider);
           final searchDestinationLocation = ref.read(searchDestinationLocationProvider);
           final currentDate = ref.read(selectedDateProvider);
           final currentDepartureTime = ref.read(departureTimeProvider);
-          
-          // Only populate if we have search data
           if (searchStartLocation != null || searchDestinationLocation != null || 
               currentDate != null || currentDepartureTime != null) {
-            // Populate location controllers from search data
             if (searchStartLocation != null) {
               startLocationController.text = searchStartLocation;
             }
             if (searchDestinationLocation != null) {
               destinationLocationController.text = searchDestinationLocation;
             }
-            
-            // Date and departure time are already in providers, just clear arrival time
             ref.read(arrivalTimeProvider.notifier).setTime(null);
           }
         }
@@ -153,7 +146,14 @@ class _CreateRideScreenState extends ConsumerState<CreateRideScreen> {
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
-                  _resetForm();
+                  if (widget.isEditing) {
+                    ref
+                        .read(navigationNotifierProvider.notifier)
+                        .setTab(NavigationTab.home);
+                    context.go('/home');
+                  } else {
+                    _resetForm();
+                  }
                 },
                 child: Text(
                   'OK',
@@ -166,10 +166,6 @@ class _CreateRideScreenState extends ConsumerState<CreateRideScreen> {
             ],
           ),
         );
-        ref
-            .read(navigationNotifierProvider.notifier)
-            .setTab(NavigationTab.home);
-        context.go('/home');
       }
     } catch (e) {
       throw Exception("Error Creating Ride");

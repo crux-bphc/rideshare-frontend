@@ -83,7 +83,6 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
           ? "Select Departure or Arrival Time"
           : null;
 
-      // Don't validate seats when searching - seats selector is hidden
       seatsError = null;
 
       if (departureTime != null &&
@@ -97,12 +96,10 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
         dateError == null &&
         timeError == null &&
         seatsError == null) {
-      // Store search locations in providers for persistence
       ref.read(searchStartLocationProvider.notifier).setLocation(startLocationController.text.trim());
       ref.read(searchDestinationLocationProvider.notifier).setLocation(destinationLocationController.text.trim());
       
       final rides = await _searchRide();
-      // Don't reset form - preserve data for navigation to create ride screen
       if (mounted) {
         GoRouter.of(context).go('/rides/available', extra: rides);
       }

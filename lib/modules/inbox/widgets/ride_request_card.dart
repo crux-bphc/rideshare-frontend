@@ -105,7 +105,11 @@ class RideCard extends ConsumerWidget{
                 style: TextStyle(fontSize: 14, color: AppColors.textPrimary, fontWeight: FontWeight.w600),
               ),
             const SizedBox(height: 16),
-            RideCardActions(status: rideRequest.status)
+            RideCardActions(
+              status: rideRequest.status,
+              onAccept: onAccept,
+              onDecline: onDecline,
+            )
           ],
         ),
       ),
