@@ -47,7 +47,7 @@ class RideService {
     String rideId
   ) async {
     try {
-      await _dio.post(
+      await _dio.put(
         '${dotenv.env['BACKEND_API_URL']}rides/manage/update/$rideId',
         data: {
           "departureStartTime": departureStartTime.toIso8601String(),
