@@ -40,12 +40,14 @@ class _CreateRideScreenState extends ConsumerState<CreateRideScreen> {
   @override
   void initState() {
     super.initState();
-    if (widget.isEditing && widget.ride != null) {
-      final ride = widget.ride!;
-      startLocationController.text = ride.rideStartLocation ?? '';
-      destinationLocationController.text = ride.rideEndLocation ?? '';
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        if (widget.isEditing && widget.ride != null) {
+          // Populate from ride being edited
+          final ride = widget.ride!;
+          startLocationController.text = ride.rideStartLocation ?? '';
+          destinationLocationController.text = ride.rideEndLocation ?? '';
+          
           if (ride.departureStartTime != null) {
             ref.read(selectedDateProvider.notifier).setDate(ride.departureStartTime!);
             ref.read(departureTimeProvider.notifier).setTime(TimeOfDay.fromDateTime(ride.departureStartTime!));
@@ -58,9 +60,30 @@ class _CreateRideScreenState extends ConsumerState<CreateRideScreen> {
           if (ride.maxMemberCount != null) {
             ref.read(seatProvider.notifier).setSeats(ride.maxMemberCount!);
           }
+        } else {
+          // Populate from search data (if available) - preserve search details except arrival time
+          final searchStartLocation = ref.read(searchStartLocationProvider);
+          final searchDestinationLocation = ref.read(searchDestinationLocationProvider);
+          final currentDate = ref.read(selectedDateProvider);
+          final currentDepartureTime = ref.read(departureTimeProvider);
+          
+          // Only populate if we have search data
+          if (searchStartLocation != null || searchDestinationLocation != null || 
+              currentDate != null || currentDepartureTime != null) {
+            // Populate location controllers from search data
+            if (searchStartLocation != null) {
+              startLocationController.text = searchStartLocation;
+            }
+            if (searchDestinationLocation != null) {
+              destinationLocationController.text = searchDestinationLocation;
+            }
+            
+            // Date and departure time are already in providers, just clear arrival time
+            ref.read(arrivalTimeProvider.notifier).setTime(null);
+          }
         }
-      });
-    }
+      }
+    });
   }
 
   @override
@@ -160,6 +183,8 @@ class _CreateRideScreenState extends ConsumerState<CreateRideScreen> {
     ref.read(departureTimeProvider.notifier).setTime(null);
     ref.read(arrivalTimeProvider.notifier).setTime(null);
     ref.read(seatProvider.notifier).resetSeats();
+    ref.read(searchStartLocationProvider.notifier).clear();
+    ref.read(searchDestinationLocationProvider.notifier).clear();
     GoRouter.of(context).go("/rides/search");
   }
 

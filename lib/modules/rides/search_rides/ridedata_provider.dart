@@ -77,3 +77,45 @@ class SeatNotifier extends Notifier<int> {
 final seatProvider = NotifierProvider<SeatNotifier, int>(() {
   return SeatNotifier();
 });
+
+class SearchStartLocationNotifier extends Notifier<String?> {
+  @override
+  String? build() {
+    return null;
+  }
+
+  void setLocation(String? location) {
+    state = location;
+  }
+
+  void clear() {
+    state = null;
+  }
+}
+
+final searchStartLocationProvider = NotifierProvider<SearchStartLocationNotifier, String?>(
+  () {
+    return SearchStartLocationNotifier();
+  },
+);
+
+class SearchDestinationLocationNotifier extends Notifier<String?> {
+  @override
+  String? build() {
+    return null;
+  }
+
+  void setLocation(String? location) {
+    state = location;
+  }
+
+  void clear() {
+    state = null;
+  }
+}
+
+final searchDestinationLocationProvider = NotifierProvider<SearchDestinationLocationNotifier, String?>(
+  () {
+    return SearchDestinationLocationNotifier();
+  },
+);

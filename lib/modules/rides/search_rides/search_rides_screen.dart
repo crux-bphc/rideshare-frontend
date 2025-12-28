@@ -83,8 +83,8 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
           ? "Select Departure or Arrival Time"
           : null;
 
-      final selectedSeats = ref.read(seatProvider);
-      seatsError = selectedSeats < 2 ? "Minimum 2 seats required" : null;
+      // Don't validate seats when searching - seats selector is hidden
+      seatsError = null;
 
       if (departureTime != null &&
           arrivalTime != null &&
@@ -92,13 +92,17 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
         timeError = "Departure time cannot be after arrival time";
       }
     });
-    if (startLocationError == null &&
+      if (startLocationError == null &&
         destinationLocationError == null &&
         dateError == null &&
         timeError == null &&
         seatsError == null) {
+      // Store search locations in providers for persistence
+      ref.read(searchStartLocationProvider.notifier).setLocation(startLocationController.text.trim());
+      ref.read(searchDestinationLocationProvider.notifier).setLocation(destinationLocationController.text.trim());
+      
       final rides = await _searchRide();
-      _resetForm();
+      // Don't reset form - preserve data for navigation to create ride screen
       if (mounted) {
         GoRouter.of(context).go('/rides/available', extra: rides);
       }
@@ -138,6 +142,7 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
                 dateError: dateError,
                 timeError: timeError,
                 seatsError: seatsError,
+                showSeatsSelector: false,
               ),
               const SizedBox(height: 48),
               SizedBox(
