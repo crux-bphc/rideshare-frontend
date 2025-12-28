@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:rideshare/models/ride.dart';
 import 'package:rideshare/models/user.dart';
+import 'package:rideshare/modules/inbox/provider/ride_requests_provider.dart';
 import 'package:rideshare/modules/rides/ride_details/widgets/member_card.dart';
 import 'package:rideshare/modules/rides/ride_details/widgets/route_icon.dart';
 import 'package:rideshare/modules/splash/splash_page.dart';
+import 'package:rideshare/shared/providers/navigation_provider.dart';
 import 'package:rideshare/shared/providers/rides_provider.dart';
 import 'package:rideshare/shared/providers/user_provider.dart';
 import 'package:rideshare/shared/theme.dart';
@@ -53,7 +57,24 @@ class RideDetailsScreen extends ConsumerWidget {
               appBar: AppBar(
                 leading: IconButton(
                   icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () {
+                    if (context.canPop()) {
+                      context.pop();
+                      // Restore inbox tab if we're going back to inbox
+                      Future.delayed(const Duration(milliseconds: 50), () {
+                        if (context.mounted) {
+                          final location = GoRouter.of(context).routerDelegate.currentConfiguration.uri.toString();
+                          if (location.contains('/inbox')) {
+                            ref.read(navigationNotifierProvider.notifier).setTab(NavigationTab.inbox);
+                          }
+                        }
+                      });
+                    } else {
+                      // Fallback: go to inbox
+                      ref.read(navigationNotifierProvider.notifier).setTab(NavigationTab.inbox);
+                      context.go('/inbox');
+                    }
+                  },
                 ),
                 title: const Text('Ride Details'),
               ),
@@ -132,7 +153,97 @@ class RideDetailsScreen extends ConsumerWidget {
                     if (members.isNotEmpty) ...[
                       Text('Members:', style: TextStyle(color: AppColors.textPrimary, fontSize: 16, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 8),
-                      ...members.map((m) => MemberCard(member: m)),
+                      FutureBuilder<String?>(
+                        future: _getEmail(ref),
+                        builder: (context, emailSnapshot) {
+                          final currentUserEmail = emailSnapshot.data;
+                          final isCurrentUserCreator = currentUserEmail != null && ride.createdBy == currentUserEmail;
+                          
+                          return Column(
+                            children: members.map((m) {
+                              final isCurrentUser = currentUserEmail != null && m.email == currentUserEmail;
+                              final showExitButton = isCurrentUser && !isCurrentUserCreator;
+                              
+                              return Card(
+                                color: AppColors.card,
+                                margin: const EdgeInsets.symmetric(vertical: 6),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              m.name,
+                                              style: const TextStyle(
+                                                color: AppColors.textPrimary,
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 4),
+                                            Text(
+                                              m.phoneNumber,
+                                              style: const TextStyle(
+                                                color: AppColors.textSecondary,
+                                                fontSize: 14,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      if (showExitButton)
+                                        TextButton.icon(
+                                          onPressed: () async {
+                                            try {
+                                              await ref.read(ridesNotifierProvider.notifier).exitRide(ride.id.toString());
+                                              if (context.mounted) {
+                                                ScaffoldMessenger.of(context).showSnackBar(
+                                                  const SnackBar(
+                                                    content: Text('Successfully exited the ride'),
+                                                    backgroundColor: AppColors.success,
+                                                  ),
+                                                );
+                                                Navigator.pop(context);
+                                              }
+                                            } catch (e) {
+                                              if (context.mounted) {
+                                                ScaffoldMessenger.of(context).showSnackBar(
+                                                  SnackBar(
+                                                    content: Text('Failed to exit ride: ${e.toString()}'),
+                                                    backgroundColor: AppColors.error,
+                                                  ),
+                                                );
+                                              }
+                                            }
+                                          },
+                                          icon: const Icon(Icons.exit_to_app, color: AppColors.error, size: 20),
+                                          label: const Text(
+                                            'Exit',
+                                            style: TextStyle(color: AppColors.error),
+                                          ),
+                                        )
+                                      else
+                                        IconButton(
+                                          icon: const Icon(Icons.copy, color: AppColors.textSecondary, size: 20),
+                                          onPressed: () {
+                                            Clipboard.setData(ClipboardData(text: m.phoneNumber));
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              const SnackBar(content: Text("Copied Phone Number")),
+                                            );
+                                          },
+                                          tooltip: 'Copy phone number',
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                          );
+                        },
+                      ),
                       const SizedBox(height: 16),
                     ],
                     FutureBuilder<String?>(
@@ -147,25 +258,53 @@ class RideDetailsScreen extends ConsumerWidget {
                              ride.createdBy == currentUserEmail);
                         
                         if (!isCurrentUserMember) {
-                          return SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                try{
-                                  ref.read(ridesNotifierProvider.notifier).sendRequest(ride.id);
-                                  const snackBar = SnackBar(content: Text('Succesfully sent request to join the Ride!'), backgroundColor: AppColors.success,);
-                                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                                }
-                                catch(e){
-                                  const snackBar = SnackBar(content: Text('Failed to Join Ride'), backgroundColor: AppColors.error,);
-                                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                                }
-                              },
-                              style: ElevatedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(vertical: 15),
-                              ),
-                              child: const Text('Send request to join'),
-                            ),
+                          // Check if user has already sent a request
+                          return FutureBuilder(
+                            future: ref.read(userNotifierProvider.notifier).getSentRequests(),
+                            builder: (context, sentRequestsSnapshot) {
+                              if (sentRequestsSnapshot.connectionState == ConnectionState.waiting) {
+                                return const SizedBox.shrink();
+                              }
+                              
+                              final sentRequests = sentRequestsSnapshot.data ?? [];
+                              final hasSentRequest = sentRequests.any((request) => request.id == ride.id);
+                              
+                              if (hasSentRequest) {
+                                return const SizedBox.shrink(); // Don't show button if request already sent
+                              }
+                              
+                              return SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton(
+                                  onPressed: () async {
+                                    try {
+                                      await ref.read(ridesNotifierProvider.notifier).sendRequest(ride.id);
+                                      if (context.mounted) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(
+                                            content: Text('Successfully sent request to join the Ride!'),
+                                            backgroundColor: AppColors.success,
+                                          ),
+                                        );
+                                      }
+                                    } catch (e) {
+                                      if (context.mounted) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(
+                                            content: Text('Failed to Join Ride: ${e.toString()}'),
+                                            backgroundColor: AppColors.error,
+                                          ),
+                                        );
+                                      }
+                                    }
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    padding: const EdgeInsets.symmetric(vertical: 15),
+                                  ),
+                                  child: const Text('Send request to join'),
+                                ),
+                              );
+                            },
                           );
                         } else {
                           return const SizedBox.shrink();

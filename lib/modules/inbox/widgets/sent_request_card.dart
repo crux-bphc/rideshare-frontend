@@ -35,7 +35,7 @@ class SentRequestCard extends ConsumerWidget {
     return GestureDetector(
       onTap: () {
         final ride = _convertToRide(rideRequest);
-        context.go("/rides/details", extra: ride);
+        context.push("/rides/details", extra: ride);
       },
       child: Container(
         width: 150,
