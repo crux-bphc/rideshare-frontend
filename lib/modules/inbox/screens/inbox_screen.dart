@@ -283,12 +283,33 @@ class _InboxScreenState extends ConsumerState<InboxScreen> with SingleTickerProv
     return Scaffold(
       appBar: AppBar(
         title: const Text("Inbox"),
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: const [
-            Tab(text: 'Received'),
-            Tab(text: 'Sent'),
-          ],
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(kToolbarHeight),
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
+            decoration: BoxDecoration(
+              color: AppColors.card,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: TabBar(
+              controller: _tabController,
+              indicatorSize: TabBarIndicatorSize.tab,
+              indicator: BoxDecoration(
+                color: AppColors.button,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              labelColor: Colors.white,
+              unselectedLabelColor: Colors.white,
+              labelStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+              dividerColor: Colors.transparent,
+              tabs: const [
+                Tab(text: 'Received'),
+                Tab(text: 'Sent'),
+              ],
+            ),
+          ),
         ),
         actions: [
           IconButton(
