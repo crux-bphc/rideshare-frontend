@@ -1,3 +1,4 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rideshare/models/user.dart';
 import 'package:rideshare/providers/auth/logto_auth.dart';
 import 'package:rideshare/models/ride.dart';
@@ -10,6 +11,8 @@ final rideServiceProvider = Provider<RideService>((ref) {
   final dio = ref.watch(logtoAuthProvider).dioClient;
   return RideService(dio);
 });
+
+final isBookmarkingProvider = StateProvider<bool>((ref) => false);
 
 @riverpod
 class RidesNotifier extends _$RidesNotifier {
