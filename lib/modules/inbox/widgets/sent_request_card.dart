@@ -50,7 +50,7 @@ class SentRequestCard extends ConsumerWidget {
               color: rideRequest.status == "accepted"
                   ? AppColors.primary
                   : rideRequest.status == "declined"
-                  ? AppColors.accent
+                  ? Colors.grey.shade500
                   : Color(0xFF303441),
               width: 1,
             ),
@@ -153,46 +153,32 @@ class SentRequestCard extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 8),
-                if (rideRequest.maxMemberCount != null)
-                  Text(
-                    '${rideRequest.maxMemberCount} seats',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: AppColors.textPrimary,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                const SizedBox(height: 16),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    SizedBox(
-                      width: 120,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 18,
-                          vertical: 10,
-                        ),
-                        decoration: BoxDecoration(
-                          color: (rideRequest.status == 'accepted')
-                              ? AppColors.button
-                              : (rideRequest.status == 'declined')
-                              ? AppColors.altButton
-                              : Colors.grey.shade700,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          rideRequest.status.isEmpty
-                              ? "Pending"
-                              : "${rideRequest.status[0].toUpperCase()}${rideRequest.status.substring(1).toLowerCase()}",
-                          style: TextStyle(
-                            color: AppColors.textPrimary,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          textAlign: TextAlign.center,
+                    if (rideRequest.maxMemberCount != null)
+                      Text(
+                        '${rideRequest.maxMemberCount} seats',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AppColors.textPrimary,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
+                    Text(
+                      rideRequest.status.isEmpty
+                          ? "Pending"
+                          : "${rideRequest.status[0].toUpperCase()}${rideRequest.status.substring(1).toLowerCase()}",
+                      style: TextStyle(
+                        color: rideRequest.status == "accepted"
+                            ? AppColors.primary
+                            : rideRequest.status == "declined"
+                            ? AppColors.textPrimary
+                            : Colors.grey.shade500,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
                   ],
                 ),

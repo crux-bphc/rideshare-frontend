@@ -22,7 +22,7 @@ class RideCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Container(
-      margin: EdgeInsets.fromLTRB(8, 6, 8, 8),
+      margin: const EdgeInsets.fromLTRB(8, 6, 8, 8),
       decoration: BoxDecoration(
         color: AppColors.card,
         borderRadius: BorderRadius.circular(16),
@@ -35,7 +35,7 @@ class RideCard extends ConsumerWidget {
                 ? AppColors.primary
                 : rideRequest.status == "declined"
                 ? AppColors.accent
-                : Color(0xFF303441),
+                : const Color(0xFF303441),
             width: 1,
           ),
         ),
@@ -64,7 +64,7 @@ class RideCard extends ConsumerWidget {
                           rideRequest.status == "pending"
                               ? "$displayName requested to join"
                               : "From: $displayName",
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                             color: AppColors.textPrimary,
@@ -83,14 +83,14 @@ class RideCard extends ConsumerWidget {
                     rideRequest.departureStartTime != null
                         ? "${DateFormat('d').format(rideRequest.departureStartTime!)}${getDaySuffix(rideRequest.departureStartTime!.day)} ${DateFormat('MMM').format(rideRequest.departureStartTime!)}"
                         : '',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 14,
                       color: AppColors.textPrimary,
                     ),
                   ),
                   if (rideRequest.departureStartTime != null) ...[
                     const SizedBox(width: 8),
-                    Text(
+                    const Text(
                       '|',
                       style: TextStyle(
                         fontSize: 14,
@@ -103,7 +103,7 @@ class RideCard extends ConsumerWidget {
                         rideRequest.departureStartTime,
                         rideRequest.departureEndTime,
                       ),
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 14,
                         color: AppColors.textPrimary,
                         fontWeight: FontWeight.w600,
@@ -115,28 +115,65 @@ class RideCard extends ConsumerWidget {
               const SizedBox(height: 8),
               Text(
                 '${rideRequest.rideStartLocation ?? "Unknown"} - ${rideRequest.rideEndLocation ?? "Unknown"}',
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 18,
                   color: AppColors.button,
                   fontWeight: FontWeight.w900,
                 ),
               ),
               const SizedBox(height: 8),
-              if (rideRequest.maxMemberCount != null)
-                Text(
-                  '${rideRequest.maxMemberCount} seats',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: AppColors.textPrimary,
-                    fontWeight: FontWeight.w600,
-                  ),
+              if (rideRequest.status == "pending")
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    if (rideRequest.maxMemberCount != null)
+                      Text(
+                        '${rideRequest.maxMemberCount} seats',
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: AppColors.textPrimary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        textAlign: TextAlign.start,
+                      ),
+                    SizedBox(
+                      height: rideRequest.maxMemberCount != null ? 8 : 0,
+                    ),
+                    RideCardActions(
+                      onAccept: onAccept,
+                      onDecline: onDecline,
+                    ),
+                  ],
+                )
+              else
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    if (rideRequest.maxMemberCount != null)
+                      Text(
+                        '${rideRequest.maxMemberCount} seats',
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: AppColors.textPrimary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    Text(
+                      "${rideRequest.status[0].toUpperCase()}${rideRequest.status.substring(1).toLowerCase()}",
+                      style: TextStyle(
+                        color: rideRequest.status == 'accepted'
+                            ? AppColors.primary
+                            : rideRequest.status == 'declined'
+                            ? AppColors.textPrimary
+                            : Colors.grey.shade500,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
                 ),
-              const SizedBox(height: 16),
-              RideCardActions(
-                status: rideRequest.status,
-                onAccept: onAccept,
-                onDecline: onDecline,
-              ),
             ],
           ),
         ),
