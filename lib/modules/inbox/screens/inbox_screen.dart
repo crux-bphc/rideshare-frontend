@@ -311,18 +311,7 @@ class _InboxScreenState extends ConsumerState<InboxScreen> with SingleTickerProv
             ),
           ),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: () {
-              if (_tabController.index == 0) {
-                ref.read(rideRequestsAsyncProvider.notifier).refreshRequests();
-              } else {
-                ref.read(sentRequestsAsyncProvider.notifier).refreshRequests();
-              }
-            },
-          ),
-        ],
+        actions: [],
       ),
       body: TabBarView(
         controller: _tabController,
