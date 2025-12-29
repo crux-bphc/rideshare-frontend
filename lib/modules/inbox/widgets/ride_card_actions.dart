@@ -2,25 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:rideshare/shared/theme.dart';
 
 class RideCardActions extends StatelessWidget {
-  final String status;
   final VoidCallback? onAccept;
   final VoidCallback? onDecline;
 
   const RideCardActions({
     super.key,
-    required this.status,
     this.onAccept,
     this.onDecline,
   });
 
   @override
   Widget build(BuildContext context) {
-    if (status == "pending"){
-      return PendingStatus(onAccept: onAccept, onDecline: onDecline,);
-    }
-    else{
-      return NotPending(status: status);
-    }
+    return PendingStatus(
+      onAccept: onAccept,
+      onDecline: onDecline,
+    );
   }
 }
 
@@ -65,6 +61,7 @@ class PendingStatus extends StatelessWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
               ),
+              side: BorderSide(color: Color(0xFF303441), width: 1),
             ),
             child: const Text(
               "Decline",
@@ -72,43 +69,6 @@ class PendingStatus extends StatelessWidget {
             ),
           ),
         ),
-      ],
-    );
-  }
-}
-
-class NotPending extends StatelessWidget {
-  final String status;
-
-  const NotPending({
-    super.key,
-    required this.status
-  });
-
-  @override
-  Widget build(BuildContext context){
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        SizedBox(
-          width: 120,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-            decoration: BoxDecoration(
-              color: (status=='accepted') ? AppColors.button : AppColors.altButton,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Text(
-              "${status[0].toUpperCase()}${status.substring(1).toLowerCase()}",
-              style: TextStyle(
-                color: AppColors.textPrimary,
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ),
-        )
       ],
     );
   }

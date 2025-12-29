@@ -54,4 +54,36 @@ final rideRequestsAsyncProvider = AsyncNotifierProvider<RideRequestsAsyncNotifie
   return RideRequestsAsyncNotifier();
 });
 
+class SentRequestsAsyncNotifier extends AsyncNotifier<List<RideRequest>> {
+  @override
+  Future<List<RideRequest>> build() async {
+    final userNotifier = ref.read(userNotifierProvider.notifier);
+    return await userNotifier.getSentRequests();
+  }
+
+  Future<void> refreshRequests() async {
+    state = const AsyncLoading();
+    try {
+      final userNotifier = ref.read(userNotifierProvider.notifier);
+      final requests = await userNotifier.getSentRequests();
+      state = AsyncData(requests);
+    } catch (error, stackTrace) {
+      state = AsyncError(error, stackTrace);
+    }
+  }
+
+  Future<void> deleteRequest(int requestId) async {
+    try {
+      await ref.read(ridesNotifierProvider.notifier).deleteRequest(requestId.toString());
+      await refreshRequests();
+    } catch (error) {
+      rethrow;
+    }
+  }
+}
+
+final sentRequestsAsyncProvider = AsyncNotifierProvider<SentRequestsAsyncNotifier, List<RideRequest>>(() {
+  return SentRequestsAsyncNotifier();
+});
+
 //using async provider for the first time was actually fun

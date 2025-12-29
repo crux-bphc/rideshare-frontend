@@ -22,6 +22,10 @@ class RideCard extends ConsumerWidget {
       decoration: BoxDecoration(
         color: AppColors.card,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Color(0xFF303441),
+          width: 1,
+        ),
       ),
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -45,15 +49,17 @@ class RideCard extends ConsumerWidget {
                   builder: (context, ref, child) {
                     final authState = ref.watch(authNotifierProvider);
                     final currentUserEmail = authState.valueOrNull?.user?.email;
-                    final isCreator = currentUserEmail != null && 
+                    final isCreator =
+                        currentUserEmail != null &&
                         ride.createdBy == currentUserEmail;
-                    
+
                     final now = DateTime.now();
-                    final is12HoursBefore = ride.departureStartTime != null &&
+                    final is12HoursBefore =
+                        ride.departureStartTime != null &&
                         ride.departureStartTime!.difference(now).inHours >= 12;
-                    
+
                     final shouldShowEditIcon = isCreator && is12HoursBefore;
-                    
+
                     return Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -104,8 +110,6 @@ class RideCard extends ConsumerWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 16),
-
             Text(
               "${ride.rideStartLocation} - ${ride.rideEndLocation}",
               style: const TextStyle(
@@ -114,7 +118,7 @@ class RideCard extends ConsumerWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 16),
 
             Row(
               children: [
@@ -145,7 +149,9 @@ class RideCard extends ConsumerWidget {
                 const SizedBox(width: 12),
                 Consumer(
                   builder: (context, ref, child) {
-                    final bookmarkedRidesAsync = ref.watch(bookmarkedRidesProvider);
+                    final bookmarkedRidesAsync = ref.watch(
+                      bookmarkedRidesProvider,
+                    );
                     return bookmarkedRidesAsync.when(
                       data: (bookmarkedRides) {
                         final isBookmarked = bookmarkedRides.any(

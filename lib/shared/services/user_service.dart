@@ -73,4 +73,28 @@ class UserService {
       throw Exception("Failed to get Received Requests $e");
     }
   }
+
+  Future<List<RideRequest>> getRequestsSent() async{
+    try{
+      final response = await _dio.get(
+        '${dotenv.env['BACKEND_API_URL']}user/requests/sent'
+      );
+
+      if (response.statusCode == 200) {
+        final currentUserEmail = await getUserEmail();
+        return (response.data as List).map((json) {
+          final response = Map<String, dynamic>.from(json);
+          response['requestSender'] ??= currentUserEmail ?? '';
+          response['status'] ??= 'pending';
+          
+          return RideRequest.fromJson(response);
+        }).toList();
+      }
+      else {
+        throw Exception ('Failed to get users Ride Requests ');
+      }
+    } catch(e){
+      throw Exception("Failed to get user rides: $e");
+    }
+  }
 }

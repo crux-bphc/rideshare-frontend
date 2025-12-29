@@ -8,7 +8,6 @@ import 'package:rideshare/shared/theme.dart';
 import 'package:rideshare/shared/util/datetime_utils.dart';
 import 'package:rideshare/shared/providers/navigation_provider.dart';
 import 'package:rideshare/modules/rides/widgets/ride_form.dart';
-import 'package:intl/intl.dart';
 
 class CreateRideScreen extends ConsumerStatefulWidget {
   final bool isEditing;
@@ -41,12 +40,13 @@ class _CreateRideScreenState extends ConsumerState<CreateRideScreen> {
   @override
   void initState() {
     super.initState();
-    if (widget.isEditing && widget.ride != null) {
-      final ride = widget.ride!;
-      startLocationController.text = ride.rideStartLocation ?? '';
-      destinationLocationController.text = ride.rideEndLocation ?? '';
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        if (widget.isEditing && widget.ride != null) {
+          final ride = widget.ride!;
+          startLocationController.text = ride.rideStartLocation ?? '';
+          destinationLocationController.text = ride.rideEndLocation ?? '';
+          
           if (ride.departureStartTime != null) {
             ref.read(selectedDateProvider.notifier).setDate(ride.departureStartTime!);
             ref.read(departureTimeProvider.notifier).setTime(TimeOfDay.fromDateTime(ride.departureStartTime!));
@@ -59,9 +59,24 @@ class _CreateRideScreenState extends ConsumerState<CreateRideScreen> {
           if (ride.maxMemberCount != null) {
             ref.read(seatProvider.notifier).setSeats(ride.maxMemberCount!);
           }
+        } else {
+          final searchStartLocation = ref.read(searchStartLocationProvider);
+          final searchDestinationLocation = ref.read(searchDestinationLocationProvider);
+          final currentDate = ref.read(selectedDateProvider);
+          final currentDepartureTime = ref.read(departureTimeProvider);
+          if (searchStartLocation != null || searchDestinationLocation != null || 
+              currentDate != null || currentDepartureTime != null) {
+            if (searchStartLocation != null) {
+              startLocationController.text = searchStartLocation;
+            }
+            if (searchDestinationLocation != null) {
+              destinationLocationController.text = searchDestinationLocation;
+            }
+            ref.read(arrivalTimeProvider.notifier).setTime(null);
+          }
         }
-      });
-    }
+      }
+    });
   }
 
   @override
@@ -131,7 +146,14 @@ class _CreateRideScreenState extends ConsumerState<CreateRideScreen> {
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
-                  _resetForm();
+                  if (widget.isEditing) {
+                    ref
+                        .read(navigationNotifierProvider.notifier)
+                        .setTab(NavigationTab.home);
+                    context.go('/home');
+                  } else {
+                    _resetForm();
+                  }
                 },
                 child: Text(
                   'OK',
@@ -144,10 +166,6 @@ class _CreateRideScreenState extends ConsumerState<CreateRideScreen> {
             ],
           ),
         );
-        ref
-            .read(navigationNotifierProvider.notifier)
-            .setTab(NavigationTab.home);
-        context.go('/home');
       }
     } catch (e) {
       throw Exception("Error Creating Ride");
@@ -161,6 +179,8 @@ class _CreateRideScreenState extends ConsumerState<CreateRideScreen> {
     ref.read(departureTimeProvider.notifier).setTime(null);
     ref.read(arrivalTimeProvider.notifier).setTime(null);
     ref.read(seatProvider.notifier).resetSeats();
+    ref.read(searchStartLocationProvider.notifier).clear();
+    ref.read(searchDestinationLocationProvider.notifier).clear();
     GoRouter.of(context).go("/rides/search");
   }
 

@@ -32,4 +32,9 @@ class UserNotifier extends _$UserNotifier {
     final userService = ref.watch(userServiceProvider);
     return userService.getRequestsReceived();
   }
+
+  Future<List<RideRequest>> getSentRequests() async{
+    final userService = ref.watch(userServiceProvider);
+    return userService.getRequestsSent();
+  }
 }
