@@ -22,6 +22,10 @@ class RideCard extends ConsumerWidget {
       decoration: BoxDecoration(
         color: AppColors.card,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Color(0xFF303441),
+          width: 1,
+        ),
       ),
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -106,8 +110,6 @@ class RideCard extends ConsumerWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 16),
-
             Text(
               "${ride.rideStartLocation} - ${ride.rideEndLocation}",
               style: const TextStyle(
@@ -116,7 +118,7 @@ class RideCard extends ConsumerWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 16),
 
             Row(
               children: [

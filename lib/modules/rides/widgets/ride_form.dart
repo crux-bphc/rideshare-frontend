@@ -16,6 +16,7 @@ class RideForm extends ConsumerStatefulWidget {
   final String? dateError;
   final String? timeError;
   final String? seatsError;
+  final bool showSeatsSelector;
 
   const RideForm({
     super.key,
@@ -26,6 +27,7 @@ class RideForm extends ConsumerStatefulWidget {
     this.dateError,
     this.timeError,
     this.seatsError,
+    this.showSeatsSelector = true,
   });
 
   @override
@@ -146,22 +148,24 @@ class _RideFormState extends ConsumerState<RideForm> {
             ),
           ),
         ],
-        const SizedBox(height: 24),
-        SectionHeader(title: 'Seats Required'),
-        const SizedBox(height: 16),
-        const SeatSelection(),
-        if (widget.seatsError != null) ...[
-          const SizedBox(height: 8),
-          Padding(
-            padding: const EdgeInsets.only(left: 12.0),
-            child: Text(
-              widget.seatsError!,
-              style: TextStyle(
-                color: theme.colorScheme.error,
-                fontSize: 12,
+        if (widget.showSeatsSelector) ...[
+          const SizedBox(height: 24),
+          SectionHeader(title: 'Seats Required'),
+          const SizedBox(height: 16),
+          const SeatSelection(),
+          if (widget.seatsError != null) ...[
+            const SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.only(left: 12.0),
+              child: Text(
+                widget.seatsError!,
+                style: TextStyle(
+                  color: theme.colorScheme.error,
+                  fontSize: 12,
+                ),
               ),
             ),
-          ),
+          ],
         ],
       ],
     );

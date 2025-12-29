@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:rideshare/models/ride.dart';
-import 'package:rideshare/shared/providers/rides_provider.dart';
 import 'package:rideshare/modules/rides/your_rides/widgets/your_rides_list.dart';
+import 'package:rideshare/modules/splash/splash_page.dart';
+import 'package:rideshare/shared/providers/rides_provider.dart';
 import 'package:rideshare/shared/theme.dart';
 
 class YourRidesScreen extends ConsumerWidget {
@@ -66,9 +65,7 @@ class YourRidesScreen extends ConsumerWidget {
                     }
                     return YourRidesList(rides: rides);
                   },
-                  loading: () => const Center(
-                    child: CircularProgressIndicator(),
-                  ),
+                  loading: () => const SplashPage(),
                   error: (error, stack) => Center(
                     child: Text('No upcoming rides.'),
                   ),
@@ -87,9 +84,7 @@ class YourRidesScreen extends ConsumerWidget {
                     }
                     return YourRidesList(rides: rides);
                   },
-                  loading: () => const Center(
-                    child: CircularProgressIndicator(),
-                  ),
+                  loading: () => const SplashPage(),
                   error: (error, stack) => Center(
                     child: Text('No bookmarked rides.'),
                   ),
