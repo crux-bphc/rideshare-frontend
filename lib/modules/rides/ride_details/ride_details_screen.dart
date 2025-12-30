@@ -232,7 +232,7 @@ class RideDetailsScreen extends ConsumerWidget {
                                                       backgroundColor: AppColors.error,
                                                     ),
                                                     child: const Text(
-                                                      'Yes, Exit',
+                                                      'Exit',
                                                       style: TextStyle(
                                                         color: Colors.white,
                                                         fontWeight: FontWeight.bold,

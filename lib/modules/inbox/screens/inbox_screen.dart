@@ -92,7 +92,7 @@ class _InboxScreenState extends ConsumerState<InboxScreen> with SingleTickerProv
               backgroundColor: AppColors.error,
             ),
             child: const Text(
-              'Yes, Delete',
+              'Delete',
               style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
@@ -102,6 +102,7 @@ class _InboxScreenState extends ConsumerState<InboxScreen> with SingleTickerProv
         ],
       ),
     );
+
 
     if (shouldDelete != true) {
       return;

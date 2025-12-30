@@ -18,6 +18,8 @@ class _MainAppState extends ConsumerState<MainApp> {
   Widget build(BuildContext context) {
     final currentTab = ref.watch(navigationNotifierProvider);
     final navigationNotifier = ref.read(navigationNotifierProvider.notifier);
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isMobile = screenWidth < 600;
 
     return Scaffold(
       body: widget.child,
@@ -29,9 +31,9 @@ class _MainAppState extends ConsumerState<MainApp> {
           child: Stack(
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
+                padding: EdgeInsets.symmetric(
+                  horizontal: isMobile ? 8 : 16,
+                  vertical: isMobile ? 6 : 8,
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -45,6 +47,7 @@ class _MainAppState extends ConsumerState<MainApp> {
                       Icons.home_outlined,
                       Icons.home,
                       'Home',
+                      isMobile,
                     ),
                     _buildNavItem(
                       context,
@@ -54,8 +57,8 @@ class _MainAppState extends ConsumerState<MainApp> {
                       navigationNotifier,
                       Icons.directions_car_filled_outlined,
                       Icons.directions_car,
-
                       'Rides',
+                      isMobile,
                     ),
                     _buildNavItem(
                       context,
@@ -66,6 +69,7 @@ class _MainAppState extends ConsumerState<MainApp> {
                       Icons.inbox_outlined,
                       Icons.inbox,
                       'Inbox',
+                      isMobile,
                     ),
                     _buildNavItem(
                       context,
@@ -76,6 +80,7 @@ class _MainAppState extends ConsumerState<MainApp> {
                       Icons.account_circle_outlined,
                       Icons.account_circle,
                       'Profile',
+                      isMobile,
                     ),
                   ],
                 ),
@@ -96,6 +101,7 @@ class _MainAppState extends ConsumerState<MainApp> {
     IconData outlinedIcon,
     IconData filledIcon,
     String label,
+    bool isMobile,
   ) {
     final isSelected = currentTab == tab;
 
@@ -107,7 +113,10 @@ class _MainAppState extends ConsumerState<MainApp> {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: EdgeInsets.symmetric(
+          horizontal: isMobile ? 8 : 16,
+          vertical: isMobile ? 8 : 12,
+        ),
         decoration: BoxDecoration(
           color: isSelected
               ? AppColors.primary.withValues(alpha: 0.2)
@@ -120,20 +129,20 @@ class _MainAppState extends ConsumerState<MainApp> {
             Icon(
               isSelected ? filledIcon : outlinedIcon,
               color: AppColors.primary,
-              size: 34,
+              size: isMobile ? 28 : 34,
             ),
-            const SizedBox(width: 2),
+            if (!isMobile) const SizedBox(width: 2),
             AnimatedSize(
               duration: const Duration(milliseconds: 300),
               curve: Curves.easeInOut,
-              child: isSelected
+              child: isSelected && !isMobile
                   ? Padding(
                       padding: const EdgeInsets.only(left: 4),
                       child: Text(
                         label,
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: AppColors.primary,
-                          fontSize: 14,
+                          fontSize: isMobile ? 12 : 14,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
