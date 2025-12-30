@@ -56,15 +56,6 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
     }
   }
 
-  void _resetForm() {
-    startLocationController.clear();
-    destinationLocationController.clear();
-    ref.read(selectedDateProvider.notifier).setDate(null);
-    ref.read(departureTimeProvider.notifier).setTime(null);
-    ref.read(arrivalTimeProvider.notifier).setTime(null);
-    ref.read(seatProvider.notifier).resetSeats();
-  }
-
   void _validateAndSearch() async {
     setState(() {
       startLocationError = startLocationController.text.trim().isEmpty

@@ -4,8 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rideshare/models/ride.dart';
 import 'package:rideshare/models/user.dart';
-import 'package:rideshare/modules/inbox/provider/ride_requests_provider.dart';
-import 'package:rideshare/modules/rides/ride_details/widgets/member_card.dart';
 import 'package:rideshare/modules/rides/ride_details/widgets/route_icon.dart';
 import 'package:rideshare/modules/splash/splash_page.dart';
 import 'package:rideshare/shared/providers/navigation_provider.dart';
@@ -195,6 +193,60 @@ class RideDetailsScreen extends ConsumerWidget {
                                       if (showExitButton)
                                         TextButton.icon(
                                           onPressed: () async {
+                                            final shouldExit = await showDialog<bool>(
+                                              context: context,
+                                              builder: (context) => AlertDialog(
+                                                backgroundColor: AppColors.card,
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.circular(16),
+                                                ),
+                                                title: const Text(
+                                                  'Exit Ride',
+                                                  style: TextStyle(
+                                                    color: AppColors.primary,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 20,
+                                                  ),
+                                                ),
+                                                content: const Text(
+                                                  'Are you sure you want to exit this ride?',
+                                                  style: TextStyle(
+                                                    color: AppColors.textPrimary,
+                                                    fontSize: 16,
+                                                  ),
+                                                ),
+                                                actions: [
+                                                  TextButton(
+                                                    onPressed: () => Navigator.of(context).pop(false),
+                                                    child: const Text(
+                                                      'Cancel',
+                                                      style: TextStyle(
+                                                        color: AppColors.textSecondary,
+                                                        fontWeight: FontWeight.w600,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  ElevatedButton(
+                                                    onPressed: () => Navigator.of(context).pop(true),
+                                                    style: ElevatedButton.styleFrom(
+                                                      backgroundColor: AppColors.error,
+                                                    ),
+                                                    child: const Text(
+                                                      'Yes, Exit',
+                                                      style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontWeight: FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+
+                                            if (shouldExit != true) {
+                                              return;
+                                            }
+
                                             try {
                                               await ref.read(ridesNotifierProvider.notifier).exitRide(ride.id.toString());
                                               if (context.mounted) {

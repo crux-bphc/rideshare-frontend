@@ -3,6 +3,7 @@ import 'package:rideshare/models/user.dart';
 import 'package:rideshare/providers/auth/logto_auth.dart';
 import 'package:rideshare/models/ride.dart';
 import 'package:rideshare/shared/services/ride_service.dart';
+import 'package:rideshare/modules/inbox/provider/ride_requests_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'rides_provider.g.dart';
@@ -100,7 +101,8 @@ class RidesNotifier extends _$RidesNotifier {
 
   Future<void> deleteRequest(String rideId) async {
     final rideService = ref.watch(rideServiceProvider);
-    rideService.deleteRequest(rideId);
+    await rideService.deleteRequest(rideId);
+    ref.invalidate(sentRequestsAsyncProvider);
   }
 
   Future<void> exitRide(String rideId) async {
