@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:logto_dart_sdk/logto_dart_sdk.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -27,7 +28,7 @@ class LogtoAuthProvider extends AuthProvider {
   Future<AuthUser?> initialise() async {
     final appId = dotenv.env['CLIENT_ID'];
     final endpoint = dotenv.env['AUTH_DISCOVERY_URL'];
-    
+
     if (appId == null || endpoint == null) {
       throw Exception('Missing CLIENT_ID or AUTH_DISCOVERY_URL in .env');
     }

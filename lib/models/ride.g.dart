@@ -19,6 +19,7 @@ _Ride _$RideFromJson(Map<String, dynamic> json) => _Ride(
   maxMemberCount: (json['maxMemberCount'] as num?)?.toInt(),
   rideStartLocation: json['rideStartLocation'] as String?,
   rideEndLocation: json['rideEndLocation'] as String?,
+  isBookmarked: json['isBookmarked'] as bool?,
 );
 
 Map<String, dynamic> _$RideToJson(_Ride instance) => <String, dynamic>{
@@ -30,4 +31,5 @@ Map<String, dynamic> _$RideToJson(_Ride instance) => <String, dynamic>{
   'maxMemberCount': instance.maxMemberCount,
   'rideStartLocation': instance.rideStartLocation,
   'rideEndLocation': instance.rideEndLocation,
+  'isBookmarked': instance.isBookmarked,
 };

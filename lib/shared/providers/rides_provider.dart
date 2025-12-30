@@ -1,3 +1,4 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rideshare/models/user.dart';
 import 'package:rideshare/providers/auth/logto_auth.dart';
 import 'package:rideshare/models/ride.dart';
@@ -10,6 +11,8 @@ final rideServiceProvider = Provider<RideService>((ref) {
   final dio = ref.watch(logtoAuthProvider).dioClient;
   return RideService(dio);
 });
+
+final isBookmarkingProvider = StateProvider<bool>((ref) => false);
 
 @riverpod
 class RidesNotifier extends _$RidesNotifier {
@@ -48,14 +51,14 @@ class RidesNotifier extends _$RidesNotifier {
     ref.invalidate(upcomingRidesProvider);
   }
 
-    Future<void> editRide(
+  Future<void> editRide(
     DateTime departureStartTime,
     DateTime departureEndTime,
     String? comments,
     int seats,
     String rideStart,
     String rideEnd,
-    String rideId
+    String rideId,
   ) async {
     final rideService = ref.watch(rideServiceProvider);
     await rideService.editRide(
@@ -65,39 +68,42 @@ class RidesNotifier extends _$RidesNotifier {
       seats,
       rideStart,
       rideEnd,
-      rideId
+      rideId,
     );
     ref.invalidate(upcomingRidesProvider);
   }
 
-
-  Future<void> sendRequest(int rideId) async{
+  Future<void> sendRequest(int rideId) async {
     final rideService = ref.watch(rideServiceProvider);
     rideService.sendRequest(rideId);
   }
 
-  Future<List<User>> getMembers(int rideId)  async{
+  Future<List<User>> getMembers(int rideId) async {
     final rideService = ref.watch(rideServiceProvider);
     return rideService.getMembers(rideId);
   }
 
-  Future<void> manageRequest(int rideId, String requestUserEmail, String status) async {
+  Future<void> manageRequest(
+    int rideId,
+    String requestUserEmail,
+    String status,
+  ) async {
     final rideService = ref.watch(rideServiceProvider);
     rideService.manageRequest(rideId, requestUserEmail, status);
   }
 
-  Future<void> deleteRide(String rideId) async{
+  Future<void> deleteRide(String rideId) async {
     final rideService = ref.watch(rideServiceProvider);
     await rideService.deleteRide(rideId);
     ref.invalidate(upcomingRidesProvider);
   }
 
-  Future<void> deleteRequest(String rideId) async{
+  Future<void> deleteRequest(String rideId) async {
     final rideService = ref.watch(rideServiceProvider);
     rideService.deleteRequest(rideId);
   }
 
-  Future<void> exitRide(String rideId) async{
+  Future<void> exitRide(String rideId) async {
     final rideService = ref.watch(rideServiceProvider);
     await rideService.exitRide(rideId);
     ref.invalidate(upcomingRidesProvider);

@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Ride {
 
- int get id; String get createdBy; String? get comments; DateTime? get departureStartTime; DateTime? get departureEndTime; int? get maxMemberCount; String? get rideStartLocation; String? get rideEndLocation;
+ int get id; String get createdBy; String? get comments; DateTime? get departureStartTime; DateTime? get departureEndTime; int? get maxMemberCount; String? get rideStartLocation; String? get rideEndLocation; bool? get isBookmarked;
 /// Create a copy of Ride
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $RideCopyWith<Ride> get copyWith => _$RideCopyWithImpl<Ride>(this as Ride, _$ide
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Ride&&(identical(other.id, id) || other.id == id)&&(identical(other.createdBy, createdBy) || other.createdBy == createdBy)&&(identical(other.comments, comments) || other.comments == comments)&&(identical(other.departureStartTime, departureStartTime) || other.departureStartTime == departureStartTime)&&(identical(other.departureEndTime, departureEndTime) || other.departureEndTime == departureEndTime)&&(identical(other.maxMemberCount, maxMemberCount) || other.maxMemberCount == maxMemberCount)&&(identical(other.rideStartLocation, rideStartLocation) || other.rideStartLocation == rideStartLocation)&&(identical(other.rideEndLocation, rideEndLocation) || other.rideEndLocation == rideEndLocation));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Ride&&(identical(other.id, id) || other.id == id)&&(identical(other.createdBy, createdBy) || other.createdBy == createdBy)&&(identical(other.comments, comments) || other.comments == comments)&&(identical(other.departureStartTime, departureStartTime) || other.departureStartTime == departureStartTime)&&(identical(other.departureEndTime, departureEndTime) || other.departureEndTime == departureEndTime)&&(identical(other.maxMemberCount, maxMemberCount) || other.maxMemberCount == maxMemberCount)&&(identical(other.rideStartLocation, rideStartLocation) || other.rideStartLocation == rideStartLocation)&&(identical(other.rideEndLocation, rideEndLocation) || other.rideEndLocation == rideEndLocation)&&(identical(other.isBookmarked, isBookmarked) || other.isBookmarked == isBookmarked));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,createdBy,comments,departureStartTime,departureEndTime,maxMemberCount,rideStartLocation,rideEndLocation);
+int get hashCode => Object.hash(runtimeType,id,createdBy,comments,departureStartTime,departureEndTime,maxMemberCount,rideStartLocation,rideEndLocation,isBookmarked);
 
 @override
 String toString() {
-  return 'Ride(id: $id, createdBy: $createdBy, comments: $comments, departureStartTime: $departureStartTime, departureEndTime: $departureEndTime, maxMemberCount: $maxMemberCount, rideStartLocation: $rideStartLocation, rideEndLocation: $rideEndLocation)';
+  return 'Ride(id: $id, createdBy: $createdBy, comments: $comments, departureStartTime: $departureStartTime, departureEndTime: $departureEndTime, maxMemberCount: $maxMemberCount, rideStartLocation: $rideStartLocation, rideEndLocation: $rideEndLocation, isBookmarked: $isBookmarked)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $RideCopyWith<$Res>  {
   factory $RideCopyWith(Ride value, $Res Function(Ride) _then) = _$RideCopyWithImpl;
 @useResult
 $Res call({
- int id, String createdBy, String? comments, DateTime? departureStartTime, DateTime? departureEndTime, int? maxMemberCount, String? rideStartLocation, String? rideEndLocation
+ int id, String createdBy, String? comments, DateTime? departureStartTime, DateTime? departureEndTime, int? maxMemberCount, String? rideStartLocation, String? rideEndLocation, bool? isBookmarked
 });
 
 
@@ -65,7 +65,7 @@ class _$RideCopyWithImpl<$Res>
 
 /// Create a copy of Ride
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? createdBy = null,Object? comments = freezed,Object? departureStartTime = freezed,Object? departureEndTime = freezed,Object? maxMemberCount = freezed,Object? rideStartLocation = freezed,Object? rideEndLocation = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? createdBy = null,Object? comments = freezed,Object? departureStartTime = freezed,Object? departureEndTime = freezed,Object? maxMemberCount = freezed,Object? rideStartLocation = freezed,Object? rideEndLocation = freezed,Object? isBookmarked = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,createdBy: null == createdBy ? _self.createdBy : createdBy // ignore: cast_nullable_to_non_nullable
@@ -75,7 +75,8 @@ as DateTime?,departureEndTime: freezed == departureEndTime ? _self.departureEndT
 as DateTime?,maxMemberCount: freezed == maxMemberCount ? _self.maxMemberCount : maxMemberCount // ignore: cast_nullable_to_non_nullable
 as int?,rideStartLocation: freezed == rideStartLocation ? _self.rideStartLocation : rideStartLocation // ignore: cast_nullable_to_non_nullable
 as String?,rideEndLocation: freezed == rideEndLocation ? _self.rideEndLocation : rideEndLocation // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,isBookmarked: freezed == isBookmarked ? _self.isBookmarked : isBookmarked // ignore: cast_nullable_to_non_nullable
+as bool?,
   ));
 }
 
@@ -160,10 +161,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String createdBy,  String? comments,  DateTime? departureStartTime,  DateTime? departureEndTime,  int? maxMemberCount,  String? rideStartLocation,  String? rideEndLocation)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String createdBy,  String? comments,  DateTime? departureStartTime,  DateTime? departureEndTime,  int? maxMemberCount,  String? rideStartLocation,  String? rideEndLocation,  bool? isBookmarked)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Ride() when $default != null:
-return $default(_that.id,_that.createdBy,_that.comments,_that.departureStartTime,_that.departureEndTime,_that.maxMemberCount,_that.rideStartLocation,_that.rideEndLocation);case _:
+return $default(_that.id,_that.createdBy,_that.comments,_that.departureStartTime,_that.departureEndTime,_that.maxMemberCount,_that.rideStartLocation,_that.rideEndLocation,_that.isBookmarked);case _:
   return orElse();
 
 }
@@ -181,10 +182,10 @@ return $default(_that.id,_that.createdBy,_that.comments,_that.departureStartTime
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String createdBy,  String? comments,  DateTime? departureStartTime,  DateTime? departureEndTime,  int? maxMemberCount,  String? rideStartLocation,  String? rideEndLocation)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String createdBy,  String? comments,  DateTime? departureStartTime,  DateTime? departureEndTime,  int? maxMemberCount,  String? rideStartLocation,  String? rideEndLocation,  bool? isBookmarked)  $default,) {final _that = this;
 switch (_that) {
 case _Ride():
-return $default(_that.id,_that.createdBy,_that.comments,_that.departureStartTime,_that.departureEndTime,_that.maxMemberCount,_that.rideStartLocation,_that.rideEndLocation);case _:
+return $default(_that.id,_that.createdBy,_that.comments,_that.departureStartTime,_that.departureEndTime,_that.maxMemberCount,_that.rideStartLocation,_that.rideEndLocation,_that.isBookmarked);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -201,10 +202,10 @@ return $default(_that.id,_that.createdBy,_that.comments,_that.departureStartTime
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String createdBy,  String? comments,  DateTime? departureStartTime,  DateTime? departureEndTime,  int? maxMemberCount,  String? rideStartLocation,  String? rideEndLocation)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String createdBy,  String? comments,  DateTime? departureStartTime,  DateTime? departureEndTime,  int? maxMemberCount,  String? rideStartLocation,  String? rideEndLocation,  bool? isBookmarked)?  $default,) {final _that = this;
 switch (_that) {
 case _Ride() when $default != null:
-return $default(_that.id,_that.createdBy,_that.comments,_that.departureStartTime,_that.departureEndTime,_that.maxMemberCount,_that.rideStartLocation,_that.rideEndLocation);case _:
+return $default(_that.id,_that.createdBy,_that.comments,_that.departureStartTime,_that.departureEndTime,_that.maxMemberCount,_that.rideStartLocation,_that.rideEndLocation,_that.isBookmarked);case _:
   return null;
 
 }
@@ -216,7 +217,7 @@ return $default(_that.id,_that.createdBy,_that.comments,_that.departureStartTime
 @JsonSerializable()
 
 class _Ride implements Ride {
-  const _Ride({required this.id, required this.createdBy, this.comments, this.departureStartTime, this.departureEndTime, this.maxMemberCount, this.rideStartLocation, this.rideEndLocation});
+  const _Ride({required this.id, required this.createdBy, this.comments, this.departureStartTime, this.departureEndTime, this.maxMemberCount, this.rideStartLocation, this.rideEndLocation, this.isBookmarked});
   factory _Ride.fromJson(Map<String, dynamic> json) => _$RideFromJson(json);
 
 @override final  int id;
@@ -227,6 +228,7 @@ class _Ride implements Ride {
 @override final  int? maxMemberCount;
 @override final  String? rideStartLocation;
 @override final  String? rideEndLocation;
+@override final  bool? isBookmarked;
 
 /// Create a copy of Ride
 /// with the given fields replaced by the non-null parameter values.
@@ -241,16 +243,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Ride&&(identical(other.id, id) || other.id == id)&&(identical(other.createdBy, createdBy) || other.createdBy == createdBy)&&(identical(other.comments, comments) || other.comments == comments)&&(identical(other.departureStartTime, departureStartTime) || other.departureStartTime == departureStartTime)&&(identical(other.departureEndTime, departureEndTime) || other.departureEndTime == departureEndTime)&&(identical(other.maxMemberCount, maxMemberCount) || other.maxMemberCount == maxMemberCount)&&(identical(other.rideStartLocation, rideStartLocation) || other.rideStartLocation == rideStartLocation)&&(identical(other.rideEndLocation, rideEndLocation) || other.rideEndLocation == rideEndLocation));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Ride&&(identical(other.id, id) || other.id == id)&&(identical(other.createdBy, createdBy) || other.createdBy == createdBy)&&(identical(other.comments, comments) || other.comments == comments)&&(identical(other.departureStartTime, departureStartTime) || other.departureStartTime == departureStartTime)&&(identical(other.departureEndTime, departureEndTime) || other.departureEndTime == departureEndTime)&&(identical(other.maxMemberCount, maxMemberCount) || other.maxMemberCount == maxMemberCount)&&(identical(other.rideStartLocation, rideStartLocation) || other.rideStartLocation == rideStartLocation)&&(identical(other.rideEndLocation, rideEndLocation) || other.rideEndLocation == rideEndLocation)&&(identical(other.isBookmarked, isBookmarked) || other.isBookmarked == isBookmarked));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,createdBy,comments,departureStartTime,departureEndTime,maxMemberCount,rideStartLocation,rideEndLocation);
+int get hashCode => Object.hash(runtimeType,id,createdBy,comments,departureStartTime,departureEndTime,maxMemberCount,rideStartLocation,rideEndLocation,isBookmarked);
 
 @override
 String toString() {
-  return 'Ride(id: $id, createdBy: $createdBy, comments: $comments, departureStartTime: $departureStartTime, departureEndTime: $departureEndTime, maxMemberCount: $maxMemberCount, rideStartLocation: $rideStartLocation, rideEndLocation: $rideEndLocation)';
+  return 'Ride(id: $id, createdBy: $createdBy, comments: $comments, departureStartTime: $departureStartTime, departureEndTime: $departureEndTime, maxMemberCount: $maxMemberCount, rideStartLocation: $rideStartLocation, rideEndLocation: $rideEndLocation, isBookmarked: $isBookmarked)';
 }
 
 
@@ -261,7 +263,7 @@ abstract mixin class _$RideCopyWith<$Res> implements $RideCopyWith<$Res> {
   factory _$RideCopyWith(_Ride value, $Res Function(_Ride) _then) = __$RideCopyWithImpl;
 @override @useResult
 $Res call({
- int id, String createdBy, String? comments, DateTime? departureStartTime, DateTime? departureEndTime, int? maxMemberCount, String? rideStartLocation, String? rideEndLocation
+ int id, String createdBy, String? comments, DateTime? departureStartTime, DateTime? departureEndTime, int? maxMemberCount, String? rideStartLocation, String? rideEndLocation, bool? isBookmarked
 });
 
 
@@ -278,7 +280,7 @@ class __$RideCopyWithImpl<$Res>
 
 /// Create a copy of Ride
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? createdBy = null,Object? comments = freezed,Object? departureStartTime = freezed,Object? departureEndTime = freezed,Object? maxMemberCount = freezed,Object? rideStartLocation = freezed,Object? rideEndLocation = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? createdBy = null,Object? comments = freezed,Object? departureStartTime = freezed,Object? departureEndTime = freezed,Object? maxMemberCount = freezed,Object? rideStartLocation = freezed,Object? rideEndLocation = freezed,Object? isBookmarked = freezed,}) {
   return _then(_Ride(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,createdBy: null == createdBy ? _self.createdBy : createdBy // ignore: cast_nullable_to_non_nullable
@@ -288,7 +290,8 @@ as DateTime?,departureEndTime: freezed == departureEndTime ? _self.departureEndT
 as DateTime?,maxMemberCount: freezed == maxMemberCount ? _self.maxMemberCount : maxMemberCount // ignore: cast_nullable_to_non_nullable
 as int?,rideStartLocation: freezed == rideStartLocation ? _self.rideStartLocation : rideStartLocation // ignore: cast_nullable_to_non_nullable
 as String?,rideEndLocation: freezed == rideEndLocation ? _self.rideEndLocation : rideEndLocation // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,isBookmarked: freezed == isBookmarked ? _self.isBookmarked : isBookmarked // ignore: cast_nullable_to_non_nullable
+as bool?,
   ));
 }
 

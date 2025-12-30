@@ -44,7 +44,7 @@ class RideService {
     int seats,
     String rideStart,
     String rideEnd,
-    String rideId
+    String rideId,
   ) async {
     try {
       await _dio.put(
@@ -157,12 +157,30 @@ class RideService {
     }
   }
 
+  Future<List<Ride>> getCompletedRides() async {
+    try {
+      final response = await _dio.get(
+        '${dotenv.env['BACKEND_API_URL']}user/rides/completed',
+      );
+
+      if (response.statusCode == 200) {
+        return (response.data as List)
+            .map((json) => Ride.fromJson(json))
+            .toList();
+      } else {
+        throw Exception('Failed to get completed rides');
+      }
+    } catch (e) {
+      throw Exception('Failed to get completed rides: $e');
+    }
+  }
+
   Future<void> toggleBookmark(String rideId, bool isBookmarked) async {
     try {
       if (isBookmarked) {
-        // await _dio.delete(
-        //   '${dotenv.env['BACKEND_API_API_URL']}user/bookmarks/delete/$rideId',
-        // );
+        await _dio.delete(
+          '${dotenv.env['BACKEND_API_URL']}user/bookmarks/delete/$rideId',
+        );
       } else {
         await _dio.post(
           '${dotenv.env['BACKEND_API_URL']}user/bookmarks/create/$rideId',
@@ -223,53 +241,30 @@ class RideService {
     }
   }
 
-  Future<List<Ride>> getCompletedRides() async {
+  Future<void> deleteRide(String rideId) async {
     try {
-      final response = await _dio.get(
-        '${dotenv.env['BACKEND_API_URL']}user/rides/completed',
-      );
-
-      if (response.statusCode == 200) {
-        return (response.data as List)
-            .map((json) => Ride.fromJson(json))
-            .toList();
-      } else {
-        throw Exception('Failed to get completed rides');
-      }
-    } catch (e) {
-      throw Exception('Failed to get completed rides: $e');
-    }
-  }
-
-  Future<void> deleteRide(String rideId) async{
-    try{
       await _dio.delete(
-        '${dotenv.env['BACKEND_API_URL']}rides/manage/delete/$rideId'
+        '${dotenv.env['BACKEND_API_URL']}rides/manage/delete/$rideId',
       );
-    }
-    catch(e){
+    } catch (e) {
       throw Exception('Failed to delete the ride : $e');
     }
   }
 
-  Future<void> deleteRequest(String rideId) async{
-    try{
+  Future<void> deleteRequest(String rideId) async {
+    try {
       await _dio.delete(
-        '${dotenv.env['BACKEND_API_URL']}rides/request/$rideId'
+        '${dotenv.env['BACKEND_API_URL']}rides/request/$rideId',
       );
-    }
-    catch(e){
+    } catch (e) {
       throw Exception('Failed to delete the ride request: $e');
     }
   }
 
-  Future<void> exitRide(String rideId) async{
-    try{
-      await _dio.delete(
-        '${dotenv.env['BACKEND_API_URL']}rides/exit/$rideId'
-      );
-    }
-    catch(e){
+  Future<void> exitRide(String rideId) async {
+    try {
+      await _dio.delete('${dotenv.env['BACKEND_API_URL']}rides/exit/$rideId');
+    } catch (e) {
       throw Exception('Failed to exit the ride: $e');
     }
   }

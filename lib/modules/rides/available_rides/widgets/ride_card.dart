@@ -166,12 +166,26 @@ class RideCard extends ConsumerWidget {
                           ),
                           child: InkWell(
                             onTap: () async {
-                              final rideService = ref.read(rideServiceProvider);
-                              await rideService.toggleBookmark(
-                                ride.id.toString(),
-                                isBookmarked,
+                              final isBookmarking = ref.read(
+                                isBookmarkingProvider,
                               );
-                              ref.invalidate(bookmarkedRidesProvider);
+                              if (isBookmarking) return;
+
+                              ref.read(isBookmarkingProvider.notifier).state =
+                                  true;
+                              try {
+                                final rideService = ref.read(
+                                  rideServiceProvider,
+                                );
+                                await rideService.toggleBookmark(
+                                  ride.id.toString(),
+                                  isBookmarked,
+                                );
+                                ref.invalidate(bookmarkedRidesProvider);
+                              } finally {
+                                ref.read(isBookmarkingProvider.notifier).state =
+                                    false;
+                              }
                             },
                             child: Icon(
                               isBookmarked
@@ -190,7 +204,7 @@ class RideCard extends ConsumerWidget {
                           color: AppColors.navbar,
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: Icon(
+                        child: const Icon(
                           Icons.bookmark_outline,
                           color: AppColors.accent,
                           size: 20,
@@ -203,7 +217,7 @@ class RideCard extends ConsumerWidget {
                           color: AppColors.navbar,
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: Icon(
+                        child: const Icon(
                           Icons.bookmark_outline,
                           color: AppColors.accent,
                           size: 20,
