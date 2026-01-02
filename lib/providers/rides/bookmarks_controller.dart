@@ -10,7 +10,7 @@ class BookmarksController extends AsyncNotifier<Set<int>> {
     _service = ref.read(rideServiceProvider);
 
     final rides = await _service.getBookmarkedRides();
-    return rides.map((r) => r.id!).toSet();
+    return rides.map((r) => r.id).toSet();
   }
 
   Future<void> toggle(int rideId) async {

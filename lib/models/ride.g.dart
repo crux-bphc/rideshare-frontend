@@ -16,10 +16,10 @@ _Ride _$RideFromJson(Map<String, dynamic> json) => _Ride(
   departureEndTime: json['departureEndTime'] == null
       ? null
       : DateTime.parse(json['departureEndTime'] as String),
+  isBookmarked: json['isBookmarked'] as bool?,
   maxMemberCount: (json['maxMemberCount'] as num?)?.toInt(),
   rideStartLocation: json['rideStartLocation'] as String?,
   rideEndLocation: json['rideEndLocation'] as String?,
-  isBookmarked: json['isBookmarked'] as bool?,
 );
 
 Map<String, dynamic> _$RideToJson(_Ride instance) => <String, dynamic>{
@@ -28,8 +28,8 @@ Map<String, dynamic> _$RideToJson(_Ride instance) => <String, dynamic>{
   'comments': instance.comments,
   'departureStartTime': instance.departureStartTime?.toIso8601String(),
   'departureEndTime': instance.departureEndTime?.toIso8601String(),
+  'isBookmarked': instance.isBookmarked,
   'maxMemberCount': instance.maxMemberCount,
   'rideStartLocation': instance.rideStartLocation,
   'rideEndLocation': instance.rideEndLocation,
-  'isBookmarked': instance.isBookmarked,
 };

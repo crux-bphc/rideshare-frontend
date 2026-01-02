@@ -11,7 +11,7 @@ abstract class Ride with _$Ride {
     String? comments,
     DateTime? departureStartTime,
     DateTime? departureEndTime,
-    bool isBookmarked,
+    bool? isBookmarked,
     int? maxMemberCount,
     String? rideStartLocation,
     String? rideEndLocation,

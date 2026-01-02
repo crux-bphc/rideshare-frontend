@@ -26,10 +26,10 @@ class RideListBase extends ConsumerWidget {
           child: ListView.builder(
             itemCount: rides.length,
             itemBuilder: (context, index) {
-                final ride = rides[index];
-                return RideCard(
-                  ride: ride,
-                );
+              final ride = rides[index];
+              return RideCard(
+                ride: ride,
+              );
             },
           ),
         ),

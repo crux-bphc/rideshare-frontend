@@ -14,7 +14,8 @@ class InboxScreen extends ConsumerStatefulWidget {
   ConsumerState<InboxScreen> createState() => _InboxScreenState();
 }
 
-class _InboxScreenState extends ConsumerState<InboxScreen> with SingleTickerProviderStateMixin {
+class _InboxScreenState extends ConsumerState<InboxScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
@@ -29,20 +30,26 @@ class _InboxScreenState extends ConsumerState<InboxScreen> with SingleTickerProv
     super.dispose();
   }
 
-  Future<void> _handleRequest(WidgetRef ref, RideRequest req, String status) async {
+  Future<void> _handleRequest(
+    WidgetRef ref,
+    RideRequest req,
+    String status,
+  ) async {
     try {
-      await ref.read(rideRequestsAsyncProvider.notifier).handleRequest(
-        req.id, 
-        req.requestSender, 
-        status
-      );
+      await ref
+          .read(rideRequestsAsyncProvider.notifier)
+          .handleRequest(req.id, req.requestSender, status);
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Request ${status.toLowerCase()} successfully'),
-          backgroundColor: status == 'accepted' ? AppColors.success : AppColors.error,
+          backgroundColor: status == 'accepted'
+              ? AppColors.success
+              : AppColors.error,
         ),
       );
     } catch (error) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Failed to update request'),
@@ -55,6 +62,7 @@ class _InboxScreenState extends ConsumerState<InboxScreen> with SingleTickerProv
   Future<void> _handleDeleteRequest(WidgetRef ref, RideRequest req) async {
     try {
       await ref.read(sentRequestsAsyncProvider.notifier).deleteRequest(req.id);
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text('Request deleted successfully'),
@@ -62,6 +70,7 @@ class _InboxScreenState extends ConsumerState<InboxScreen> with SingleTickerProv
         ),
       );
     } catch (error) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Failed to delete request: ${error.toString()}'),
@@ -73,7 +82,7 @@ class _InboxScreenState extends ConsumerState<InboxScreen> with SingleTickerProv
 
   Widget _buildReceivedTab(WidgetRef ref) {
     final requestsAsyncValue = ref.watch(rideRequestsAsyncProvider);
-    
+
     return requestsAsyncValue.when(
       loading: () => const SplashPage(),
       error: (error, stack) => Center(
@@ -146,10 +155,12 @@ class _InboxScreenState extends ConsumerState<InboxScreen> with SingleTickerProv
             ),
           );
         }
-        
+
         return RefreshIndicator(
           onRefresh: () async {
-            await ref.read(rideRequestsAsyncProvider.notifier).refreshRequests();
+            await ref
+                .read(rideRequestsAsyncProvider.notifier)
+                .refreshRequests();
           },
           child: ListView.builder(
             physics: const AlwaysScrollableScrollPhysics(),
@@ -161,11 +172,11 @@ class _InboxScreenState extends ConsumerState<InboxScreen> with SingleTickerProv
                 padding: const EdgeInsets.only(bottom: 8),
                 child: RideCard(
                   rideRequest: req,
-                  onAccept: req.status == 'pending' 
+                  onAccept: req.status == 'pending'
                       ? () => _handleRequest(ref, req, "accepted")
                       : null,
                   onDecline: req.status == 'pending'
-                      ? () => _handleRequest(ref, req, "declined") 
+                      ? () => _handleRequest(ref, req, "declined")
                       : null,
                 ),
               );
@@ -178,7 +189,7 @@ class _InboxScreenState extends ConsumerState<InboxScreen> with SingleTickerProv
 
   Widget _buildSentTab(WidgetRef ref) {
     final sentRequestsAsyncValue = ref.watch(sentRequestsAsyncProvider);
-    
+
     return sentRequestsAsyncValue.when(
       loading: () => const SplashPage(),
       error: (error, stack) => Center(
@@ -251,10 +262,12 @@ class _InboxScreenState extends ConsumerState<InboxScreen> with SingleTickerProv
             ),
           );
         }
-        
+
         return RefreshIndicator(
           onRefresh: () async {
-            await ref.read(sentRequestsAsyncProvider.notifier).refreshRequests();
+            await ref
+                .read(sentRequestsAsyncProvider.notifier)
+                .refreshRequests();
           },
           child: ListView.builder(
             physics: const AlwaysScrollableScrollPhysics(),
@@ -286,7 +299,10 @@ class _InboxScreenState extends ConsumerState<InboxScreen> with SingleTickerProv
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(kToolbarHeight),
           child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
+            margin: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+              vertical: 24.0,
+            ),
             decoration: BoxDecoration(
               color: AppColors.card,
               borderRadius: BorderRadius.circular(12),

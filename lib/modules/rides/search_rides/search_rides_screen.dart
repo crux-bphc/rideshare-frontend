@@ -91,14 +91,18 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
         timeError = "Departure time cannot be after arrival time";
       }
     });
-      if (startLocationError == null &&
+    if (startLocationError == null &&
         destinationLocationError == null &&
         dateError == null &&
         timeError == null &&
         seatsError == null) {
-      ref.read(searchStartLocationProvider.notifier).setLocation(startLocationController.text.trim());
-      ref.read(searchDestinationLocationProvider.notifier).setLocation(destinationLocationController.text.trim());
-      
+      ref
+          .read(searchStartLocationProvider.notifier)
+          .setLocation(startLocationController.text.trim());
+      ref
+          .read(searchDestinationLocationProvider.notifier)
+          .setLocation(destinationLocationController.text.trim());
+
       final rides = await _searchRide();
       if (mounted) {
         GoRouter.of(context).go('/rides/available', extra: rides);

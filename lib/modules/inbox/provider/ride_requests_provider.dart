@@ -3,7 +3,6 @@ import 'package:rideshare/models/ride_request.dart';
 import 'package:rideshare/shared/providers/rides_provider.dart';
 import 'package:rideshare/shared/providers/user_provider.dart';
 
-
 class RideRequestsAsyncNotifier extends AsyncNotifier<List<RideRequest>> {
   @override
   Future<List<RideRequest>> build() async {
@@ -30,18 +29,24 @@ class RideRequestsAsyncNotifier extends AsyncNotifier<List<RideRequest>> {
         }
         return request;
       }).toList();
-      
+
       state = AsyncData(updatedRequests);
     });
   }
 
-  Future<void> handleRequest(int requestId, String requestSender, String status) async {
+  Future<void> handleRequest(
+    int requestId,
+    String requestSender,
+    String status,
+  ) async {
     try {
-      await ref.read(ridesNotifierProvider.notifier).manageRequest(
-        requestId,
-        requestSender,
-        status,
-      );
+      await ref
+          .read(ridesNotifierProvider.notifier)
+          .manageRequest(
+            requestId,
+            requestSender,
+            status,
+          );
       await updateRequestStatus(requestId, status);
     } catch (error) {
       await refreshRequests();
@@ -50,9 +55,10 @@ class RideRequestsAsyncNotifier extends AsyncNotifier<List<RideRequest>> {
   }
 }
 
-final rideRequestsAsyncProvider = AsyncNotifierProvider<RideRequestsAsyncNotifier, List<RideRequest>>(() {
-  return RideRequestsAsyncNotifier();
-});
+final rideRequestsAsyncProvider =
+    AsyncNotifierProvider<RideRequestsAsyncNotifier, List<RideRequest>>(() {
+      return RideRequestsAsyncNotifier();
+    });
 
 class SentRequestsAsyncNotifier extends AsyncNotifier<List<RideRequest>> {
   @override
@@ -74,7 +80,9 @@ class SentRequestsAsyncNotifier extends AsyncNotifier<List<RideRequest>> {
 
   Future<void> deleteRequest(int requestId) async {
     try {
-      await ref.read(ridesNotifierProvider.notifier).deleteRequest(requestId.toString());
+      await ref
+          .read(ridesNotifierProvider.notifier)
+          .deleteRequest(requestId.toString());
       await refreshRequests();
     } catch (error) {
       rethrow;
@@ -82,8 +90,9 @@ class SentRequestsAsyncNotifier extends AsyncNotifier<List<RideRequest>> {
   }
 }
 
-final sentRequestsAsyncProvider = AsyncNotifierProvider<SentRequestsAsyncNotifier, List<RideRequest>>(() {
-  return SentRequestsAsyncNotifier();
-});
+final sentRequestsAsyncProvider =
+    AsyncNotifierProvider<SentRequestsAsyncNotifier, List<RideRequest>>(() {
+      return SentRequestsAsyncNotifier();
+    });
 
 //using async provider for the first time was actually fun
