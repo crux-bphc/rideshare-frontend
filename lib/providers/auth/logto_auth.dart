@@ -5,7 +5,6 @@ import 'package:logto_dart_sdk/logto_dart_sdk.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rideshare/providers/auth/auth_provider.dart';
 import 'package:rideshare/providers/auth/auth_user.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class LogtoAuthProvider extends AuthProvider {
   late final LogtoClient _logtoClient;
@@ -47,6 +46,11 @@ class LogtoAuthProvider extends AuthProvider {
     );
 
     dioClient = Dio();
+
+    dioClient.interceptors.add(
+      LogInterceptor(requestBody: true, responseBody: true),
+    );
+
     dioClient.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {

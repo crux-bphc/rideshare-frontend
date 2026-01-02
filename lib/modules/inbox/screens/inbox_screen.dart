@@ -5,6 +5,7 @@ import 'package:rideshare/modules/inbox/provider/ride_requests_provider.dart';
 import 'package:rideshare/modules/inbox/widgets/ride_request_card.dart';
 import 'package:rideshare/modules/inbox/widgets/sent_request_card.dart';
 import 'package:rideshare/modules/splash/splash_page.dart';
+import 'package:rideshare/shared/providers/user_provider.dart';
 import 'package:rideshare/shared/theme.dart';
 
 class InboxScreen extends ConsumerStatefulWidget {
@@ -14,7 +15,8 @@ class InboxScreen extends ConsumerStatefulWidget {
   ConsumerState<InboxScreen> createState() => _InboxScreenState();
 }
 
-class _InboxScreenState extends ConsumerState<InboxScreen> with SingleTickerProviderStateMixin {
+class _InboxScreenState extends ConsumerState<InboxScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
@@ -29,20 +31,26 @@ class _InboxScreenState extends ConsumerState<InboxScreen> with SingleTickerProv
     super.dispose();
   }
 
-  Future<void> _handleRequest(WidgetRef ref, RideRequest req, String status) async {
+  Future<void> _handleRequest(
+    WidgetRef ref,
+    RideRequest req,
+    String status,
+  ) async {
     try {
-      await ref.read(rideRequestsAsyncProvider.notifier).handleRequest(
-        req.id, 
-        req.requestSender, 
-        status
-      );
+      await ref
+          .read(rideRequestsAsyncProvider.notifier)
+          .handleRequest(req.id, req.requestSender, status);
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Request ${status.toLowerCase()} successfully'),
-          backgroundColor: status == 'accepted' ? AppColors.success : AppColors.error,
+          backgroundColor: status == 'accepted'
+              ? AppColors.success
+              : AppColors.error,
         ),
       );
     } catch (error) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Failed to update request'),
@@ -55,6 +63,7 @@ class _InboxScreenState extends ConsumerState<InboxScreen> with SingleTickerProv
   Future<void> _handleDeleteRequest(WidgetRef ref, RideRequest req) async {
     try {
       await ref.read(sentRequestsAsyncProvider.notifier).deleteRequest(req.id);
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text('Request deleted successfully'),
@@ -62,6 +71,7 @@ class _InboxScreenState extends ConsumerState<InboxScreen> with SingleTickerProv
         ),
       );
     } catch (error) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Failed to delete request: ${error.toString()}'),
@@ -73,7 +83,7 @@ class _InboxScreenState extends ConsumerState<InboxScreen> with SingleTickerProv
 
   Widget _buildReceivedTab(WidgetRef ref) {
     final requestsAsyncValue = ref.watch(rideRequestsAsyncProvider);
-    
+
     return requestsAsyncValue.when(
       loading: () => const SplashPage(),
       error: (error, stack) => Center(
@@ -146,31 +156,46 @@ class _InboxScreenState extends ConsumerState<InboxScreen> with SingleTickerProv
             ),
           );
         }
-        
-        return RefreshIndicator(
-          onRefresh: () async {
-            await ref.read(rideRequestsAsyncProvider.notifier).refreshRequests();
+
+        return FutureBuilder<Map<String, String>>(
+          future: _loadUserNames(ref, requests.map((r) => r.requestSender).toSet()),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting ||
+                snapshot.connectionState == ConnectionState.active) {
+              return const SplashPage();
+            }
+
+            final nameMap = snapshot.data ?? {};
+
+            return RefreshIndicator(
+              onRefresh: () async {
+                await ref
+                    .read(rideRequestsAsyncProvider.notifier)
+                    .refreshRequests();
+              },
+              child: ListView.builder(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.all(8),
+                itemCount: requests.length,
+                itemBuilder: (context, index) {
+                  final req = requests[index];
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: RideCard(
+                      rideRequest: req,
+                      senderName: nameMap[req.requestSender],
+                      onAccept: req.status == 'pending'
+                          ? () => _handleRequest(ref, req, "accepted")
+                          : null,
+                      onDecline: req.status == 'pending'
+                          ? () => _handleRequest(ref, req, "declined")
+                          : null,
+                    ),
+                  );
+                },
+              ),
+            );
           },
-          child: ListView.builder(
-            physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.all(8),
-            itemCount: requests.length,
-            itemBuilder: (context, index) {
-              final req = requests[index];
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: RideCard(
-                  rideRequest: req,
-                  onAccept: req.status == 'pending' 
-                      ? () => _handleRequest(ref, req, "accepted")
-                      : null,
-                  onDecline: req.status == 'pending'
-                      ? () => _handleRequest(ref, req, "declined") 
-                      : null,
-                ),
-              );
-            },
-          ),
         );
       },
     );
@@ -178,7 +203,7 @@ class _InboxScreenState extends ConsumerState<InboxScreen> with SingleTickerProv
 
   Widget _buildSentTab(WidgetRef ref) {
     final sentRequestsAsyncValue = ref.watch(sentRequestsAsyncProvider);
-    
+
     return sentRequestsAsyncValue.when(
       loading: () => const SplashPage(),
       error: (error, stack) => Center(
@@ -251,31 +276,64 @@ class _InboxScreenState extends ConsumerState<InboxScreen> with SingleTickerProv
             ),
           );
         }
-        
-        return RefreshIndicator(
-          onRefresh: () async {
-            await ref.read(sentRequestsAsyncProvider.notifier).refreshRequests();
+
+        return FutureBuilder<Map<String, String>>(
+          future: _loadUserNames(ref, requests.map((r) => r.createdBy).where((email) => email.isNotEmpty).toSet()),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting ||
+                snapshot.connectionState == ConnectionState.active) {
+              return const SplashPage();
+            }
+
+            final nameMap = snapshot.data ?? {};
+
+            return RefreshIndicator(
+              onRefresh: () async {
+                await ref
+                    .read(sentRequestsAsyncProvider.notifier)
+                    .refreshRequests();
+              },
+              child: ListView.builder(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.all(8),
+                itemCount: requests.length,
+                itemBuilder: (context, index) {
+                  final req = requests[index];
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: SentRequestCard(
+                      rideRequest: req,
+                      recipientName: req.createdBy.isNotEmpty ? nameMap[req.createdBy] : null,
+                      onDelete: req.status == 'pending'
+                          ? () => _handleDeleteRequest(ref, req)
+                          : null,
+                    ),
+                  );
+                },
+              ),
+            );
           },
-          child: ListView.builder(
-            physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.all(8),
-            itemCount: requests.length,
-            itemBuilder: (context, index) {
-              final req = requests[index];
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: SentRequestCard(
-                  rideRequest: req,
-                  onDelete: req.status == 'pending'
-                      ? () => _handleDeleteRequest(ref, req)
-                      : null,
-                ),
-              );
-            },
-          ),
         );
       },
     );
+  }
+
+  Future<Map<String, String>> _loadUserNames(WidgetRef ref, Set<String> emails) async {
+    final userNotifier = ref.read(userNotifierProvider.notifier);
+    final nameMap = <String, String>{};
+
+    await Future.wait(
+      emails.map((email) async {
+        try {
+          final user = await userNotifier.getUser(email);
+          nameMap[email] = user.name;
+        } catch (e) {
+          throw Exception("Could not get name : $e");
+        }
+      }),
+    );
+
+    return nameMap;
   }
 
   @override
@@ -286,7 +344,10 @@ class _InboxScreenState extends ConsumerState<InboxScreen> with SingleTickerProv
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(kToolbarHeight),
           child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
+            margin: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+              vertical: 24.0,
+            ),
             decoration: BoxDecoration(
               color: AppColors.card,
               borderRadius: BorderRadius.circular(12),

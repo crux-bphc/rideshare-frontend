@@ -18,5 +18,6 @@ abstract class RideRequest with _$RideRequest {
     String? rideEndLocation,
   }) = _RideRequest;
 
-  factory RideRequest.fromJson(Map<String, dynamic> json) => _$RideRequestFromJson(json);
+  factory RideRequest.fromJson(Map<String, dynamic> json) =>
+      _$RideRequestFromJson(json);
 }
