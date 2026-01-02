@@ -5,6 +5,7 @@ import 'package:rideshare/modules/inbox/provider/ride_requests_provider.dart';
 import 'package:rideshare/modules/inbox/widgets/ride_request_card.dart';
 import 'package:rideshare/modules/inbox/widgets/sent_request_card.dart';
 import 'package:rideshare/modules/splash/splash_page.dart';
+import 'package:rideshare/shared/providers/user_provider.dart';
 import 'package:rideshare/shared/theme.dart';
 
 class InboxScreen extends ConsumerStatefulWidget {
@@ -156,32 +157,45 @@ class _InboxScreenState extends ConsumerState<InboxScreen>
           );
         }
 
-        return RefreshIndicator(
-          onRefresh: () async {
-            await ref
-                .read(rideRequestsAsyncProvider.notifier)
-                .refreshRequests();
+        return FutureBuilder<Map<String, String>>(
+          future: _loadUserNames(ref, requests.map((r) => r.requestSender).toSet()),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting ||
+                snapshot.connectionState == ConnectionState.active) {
+              return const SplashPage();
+            }
+
+            final nameMap = snapshot.data ?? {};
+
+            return RefreshIndicator(
+              onRefresh: () async {
+                await ref
+                    .read(rideRequestsAsyncProvider.notifier)
+                    .refreshRequests();
+              },
+              child: ListView.builder(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.all(8),
+                itemCount: requests.length,
+                itemBuilder: (context, index) {
+                  final req = requests[index];
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: RideCard(
+                      rideRequest: req,
+                      senderName: nameMap[req.requestSender],
+                      onAccept: req.status == 'pending'
+                          ? () => _handleRequest(ref, req, "accepted")
+                          : null,
+                      onDecline: req.status == 'pending'
+                          ? () => _handleRequest(ref, req, "declined")
+                          : null,
+                    ),
+                  );
+                },
+              ),
+            );
           },
-          child: ListView.builder(
-            physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.all(8),
-            itemCount: requests.length,
-            itemBuilder: (context, index) {
-              final req = requests[index];
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: RideCard(
-                  rideRequest: req,
-                  onAccept: req.status == 'pending'
-                      ? () => _handleRequest(ref, req, "accepted")
-                      : null,
-                  onDecline: req.status == 'pending'
-                      ? () => _handleRequest(ref, req, "declined")
-                      : null,
-                ),
-              );
-            },
-          ),
         );
       },
     );
@@ -263,32 +277,63 @@ class _InboxScreenState extends ConsumerState<InboxScreen>
           );
         }
 
-        return RefreshIndicator(
-          onRefresh: () async {
-            await ref
-                .read(sentRequestsAsyncProvider.notifier)
-                .refreshRequests();
+        return FutureBuilder<Map<String, String>>(
+          future: _loadUserNames(ref, requests.map((r) => r.createdBy).where((email) => email.isNotEmpty).toSet()),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting ||
+                snapshot.connectionState == ConnectionState.active) {
+              return const SplashPage();
+            }
+
+            final nameMap = snapshot.data ?? {};
+
+            return RefreshIndicator(
+              onRefresh: () async {
+                await ref
+                    .read(sentRequestsAsyncProvider.notifier)
+                    .refreshRequests();
+              },
+              child: ListView.builder(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.all(8),
+                itemCount: requests.length,
+                itemBuilder: (context, index) {
+                  final req = requests[index];
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: SentRequestCard(
+                      rideRequest: req,
+                      recipientName: req.createdBy.isNotEmpty ? nameMap[req.createdBy] : null,
+                      onDelete: req.status == 'pending'
+                          ? () => _handleDeleteRequest(ref, req)
+                          : null,
+                    ),
+                  );
+                },
+              ),
+            );
           },
-          child: ListView.builder(
-            physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.all(8),
-            itemCount: requests.length,
-            itemBuilder: (context, index) {
-              final req = requests[index];
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: SentRequestCard(
-                  rideRequest: req,
-                  onDelete: req.status == 'pending'
-                      ? () => _handleDeleteRequest(ref, req)
-                      : null,
-                ),
-              );
-            },
-          ),
         );
       },
     );
+  }
+
+  Future<Map<String, String>> _loadUserNames(WidgetRef ref, Set<String> emails) async {
+    final userNotifier = ref.read(userNotifierProvider.notifier);
+    final nameMap = <String, String>{};
+
+    await Future.wait(
+      emails.map((email) async {
+        try {
+          final user = await userNotifier.getUser(email);
+          nameMap[email] = user.name;
+        } catch (e) {
+          throw Exception("Could not get name : $e");
+        }
+      }),
+    );
+
+    return nameMap;
   }
 
   @override
