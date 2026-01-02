@@ -6,11 +6,13 @@ import 'package:rideshare/models/user.dart';
 class UserService {
   final Dio _dio;
 
-  UserService(this._dio) {
-    _dio.interceptors.add(
-      LogInterceptor(requestBody: true, responseBody: true),
-    );
-  }
+  UserService(this._dio);
+
+  // UserService(this._dio) {
+  //   _dio.interceptors.add(
+  //     LogInterceptor(requestBody: true, responseBody: true),
+  //   );
+  // }
 
   Future<String?> getUserEmail() async {
     try {
@@ -40,44 +42,43 @@ class UserService {
     }
   }
 
-  Future<User> getUserDetails(String email) async{
-    try{
+  Future<User> getUserDetails(String email) async {
+    try {
       final response = await _dio.get(
         '${dotenv.env['BACKEND_API_URL']}user/email/',
-        queryParameters: {'email' : email},
+        queryParameters: {'email': email},
       );
       if (response.statusCode == 200) {
-          return User.fromJson(response.data);
-        } else {
-          throw Exception('Failed to search rides');
-        }
-    }
-    catch(e){
+        return User.fromJson(response.data);
+      } else {
+        throw Exception('Failed to search rides');
+      }
+    } catch (e) {
       throw Exception("Failed to get user details");
     }
   }
 
-  Future<List<RideRequest>> getRequestsReceived() async{
-    try{
+  Future<List<RideRequest>> getRequestsReceived() async {
+    try {
       final response = await _dio.get(
         '${dotenv.env['BACKEND_API_URL']}user/requests/received',
       );
-      if (response.statusCode == 200){
-        return (response.data as List).map((json) => RideRequest.fromJson(json)).toList();
-      }
-      else{
+      if (response.statusCode == 200) {
+        return (response.data as List)
+            .map((json) => RideRequest.fromJson(json))
+            .toList();
+      } else {
         throw Exception("Failed to get Received Requests");
       }
-    }
-    catch(e){
+    } catch (e) {
       throw Exception("Failed to get Received Requests $e");
     }
   }
 
-  Future<List<RideRequest>> getRequestsSent() async{
-    try{
+  Future<List<RideRequest>> getRequestsSent() async {
+    try {
       final response = await _dio.get(
-        '${dotenv.env['BACKEND_API_URL']}user/requests/sent'
+        '${dotenv.env['BACKEND_API_URL']}user/requests/sent',
       );
 
       if (response.statusCode == 200) {
@@ -86,14 +87,13 @@ class UserService {
           final response = Map<String, dynamic>.from(json);
           response['requestSender'] ??= currentUserEmail ?? '';
           response['status'] ??= 'pending';
-          
+
           return RideRequest.fromJson(response);
         }).toList();
+      } else {
+        throw Exception('Failed to get users Ride Requests ');
       }
-      else {
-        throw Exception ('Failed to get users Ride Requests ');
-      }
-    } catch(e){
+    } catch (e) {
       throw Exception("Failed to get user rides: $e");
     }
   }
