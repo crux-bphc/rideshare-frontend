@@ -51,47 +51,49 @@ class YourRidesScreen extends ConsumerWidget {
             ),
           ),
         ),
-        body: TabBarView(
-          children: [
-            Consumer(
-              builder: (context, ref, child) {
-                final upcomingRidesAsync = ref.watch(upcomingRidesProvider);
-                return upcomingRidesAsync.when(
-                  data: (rides) {
-                    if (rides.isEmpty) {
-                      return const Center(
-                        child: Text('No upcoming rides.'),
-                      );
-                    }
-                    return YourRidesList(rides: rides);
-                  },
-                  loading: () => const SplashPage(),
-                  error: (error, stack) => Center(
-                    child: Text('No upcoming rides.'),
-                  ),
-                );
-              },
-            ),
-            Consumer(
-              builder: (context, ref, child) {
-                final bookmarkedRidesAsync = ref.watch(bookmarkedRidesProvider);
-                return bookmarkedRidesAsync.when(
-                  data: (rides) {
-                    if (rides.isEmpty) {
-                      return const Center(
-                        child: Text('No bookmarked rides.'),
-                      );
-                    }
-                    return YourRidesList(rides: rides);
-                  },
-                  loading: () => const SplashPage(),
-                  error: (error, stack) => Center(
-                    child: Text('No bookmarked rides.'),
-                  ),
-                );
-              },
-            ),
-          ],
+        body: SafeArea(
+          child: TabBarView(
+            children: [
+              Consumer(
+                builder: (context, ref, child) {
+                  final upcomingRidesAsync = ref.watch(upcomingRidesProvider);
+                  return upcomingRidesAsync.when(
+                    data: (rides) {
+                      if (rides.isEmpty) {
+                        return const Center(
+                          child: Text('No upcoming rides.'),
+                        );
+                      }
+                      return YourRidesList(rides: rides);
+                    },
+                    loading: () => const SplashPage(),
+                    error: (error, stack) => Center(
+                      child: Text('No upcoming rides.'),
+                    ),
+                  );
+                },
+              ),
+              Consumer(
+                builder: (context, ref, child) {
+                  final bookmarkedRidesAsync = ref.watch(bookmarkedRidesProvider);
+                  return bookmarkedRidesAsync.when(
+                    data: (rides) {
+                      if (rides.isEmpty) {
+                        return const Center(
+                          child: Text('No bookmarked rides.'),
+                        );
+                      }
+                      return YourRidesList(rides: rides);
+                    },
+                    loading: () => const SplashPage(),
+                    error: (error, stack) => Center(
+                      child: Text('No bookmarked rides.'),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

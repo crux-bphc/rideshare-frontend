@@ -374,12 +374,14 @@ class _InboxScreenState extends ConsumerState<InboxScreen>
         ),
         actions: [],
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          _buildReceivedTab(ref),
-          _buildSentTab(ref),
-        ],
+      body: SafeArea(
+        child: TabBarView(
+          controller: _tabController,
+          children: [
+            _buildReceivedTab(ref),
+            _buildSentTab(ref),
+          ],
+        ),
       ),
     );
   }
