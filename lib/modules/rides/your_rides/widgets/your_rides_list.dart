@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rideshare/models/ride.dart';
 import 'package:rideshare/shared/widgets/ride_list_base.dart';
+import 'package:rideshare/shared/theme.dart';
 
 class YourRidesList extends ConsumerWidget {
   const YourRidesList({
@@ -18,7 +19,10 @@ class YourRidesList extends ConsumerWidget {
       noRidesWidget: Center(
         child: Text(
           "No Upcoming Rides!",
-          style: Theme.of(context).textTheme.bodyLarge,
+          style: TextStyle(
+            color: AppColors.textPrimary,
+            fontSize: 14,
+          ),
         ),
       ),
     );

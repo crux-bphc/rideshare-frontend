@@ -119,10 +119,10 @@ class ProfileScreen extends ConsumerWidget {
                         padding: const EdgeInsets.all(16.0),
                         child: Text(
                           'No past rides found',
-                          style: Theme.of(context).textTheme.bodyLarge
-                              ?.copyWith(
-                                color: Colors.white70,
-                              ),
+                          style: TextStyle(
+                            color: AppColors.textPrimary,
+                            fontSize: 14,
+                          ),
                         ),
                       ),
                     )
@@ -138,10 +138,28 @@ class ProfileScreen extends ConsumerWidget {
             ),
           ),
           loading: () => const SplashPage(),
-          error: (err, stack) => Center(child: Text('Error: $err')),
+          error: (err, stack) => Center(
+            child: Text(
+              'An error occurred. Please try again later.',
+              style: TextStyle(
+                color: AppColors.accent,
+                fontSize: 14,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
         ),
         loading: () => const SplashPage(),
-        error: (err, stack) => Center(child: Text('Error: $err')),
+        error: (err, stack) => Center(
+          child: Text(
+            'An error occurred. Please try again later.',
+            style: TextStyle(
+              color: AppColors.accent,
+              fontSize: 14,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ),
       ),
     );
   }

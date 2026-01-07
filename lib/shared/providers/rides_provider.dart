@@ -116,13 +116,13 @@ class RidesNotifier extends _$RidesNotifier {
 }
 
 @riverpod
-Future<List<Ride>> upcomingRides(UpcomingRidesRef ref) async {
+Future<List<Ride>> upcomingRides(Ref ref) async {
   final rideService = ref.watch(rideServiceProvider);
   return rideService.getUpcomingRides();
 }
 
 @riverpod
-Future<List<Ride>> bookmarkedRides(BookmarkedRidesRef ref) async {
+Future<List<Ride>> bookmarkedRides(Ref ref) async {
   final rideService = ref.watch(rideServiceProvider);
   return rideService.getBookmarkedRides();
 }

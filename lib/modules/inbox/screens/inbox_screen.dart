@@ -94,8 +94,7 @@ class _InboxScreenState extends ConsumerState<InboxScreen>
               'No ride requests received',
               style: TextStyle(
                 color: AppColors.textPrimary,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
+                fontSize: 14,
               ),
             ),
 
@@ -117,8 +116,7 @@ class _InboxScreenState extends ConsumerState<InboxScreen>
               'No ride requests received',
               style: TextStyle(
                 color: AppColors.textPrimary,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
+                fontSize: 14,
               ),
             ),
           );
@@ -184,8 +182,7 @@ class _InboxScreenState extends ConsumerState<InboxScreen>
               'No sent requests',
               style: TextStyle(
                 color: AppColors.textPrimary,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
+                fontSize: 14,
               ),
             ),
 
@@ -207,8 +204,7 @@ class _InboxScreenState extends ConsumerState<InboxScreen>
               'No sent requests',
               style: TextStyle(
                 color: AppColors.textPrimary,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
+                fontSize: 14,
               ),
             ),
           );

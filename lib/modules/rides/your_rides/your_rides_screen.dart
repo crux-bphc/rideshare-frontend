@@ -60,8 +60,14 @@ class YourRidesScreen extends ConsumerWidget {
                   return upcomingRidesAsync.when(
                     data: (rides) {
                       if (rides.isEmpty) {
-                        return const Center(
-                          child: Text('No upcoming rides.'),
+                        return Center(
+                          child: Text(
+                            'No upcoming rides.',
+                            style: TextStyle(
+                              color: AppColors.textPrimary,
+                              fontSize: 14,
+                            ),
+                          ),
                         );
                       }
                       return YourRidesList(rides: rides);
@@ -79,8 +85,14 @@ class YourRidesScreen extends ConsumerWidget {
                   return bookmarkedRidesAsync.when(
                     data: (rides) {
                       if (rides.isEmpty) {
-                        return const Center(
-                          child: Text('No bookmarked rides.'),
+                        return Center(
+                          child: Text(
+                            'No bookmarked rides.',
+                            style: TextStyle(
+                              color: AppColors.textPrimary,
+                              fontSize: 14,
+                            ),
+                          ),
                         );
                       }
                       return YourRidesList(rides: rides);
