@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rideshare/models/ride.dart';
 import 'package:rideshare/models/ride_request.dart';
 import 'package:rideshare/models/user.dart';
@@ -44,7 +45,7 @@ class UserNotifier extends _$UserNotifier {
 }
 
 @Riverpod(keepAlive: true)
-Future<User?> profileUserDetails(ProfileUserDetailsRef ref) async {
+Future<User?> profileUserDetails(Ref ref) async {
   final authState = ref.watch(authNotifierProvider);
   if (authState.value?.user?.email != null) {
     try {

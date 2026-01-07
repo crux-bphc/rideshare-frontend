@@ -90,30 +90,15 @@ class _InboxScreenState extends ConsumerState<InboxScreen>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.error_outline,
-              size: 64,
-              color: AppColors.error,
-            ),
-            const SizedBox(height: 16),
             Text(
-              'Error loading requests',
+              'No ride requests received',
               style: TextStyle(
                 color: AppColors.textPrimary,
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              error.toString(),
-              style: TextStyle(
-                color: AppColors.accent,
                 fontSize: 14,
               ),
-              textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 24),
+
+            const SizedBox(height: 16),
             ElevatedButton.icon(
               onPressed: () {
                 ref.read(rideRequestsAsyncProvider.notifier).refreshRequests();
@@ -127,38 +112,21 @@ class _InboxScreenState extends ConsumerState<InboxScreen>
       data: (requests) {
         if (requests.isEmpty) {
           return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.inbox,
-                  size: 64,
-                  color: AppColors.accent,
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'No ride requests',
-                  style: TextStyle(
-                    color: AppColors.textPrimary,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Pull down to refresh',
-                  style: TextStyle(
-                    color: AppColors.accent,
-                    fontSize: 14,
-                  ),
-                ),
-              ],
+            child: Text(
+              'No ride requests received',
+              style: TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 14,
+              ),
             ),
           );
         }
 
         return FutureBuilder<Map<String, String>>(
-          future: _loadUserNames(ref, requests.map((r) => r.requestSender).toSet()),
+          future: _loadUserNames(
+            ref,
+            requests.map((r) => r.requestSender).toSet(),
+          ),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting ||
                 snapshot.connectionState == ConnectionState.active) {
@@ -210,30 +178,15 @@ class _InboxScreenState extends ConsumerState<InboxScreen>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.error_outline,
-              size: 64,
-              color: AppColors.error,
-            ),
-            const SizedBox(height: 16),
             Text(
-              'Error loading sent requests',
+              'No sent requests',
               style: TextStyle(
                 color: AppColors.textPrimary,
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              error.toString(),
-              style: TextStyle(
-                color: AppColors.accent,
                 fontSize: 14,
               ),
-              textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 24),
+
+            const SizedBox(height: 16),
             ElevatedButton.icon(
               onPressed: () {
                 ref.read(sentRequestsAsyncProvider.notifier).refreshRequests();
@@ -247,38 +200,24 @@ class _InboxScreenState extends ConsumerState<InboxScreen>
       data: (requests) {
         if (requests.isEmpty) {
           return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.send_outlined,
-                  size: 64,
-                  color: AppColors.accent,
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'No sent requests',
-                  style: TextStyle(
-                    color: AppColors.textPrimary,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Pull down to refresh',
-                  style: TextStyle(
-                    color: AppColors.accent,
-                    fontSize: 14,
-                  ),
-                ),
-              ],
+            child: Text(
+              'No sent requests',
+              style: TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 14,
+              ),
             ),
           );
         }
 
         return FutureBuilder<Map<String, String>>(
-          future: _loadUserNames(ref, requests.map((r) => r.createdBy).where((email) => email.isNotEmpty).toSet()),
+          future: _loadUserNames(
+            ref,
+            requests
+                .map((r) => r.createdBy)
+                .where((email) => email.isNotEmpty)
+                .toSet(),
+          ),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting ||
                 snapshot.connectionState == ConnectionState.active) {
@@ -303,7 +242,9 @@ class _InboxScreenState extends ConsumerState<InboxScreen>
                     padding: const EdgeInsets.only(bottom: 8),
                     child: SentRequestCard(
                       rideRequest: req,
-                      recipientName: req.createdBy.isNotEmpty ? nameMap[req.createdBy] : null,
+                      recipientName: req.createdBy.isNotEmpty
+                          ? nameMap[req.createdBy]
+                          : null,
                       onDelete: req.status == 'pending'
                           ? () => _handleDeleteRequest(ref, req)
                           : null,
@@ -318,7 +259,10 @@ class _InboxScreenState extends ConsumerState<InboxScreen>
     );
   }
 
-  Future<Map<String, String>> _loadUserNames(WidgetRef ref, Set<String> emails) async {
+  Future<Map<String, String>> _loadUserNames(
+    WidgetRef ref,
+    Set<String> emails,
+  ) async {
     final userNotifier = ref.read(userNotifierProvider.notifier);
     final nameMap = <String, String>{};
 
@@ -374,12 +318,14 @@ class _InboxScreenState extends ConsumerState<InboxScreen>
         ),
         actions: [],
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          _buildReceivedTab(ref),
-          _buildSentTab(ref),
-        ],
+      body: SafeArea(
+        child: TabBarView(
+          controller: _tabController,
+          children: [
+            _buildReceivedTab(ref),
+            _buildSentTab(ref),
+          ],
+        ),
       ),
     );
   }
