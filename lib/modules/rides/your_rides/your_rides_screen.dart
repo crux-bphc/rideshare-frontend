@@ -16,16 +16,13 @@ class YourRidesScreen extends ConsumerWidget {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          title: const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-            child: Text('Your rides'),
-          ),
+          title: const Text('Your rides'),
           bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(kToolbarHeight),
+            preferredSize: const Size.fromHeight(72.0),
             child: Container(
               margin: const EdgeInsets.symmetric(
                 horizontal: 16.0,
-                vertical: 24.0,
+                vertical: 12.0,
               ),
               decoration: BoxDecoration(
                 color: AppColors.card,
@@ -81,7 +78,9 @@ class YourRidesScreen extends ConsumerWidget {
               ),
               Consumer(
                 builder: (context, ref, child) {
-                  final bookmarkedRidesAsync = ref.watch(bookmarkedRidesProvider);
+                  final bookmarkedRidesAsync = ref.watch(
+                    bookmarkedRidesProvider,
+                  );
                   return bookmarkedRidesAsync.when(
                     data: (rides) {
                       if (rides.isEmpty) {
