@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rideshare/providers/auth/auth_user.dart';
 import 'package:rideshare/shared/providers/user_provider.dart';
 import 'package:rideshare/providers/auth/logto_auth.dart';
+import 'package:rideshare/shared/services/fcm_service.dart';
 
 abstract class AuthProvider {
   Dio get dioClient;
@@ -43,6 +44,13 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
   Future<AuthState> build() async {
     final authProvider = ref.read(logtoAuthProvider);
     final user = await authProvider.initialise();
+
+    if (user != null) {
+      Future.microtask(() {
+        ref.read(fcmServiceProvider).initialize();
+      });
+    }
+
     return AuthState(user: user, isAuthenticated: user != null);
   }
 
@@ -52,6 +60,7 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
       final authProvider = ref.read(logtoAuthProvider);
       final user = await authProvider.login();
       if (user != null) {
+        await ref.read(fcmServiceProvider).initialize();
         final userService = ref.read(userServiceProvider);
         final userEmail = await userService.getUserEmail();
         if (userEmail == null) {
