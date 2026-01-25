@@ -6,11 +6,13 @@ import 'package:rideshare/models/user.dart';
 class RideService {
   final Dio _dio;
 
-  RideService(this._dio) {
-    _dio.interceptors.add(
-      LogInterceptor(requestBody: true, responseBody: true),
-    );
-  }
+  RideService(this._dio);
+
+  // RideService(this._dio) {
+  //   _dio.interceptors.add(
+  //     LogInterceptor(requestBody: true, responseBody: true),
+  //   );
+  // }
 
   Future<void> createRide(
     DateTime departureStartTime,

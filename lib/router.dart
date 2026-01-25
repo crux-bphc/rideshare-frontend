@@ -111,8 +111,9 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                       bool isEditing = false;
                       Ride? ride;
                       String? rideId;
-                      
-                      if (state.extra != null && state.extra is Map<String, dynamic>) {
+
+                      if (state.extra != null &&
+                          state.extra is Map<String, dynamic>) {
                         final params = state.extra as Map<String, dynamic>;
                         final isEditingValue = params['isEditing'];
                         if (isEditingValue is bool) {
@@ -127,7 +128,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                           rideId = rideIdValue;
                         }
                       }
-                      
+
                       return _buildPageWithFadeTransition(
                         path: state.matchedLocation,
                         child: CreateRideScreen(

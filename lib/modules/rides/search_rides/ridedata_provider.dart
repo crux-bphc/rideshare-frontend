@@ -93,11 +93,12 @@ class SearchStartLocationNotifier extends Notifier<String?> {
   }
 }
 
-final searchStartLocationProvider = NotifierProvider<SearchStartLocationNotifier, String?>(
-  () {
-    return SearchStartLocationNotifier();
-  },
-);
+final searchStartLocationProvider =
+    NotifierProvider<SearchStartLocationNotifier, String?>(
+      () {
+        return SearchStartLocationNotifier();
+      },
+    );
 
 class SearchDestinationLocationNotifier extends Notifier<String?> {
   @override
@@ -114,8 +115,9 @@ class SearchDestinationLocationNotifier extends Notifier<String?> {
   }
 }
 
-final searchDestinationLocationProvider = NotifierProvider<SearchDestinationLocationNotifier, String?>(
-  () {
-    return SearchDestinationLocationNotifier();
-  },
-);
+final searchDestinationLocationProvider =
+    NotifierProvider<SearchDestinationLocationNotifier, String?>(
+      () {
+        return SearchDestinationLocationNotifier();
+      },
+    );

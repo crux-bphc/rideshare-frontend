@@ -40,7 +40,11 @@ class MemberCard extends StatelessWidget {
               ),
             ),
             IconButton(
-              icon: const Icon(Icons.copy, color: AppColors.textSecondary, size: 20),
+              icon: const Icon(
+                Icons.copy,
+                color: AppColors.textSecondary,
+                size: 20,
+              ),
               onPressed: () {
                 Clipboard.setData(ClipboardData(text: member.phoneNumber));
                 ScaffoldMessenger.of(context).showSnackBar(

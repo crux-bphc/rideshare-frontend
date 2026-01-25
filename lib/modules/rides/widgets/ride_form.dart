@@ -71,13 +71,16 @@ class _RideFormState extends ConsumerState<RideForm> {
     if (picked != null) {
       ref.read(departureTimeProvider.notifier).setTime(picked);
       final currentArrivalTime = ref.read(arrivalTimeProvider);
-      
+
       if (currentArrivalTime != null && !picked.isBefore(currentArrivalTime)) {
         final departureMinutes = picked.hour * 60 + picked.minute;
         final newArrivalMinutes = departureMinutes + 30;
         final newArrivalHour = (newArrivalMinutes ~/ 60) % 24;
         final newArrivalMinute = newArrivalMinutes % 60;
-        final newArrivalTime = TimeOfDay(hour: newArrivalHour, minute: newArrivalMinute);
+        final newArrivalTime = TimeOfDay(
+          hour: newArrivalHour,
+          minute: newArrivalMinute,
+        );
         ref.read(arrivalTimeProvider.notifier).setTime(newArrivalTime);
       }
     }
@@ -87,11 +90,13 @@ class _RideFormState extends ConsumerState<RideForm> {
     final departureTime = ref.read(departureTimeProvider);
     final initialTime = departureTime != null
         ? TimeOfDay(
-            hour: ((departureTime.hour * 60 + departureTime.minute + 30) ~/ 60) % 24,
+            hour:
+                ((departureTime.hour * 60 + departureTime.minute + 30) ~/ 60) %
+                24,
             minute: (departureTime.minute + 30) % 60,
           )
         : TimeOfDay.now();
-    
+
     final picked = await showCustomTimePicker(
       context,
       initialTime: initialTime,
@@ -102,7 +107,10 @@ class _RideFormState extends ConsumerState<RideForm> {
         final newArrivalMinutes = departureMinutes + 30;
         final newArrivalHour = (newArrivalMinutes ~/ 60) % 24;
         final newArrivalMinute = newArrivalMinutes % 60;
-        final newArrivalTime = TimeOfDay(hour: newArrivalHour, minute: newArrivalMinute);
+        final newArrivalTime = TimeOfDay(
+          hour: newArrivalHour,
+          minute: newArrivalMinute,
+        );
         ref.read(arrivalTimeProvider.notifier).setTime(newArrivalTime);
       } else {
         ref.read(arrivalTimeProvider.notifier).setTime(picked);

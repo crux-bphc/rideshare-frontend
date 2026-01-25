@@ -13,7 +13,7 @@ class CreateRideScreen extends ConsumerStatefulWidget {
   final bool isEditing;
   final Ride? ride;
   final String? rideId;
-  
+
   const CreateRideScreen({
     super.key,
     this.isEditing = false,
@@ -46,26 +46,36 @@ class _CreateRideScreenState extends ConsumerState<CreateRideScreen> {
           final ride = widget.ride!;
           startLocationController.text = ride.rideStartLocation ?? '';
           destinationLocationController.text = ride.rideEndLocation ?? '';
-          
+
           if (ride.departureStartTime != null) {
-            ref.read(selectedDateProvider.notifier).setDate(ride.departureStartTime!);
-            ref.read(departureTimeProvider.notifier).setTime(TimeOfDay.fromDateTime(ride.departureStartTime!));
+            ref
+                .read(selectedDateProvider.notifier)
+                .setDate(ride.departureStartTime!);
+            ref
+                .read(departureTimeProvider.notifier)
+                .setTime(TimeOfDay.fromDateTime(ride.departureStartTime!));
           }
-          
+
           if (ride.departureEndTime != null) {
-            ref.read(arrivalTimeProvider.notifier).setTime(TimeOfDay.fromDateTime(ride.departureEndTime!));
+            ref
+                .read(arrivalTimeProvider.notifier)
+                .setTime(TimeOfDay.fromDateTime(ride.departureEndTime!));
           }
-          
+
           if (ride.maxMemberCount != null) {
             ref.read(seatProvider.notifier).setSeats(ride.maxMemberCount!);
           }
         } else {
           final searchStartLocation = ref.read(searchStartLocationProvider);
-          final searchDestinationLocation = ref.read(searchDestinationLocationProvider);
+          final searchDestinationLocation = ref.read(
+            searchDestinationLocationProvider,
+          );
           final currentDate = ref.read(selectedDateProvider);
           final currentDepartureTime = ref.read(departureTimeProvider);
-          if (searchStartLocation != null || searchDestinationLocation != null || 
-              currentDate != null || currentDepartureTime != null) {
+          if (searchStartLocation != null ||
+              searchDestinationLocation != null ||
+              currentDate != null ||
+              currentDepartureTime != null) {
             if (searchStartLocation != null) {
               startLocationController.text = searchStartLocation;
             }
@@ -134,7 +144,7 @@ class _CreateRideScreenState extends ConsumerState<CreateRideScreen> {
               ),
             ),
             content: Text(
-              widget.isEditing 
+              widget.isEditing
                   ? 'Your ride has been successfully updated.'
                   : 'Your ride has been successfully created.',
               style: TextStyle(
@@ -198,12 +208,10 @@ class _CreateRideScreenState extends ConsumerState<CreateRideScreen> {
 
   Future<void> _deleteRide() async {
     if (widget.rideId == null) return;
-    
+
     try {
-      await ref
-          .read(ridesNotifierProvider.notifier)
-          .deleteRide(widget.rideId!);
-      
+      await ref.read(ridesNotifierProvider.notifier).deleteRide(widget.rideId!);
+
       if (mounted) {
         showDialog(
           context: context,
@@ -388,12 +396,15 @@ class _CreateRideScreenState extends ConsumerState<CreateRideScreen> {
               const SizedBox(height: 48),
               SizedBox(
                 width: double.infinity,
-                  child: ElevatedButton(
+                child: ElevatedButton(
                   onPressed: _canCreateRide ? _createRide : null,
                   style: Theme.of(context).elevatedButtonTheme.style,
                   child: Text(
                     widget.isEditing ? 'Update Ride' : 'Create Ride',
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),

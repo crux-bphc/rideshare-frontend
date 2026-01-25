@@ -4,18 +4,19 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:rideshare/models/ride.dart';
 import 'package:rideshare/models/ride_request.dart';
-import 'package:rideshare/shared/providers/user_provider.dart';
 import 'package:rideshare/shared/theme.dart';
 import 'package:rideshare/shared/util/datetime_utils.dart';
 
 class SentRequestCard extends ConsumerWidget {
   final RideRequest rideRequest;
   final VoidCallback? onDelete;
+  final String? recipientName;
 
   const SentRequestCard({
     super.key,
     required this.rideRequest,
     this.onDelete,
+    this.recipientName,
   });
   Ride _convertToRide(RideRequest request) {
     return Ride(
@@ -65,38 +66,16 @@ class SentRequestCard extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Expanded(
-                      child: rideRequest.createdBy.isEmpty
-                          ? Text(
-                              "To: Unknown",
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.textPrimary,
-                              ),
-                            )
-                          : FutureBuilder(
-                              future: ref
-                                  .read(userNotifierProvider.notifier)
-                                  .getUser(rideRequest.createdBy),
-                              builder: (context, snapshot) {
-                                String displayName = rideRequest.createdBy;
-                                if (snapshot.connectionState ==
-                                        ConnectionState.done &&
-                                    snapshot.hasData) {
-                                  displayName =
-                                      snapshot.data?.name ??
-                                      rideRequest.createdBy;
-                                }
-                                return Text(
-                                  "To: $displayName",
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors.textPrimary,
-                                  ),
-                                );
-                              },
-                            ),
+                      child: Text(
+                        rideRequest.createdBy.isEmpty
+                            ? "To: Unknown"
+                            : "To: ${recipientName ?? rideRequest.createdBy}",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
                     ),
                     if (rideRequest.status == "pending" && onDelete != null)
                       IconButton(

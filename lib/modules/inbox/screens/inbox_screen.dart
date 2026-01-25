@@ -5,6 +5,7 @@ import 'package:rideshare/modules/inbox/provider/ride_requests_provider.dart';
 import 'package:rideshare/modules/inbox/widgets/ride_request_card.dart';
 import 'package:rideshare/modules/inbox/widgets/sent_request_card.dart';
 import 'package:rideshare/modules/splash/splash_page.dart';
+import 'package:rideshare/shared/providers/user_provider.dart';
 import 'package:rideshare/shared/theme.dart';
 
 class InboxScreen extends ConsumerStatefulWidget {
@@ -14,7 +15,8 @@ class InboxScreen extends ConsumerStatefulWidget {
   ConsumerState<InboxScreen> createState() => _InboxScreenState();
 }
 
-class _InboxScreenState extends ConsumerState<InboxScreen> with SingleTickerProviderStateMixin {
+class _InboxScreenState extends ConsumerState<InboxScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
@@ -29,20 +31,26 @@ class _InboxScreenState extends ConsumerState<InboxScreen> with SingleTickerProv
     super.dispose();
   }
 
-  Future<void> _handleRequest(WidgetRef ref, RideRequest req, String status) async {
+  Future<void> _handleRequest(
+    WidgetRef ref,
+    RideRequest req,
+    String status,
+  ) async {
     try {
-      await ref.read(rideRequestsAsyncProvider.notifier).handleRequest(
-        req.id, 
-        req.requestSender, 
-        status
-      );
+      await ref
+          .read(rideRequestsAsyncProvider.notifier)
+          .handleRequest(req.id, req.requestSender, status);
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Request ${status.toLowerCase()} successfully'),
-          backgroundColor: status == 'accepted' ? AppColors.success : AppColors.error,
+          backgroundColor: status == 'accepted'
+              ? AppColors.success
+              : AppColors.error,
         ),
       );
     } catch (error) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Failed to update request'),
@@ -55,6 +63,7 @@ class _InboxScreenState extends ConsumerState<InboxScreen> with SingleTickerProv
   Future<void> _handleDeleteRequest(WidgetRef ref, RideRequest req) async {
     try {
       await ref.read(sentRequestsAsyncProvider.notifier).deleteRequest(req.id);
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text('Request deleted successfully'),
@@ -62,6 +71,7 @@ class _InboxScreenState extends ConsumerState<InboxScreen> with SingleTickerProv
         ),
       );
     } catch (error) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Failed to delete request: ${error.toString()}'),
@@ -73,37 +83,22 @@ class _InboxScreenState extends ConsumerState<InboxScreen> with SingleTickerProv
 
   Widget _buildReceivedTab(WidgetRef ref) {
     final requestsAsyncValue = ref.watch(rideRequestsAsyncProvider);
-    
+
     return requestsAsyncValue.when(
       loading: () => const SplashPage(),
       error: (error, stack) => Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.error_outline,
-              size: 64,
-              color: AppColors.error,
-            ),
-            const SizedBox(height: 16),
             Text(
-              'Error loading requests',
+              'No ride requests received',
               style: TextStyle(
                 color: AppColors.textPrimary,
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              error.toString(),
-              style: TextStyle(
-                color: AppColors.accent,
                 fontSize: 14,
               ),
-              textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 24),
+
+            const SizedBox(height: 16),
             ElevatedButton.icon(
               onPressed: () {
                 ref.read(rideRequestsAsyncProvider.notifier).refreshRequests();
@@ -117,60 +112,58 @@ class _InboxScreenState extends ConsumerState<InboxScreen> with SingleTickerProv
       data: (requests) {
         if (requests.isEmpty) {
           return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.inbox,
-                  size: 64,
-                  color: AppColors.accent,
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'No ride requests',
-                  style: TextStyle(
-                    color: AppColors.textPrimary,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Pull down to refresh',
-                  style: TextStyle(
-                    color: AppColors.accent,
-                    fontSize: 14,
-                  ),
-                ),
-              ],
+            child: Text(
+              'No ride requests received',
+              style: TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 14,
+              ),
             ),
           );
         }
-        
-        return RefreshIndicator(
-          onRefresh: () async {
-            await ref.read(rideRequestsAsyncProvider.notifier).refreshRequests();
-          },
-          child: ListView.builder(
-            physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.all(8),
-            itemCount: requests.length,
-            itemBuilder: (context, index) {
-              final req = requests[index];
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: RideCard(
-                  rideRequest: req,
-                  onAccept: req.status == 'pending' 
-                      ? () => _handleRequest(ref, req, "accepted")
-                      : null,
-                  onDecline: req.status == 'pending'
-                      ? () => _handleRequest(ref, req, "declined") 
-                      : null,
-                ),
-              );
-            },
+
+        return FutureBuilder<Map<String, String>>(
+          future: _loadUserNames(
+            ref,
+            requests.map((r) => r.requestSender).toSet(),
           ),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting ||
+                snapshot.connectionState == ConnectionState.active) {
+              return const SplashPage();
+            }
+
+            final nameMap = snapshot.data ?? {};
+
+            return RefreshIndicator(
+              onRefresh: () async {
+                await ref
+                    .read(rideRequestsAsyncProvider.notifier)
+                    .refreshRequests();
+              },
+              child: ListView.builder(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.all(8),
+                itemCount: requests.length,
+                itemBuilder: (context, index) {
+                  final req = requests[index];
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: RideCard(
+                      rideRequest: req,
+                      senderName: nameMap[req.requestSender],
+                      onAccept: req.status == 'pending'
+                          ? () => _handleRequest(ref, req, "accepted")
+                          : null,
+                      onDecline: req.status == 'pending'
+                          ? () => _handleRequest(ref, req, "declined")
+                          : null,
+                    ),
+                  );
+                },
+              ),
+            );
+          },
         );
       },
     );
@@ -178,37 +171,22 @@ class _InboxScreenState extends ConsumerState<InboxScreen> with SingleTickerProv
 
   Widget _buildSentTab(WidgetRef ref) {
     final sentRequestsAsyncValue = ref.watch(sentRequestsAsyncProvider);
-    
+
     return sentRequestsAsyncValue.when(
       loading: () => const SplashPage(),
       error: (error, stack) => Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.error_outline,
-              size: 64,
-              color: AppColors.error,
-            ),
-            const SizedBox(height: 16),
             Text(
-              'Error loading sent requests',
+              'No sent requests',
               style: TextStyle(
                 color: AppColors.textPrimary,
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              error.toString(),
-              style: TextStyle(
-                color: AppColors.accent,
                 fontSize: 14,
               ),
-              textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 24),
+
+            const SizedBox(height: 16),
             ElevatedButton.icon(
               onPressed: () {
                 ref.read(sentRequestsAsyncProvider.notifier).refreshRequests();
@@ -222,60 +200,84 @@ class _InboxScreenState extends ConsumerState<InboxScreen> with SingleTickerProv
       data: (requests) {
         if (requests.isEmpty) {
           return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.send_outlined,
-                  size: 64,
-                  color: AppColors.accent,
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'No sent requests',
-                  style: TextStyle(
-                    color: AppColors.textPrimary,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Pull down to refresh',
-                  style: TextStyle(
-                    color: AppColors.accent,
-                    fontSize: 14,
-                  ),
-                ),
-              ],
+            child: Text(
+              'No sent requests',
+              style: TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 14,
+              ),
             ),
           );
         }
-        
-        return RefreshIndicator(
-          onRefresh: () async {
-            await ref.read(sentRequestsAsyncProvider.notifier).refreshRequests();
-          },
-          child: ListView.builder(
-            physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.all(8),
-            itemCount: requests.length,
-            itemBuilder: (context, index) {
-              final req = requests[index];
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: SentRequestCard(
-                  rideRequest: req,
-                  onDelete: req.status == 'pending'
-                      ? () => _handleDeleteRequest(ref, req)
-                      : null,
-                ),
-              );
-            },
+
+        return FutureBuilder<Map<String, String>>(
+          future: _loadUserNames(
+            ref,
+            requests
+                .map((r) => r.createdBy)
+                .where((email) => email.isNotEmpty)
+                .toSet(),
           ),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting ||
+                snapshot.connectionState == ConnectionState.active) {
+              return const SplashPage();
+            }
+
+            final nameMap = snapshot.data ?? {};
+
+            return RefreshIndicator(
+              onRefresh: () async {
+                await ref
+                    .read(sentRequestsAsyncProvider.notifier)
+                    .refreshRequests();
+              },
+              child: ListView.builder(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.all(8),
+                itemCount: requests.length,
+                itemBuilder: (context, index) {
+                  final req = requests[index];
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: SentRequestCard(
+                      rideRequest: req,
+                      recipientName: req.createdBy.isNotEmpty
+                          ? nameMap[req.createdBy]
+                          : null,
+                      onDelete: req.status == 'pending'
+                          ? () => _handleDeleteRequest(ref, req)
+                          : null,
+                    ),
+                  );
+                },
+              ),
+            );
+          },
         );
       },
     );
+  }
+
+  Future<Map<String, String>> _loadUserNames(
+    WidgetRef ref,
+    Set<String> emails,
+  ) async {
+    final userNotifier = ref.read(userNotifierProvider.notifier);
+    final nameMap = <String, String>{};
+
+    await Future.wait(
+      emails.map((email) async {
+        try {
+          final user = await userNotifier.getUser(email);
+          nameMap[email] = user.name;
+        } catch (e) {
+          throw Exception("Could not get name : $e");
+        }
+      }),
+    );
+
+    return nameMap;
   }
 
   @override
@@ -286,7 +288,10 @@ class _InboxScreenState extends ConsumerState<InboxScreen> with SingleTickerProv
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(kToolbarHeight),
           child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
+            margin: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+              vertical: 24.0,
+            ),
             decoration: BoxDecoration(
               color: AppColors.card,
               borderRadius: BorderRadius.circular(12),
@@ -313,12 +318,14 @@ class _InboxScreenState extends ConsumerState<InboxScreen> with SingleTickerProv
         ),
         actions: [],
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          _buildReceivedTab(ref),
-          _buildSentTab(ref),
-        ],
+      body: SafeArea(
+        child: TabBarView(
+          controller: _tabController,
+          children: [
+            _buildReceivedTab(ref),
+            _buildSentTab(ref),
+          ],
+        ),
       ),
     );
   }

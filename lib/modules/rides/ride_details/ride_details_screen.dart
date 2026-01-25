@@ -248,99 +248,40 @@ class RideDetailsScreen extends ConsumerWidget {
                                       if (showExitButton)
                                         TextButton.icon(
                                           onPressed: () async {
-                                            final bool shouldExit =
-                                                await showDialog(
-                                                  context: context,
-                                                  builder: (context) {
-                                                    return AlertDialog(
-                                                      backgroundColor:
-                                                          AppColors.card,
-                                                      title: const Text(
-                                                        'Exit Ride',
-                                                        style: TextStyle(
-                                                          color:
-                                                              AppColors.error,
-                                                          fontSize: 16,
-                                                        ),
-                                                      ),
-                                                      content: const Text(
-                                                        'Are you sure you want to exit this ride?',
-                                                        style: TextStyle(
-                                                          color: AppColors
-                                                              .textPrimary,
-                                                        ),
-                                                      ),
-                                                      actions: <Widget>[
-                                                        TextButton(
-                                                          onPressed: () =>
-                                                              Navigator.of(
-                                                                context,
-                                                              ).pop(false),
-                                                          child: const Text(
-                                                            'No',
-                                                            style: TextStyle(
-                                                              color: AppColors
-                                                                  .primary,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                        TextButton(
-                                                          onPressed: () =>
-                                                              Navigator.of(
-                                                                context,
-                                                              ).pop(true),
-                                                          child: const Text(
-                                                            'Yes',
-                                                            style: TextStyle(
-                                                              color: AppColors
-                                                                  .error,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    );
-                                                  },
-                                                ) ??
-                                                false;
-
-                                            if (shouldExit) {
-                                              try {
-                                                await ref
-                                                    .read(
-                                                      ridesNotifierProvider
-                                                          .notifier,
-                                                    )
-                                                    .exitRide(
-                                                      ride.id.toString(),
-                                                    );
-                                                if (context.mounted) {
-                                                  ScaffoldMessenger.of(
-                                                    context,
-                                                  ).showSnackBar(
-                                                    const SnackBar(
-                                                      content: Text(
-                                                        'Successfully exited the ride',
-                                                      ),
-                                                      backgroundColor:
-                                                          AppColors.success,
+                                            try {
+                                              await ref
+                                                  .read(
+                                                    ridesNotifierProvider
+                                                        .notifier,
+                                                  )
+                                                  .exitRide(ride.id.toString());
+                                              if (context.mounted) {
+                                                ScaffoldMessenger.of(
+                                                  context,
+                                                ).showSnackBar(
+                                                  const SnackBar(
+                                                    content: Text(
+                                                      'Successfully exited the ride',
                                                     ),
-                                                  );
-                                                  Navigator.pop(context);
-                                                }
-                                              } catch (e) {
-                                                if (context.mounted) {
-                                                  ScaffoldMessenger.of(
-                                                    context,
-                                                  ).showSnackBar(
-                                                    SnackBar(
-                                                      content: Text(
-                                                        'Failed to exit ride: ${e.toString()}',
-                                                      ),
-                                                      backgroundColor:
-                                                          AppColors.error,
+                                                    backgroundColor:
+                                                        AppColors.success,
+                                                  ),
+                                                );
+                                                Navigator.pop(context);
+                                              }
+                                            } catch (e) {
+                                              if (context.mounted) {
+                                                ScaffoldMessenger.of(
+                                                  context,
+                                                ).showSnackBar(
+                                                  SnackBar(
+                                                    content: Text(
+                                                      'Failed to exit ride: ${e.toString()}',
                                                     ),
-                                                  );
-                                                }
+                                                    backgroundColor:
+                                                        AppColors.error,
+                                                  ),
+                                                );
                                               }
                                             }
                                           },

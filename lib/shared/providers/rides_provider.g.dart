@@ -40,7 +40,7 @@ final bookmarkedRidesProvider = AutoDisposeFutureProvider<List<Ride>>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef BookmarkedRidesRef = AutoDisposeFutureProviderRef<List<Ride>>;
-String _$ridesNotifierHash() => r'2410187c37ea2ecf6d1948abe3c866731b95f89f';
+String _$ridesNotifierHash() => r'd5f1fce5cd1f49bad7a898583a842b384cf1099e';
 
 /// See also [RidesNotifier].
 @ProviderFor(RidesNotifier)

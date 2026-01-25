@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:rideshare/models/ride_request.dart';
 import 'package:rideshare/modules/inbox/widgets/ride_card_actions.dart';
-import 'package:rideshare/shared/providers/user_provider.dart';
 import 'package:rideshare/shared/theme.dart';
 import 'package:rideshare/shared/util/datetime_utils.dart';
 
@@ -11,12 +10,14 @@ class RideCard extends ConsumerWidget {
   final RideRequest rideRequest;
   final VoidCallback? onAccept;
   final VoidCallback? onDecline;
+  final String? senderName;
 
   const RideCard({
     super.key,
     required this.rideRequest,
     required this.onAccept,
     required this.onDecline,
+    this.senderName,
   });
 
   @override
@@ -49,28 +50,15 @@ class RideCard extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
-                    child: FutureBuilder(
-                      future: ref
-                          .read(userNotifierProvider.notifier)
-                          .getUser(rideRequest.requestSender),
-                      builder: (context, snapshot) {
-                        String displayName = rideRequest.requestSender;
-                        if (snapshot.connectionState == ConnectionState.done &&
-                            snapshot.hasData) {
-                          displayName =
-                              snapshot.data?.name ?? rideRequest.requestSender;
-                        }
-                        return Text(
-                          rideRequest.status == "pending"
-                              ? "$displayName requested to join"
-                              : "From: $displayName",
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimary,
-                          ),
-                        );
-                      },
+                    child: Text(
+                      rideRequest.status == "pending"
+                          ? "${senderName ?? rideRequest.requestSender} requested to join"
+                          : "From: ${senderName ?? rideRequest.requestSender}",
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
                     ),
                   ),
                 ],
