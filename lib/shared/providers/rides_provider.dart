@@ -113,6 +113,11 @@ class RidesNotifier extends _$RidesNotifier {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() => build());
   }
+
+  Future<List<String>?> getRecommendations(String input) async {
+    final rideService = ref.watch(rideServiceProvider);
+    return rideService.getRecommendations(input);
+  }
 }
 
 @riverpod

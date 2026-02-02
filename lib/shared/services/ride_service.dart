@@ -270,4 +270,22 @@ class RideService {
       throw Exception('Failed to exit the ride: $e');
     }
   }
+
+  Future<List<String>?> getRecommendations(String input) async{
+    try{
+      final  response = await _dio.get(
+        '${dotenv.env['BACKEND_API_URL']}rides/search/location',
+        queryParameters: {'searchParam': input},
+      );
+      if(response.statusCode == 200){
+        return (response.data as List?)?.map((e) => e.toString()).toList();
+      }
+      else {
+        return [];
+      }
+    }
+    catch (e){
+      return [];
+    }
+  }
 }
