@@ -64,4 +64,18 @@ final ThemeData appTheme = _theme.copyWith(
       iconSize: 24,
     ),
   ),
+  appBarTheme: AppBarTheme(
+    backgroundColor: AppColors.surface,
+    foregroundColor: AppColors.textPrimary,
+    elevation: 0,
+    scrolledUnderElevation: 0,
+    titleTextStyle: GoogleFonts.raleway(
+      fontWeight: FontWeight.bold,
+      fontSize: 24,
+      color: AppColors.textPrimary,
+    ),
+    iconTheme: const IconThemeData(
+      color: AppColors.textPrimary,
+    ),
+  ),
 );

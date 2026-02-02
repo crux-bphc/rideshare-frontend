@@ -125,7 +125,8 @@ flutter:
 flutter_icons:
   android: true
   ios: true
-  image_path: "assets/app_logo.png"
+  image_path_android: "assets/app_logo_android.png"
+  image_path_ios: "assets/app_logo_ios.png"
   remove_alpha_ios: true
   adaptive_icon_background: "#111317"
-  adaptive_icon_foreground: "assets/app_logo.png"
+  adaptive_icon_foreground: "assets/app_logo_android.png"

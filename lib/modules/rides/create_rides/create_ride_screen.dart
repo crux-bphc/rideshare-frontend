@@ -362,9 +362,6 @@ class _CreateRideScreenState extends ConsumerState<CreateRideScreen> {
       backgroundColor: AppColors.surface,
       appBar: AppBar(
         title: Text(widget.isEditing ? 'Edit Ride' : 'Create Ride'),
-        backgroundColor: AppColors.surface,
-        elevation: 0,
-        scrolledUnderElevation: 0,
         actions: widget.isEditing
             ? [
                 IconButton(

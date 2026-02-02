@@ -286,11 +286,13 @@ class _InboxScreenState extends ConsumerState<InboxScreen>
       appBar: AppBar(
         title: const Text("Inbox"),
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(kToolbarHeight),
+          preferredSize: const Size.fromHeight(68.0),
           child: Container(
-            margin: const EdgeInsets.symmetric(
-              horizontal: 16.0,
-              vertical: 24.0,
+            margin: const EdgeInsets.fromLTRB(
+              16.0,
+              8.0,
+              16.0,
+              12.0,
             ),
             decoration: BoxDecoration(
               color: AppColors.card,

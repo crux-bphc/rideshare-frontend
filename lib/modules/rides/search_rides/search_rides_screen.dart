@@ -106,9 +106,6 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Search Rides'),
-        backgroundColor: AppColors.surface,
-        elevation: 0,
-        scrolledUnderElevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
