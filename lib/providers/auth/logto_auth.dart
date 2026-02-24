@@ -17,7 +17,7 @@ class LogtoAuthProvider extends AuthProvider {
   static const postLogoutRedirectUri = 'com.crux-bphc.rideshare://callback';
 
   AuthUser? _getAuthUserFromIdToken(String? idToken) {
-    if (idToken == null || JwtDecoder.isExpired(idToken)) {
+    if (idToken == null) {
       return null;
     }
     final Map<String, dynamic> claims = JwtDecoder.decode(idToken);
@@ -62,12 +62,15 @@ class LogtoAuthProvider extends AuthProvider {
     dioClient.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
-          //getaccesstoken should ideally return the cached token or issue a new refresh token for this to work, leseee
-          final accessToken = await _logtoClient.getAccessToken(
-            resource: _apiResource,
-          );
-          if (accessToken != null) {
-            options.headers['Authorization'] = 'Bearer ${accessToken.token}';
+          try {
+            final accessToken = await _logtoClient.getAccessToken(
+              resource: _apiResource,
+            );
+            if (accessToken != null) {
+              options.headers['Authorization'] = 'Bearer ${accessToken.token}';
+            }
+          } catch (e) {
+            print('Failed to get/refresh access token: $e');
           }
           return handler.next(options);
         },
