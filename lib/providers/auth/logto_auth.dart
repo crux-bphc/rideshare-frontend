@@ -8,6 +8,7 @@ import 'package:rideshare/providers/auth/auth_user.dart';
 
 class LogtoAuthProvider extends AuthProvider {
   late final LogtoClient _logtoClient;
+  late final String _apiResource;
 
   @override
   late final Dio dioClient;
@@ -27,15 +28,22 @@ class LogtoAuthProvider extends AuthProvider {
   Future<AuthUser?> initialise() async {
     final appId = dotenv.env['CLIENT_ID'];
     final endpoint = dotenv.env['AUTH_DISCOVERY_URL'];
+    final apiResource = dotenv.env['BACKEND_API_URL'];
 
     if (appId == null || endpoint == null) {
       throw Exception('Missing CLIENT_ID or AUTH_DISCOVERY_URL in .env');
     }
+    if (apiResource == null || apiResource.isEmpty) {
+      throw Exception('Missing BACKEND_API_URL in .env');
+    }
+
+    _apiResource = apiResource;
 
     _logtoClient = LogtoClient(
       config: LogtoConfig(
         appId: appId,
         endpoint: endpoint,
+        resources: [apiResource],
         scopes: [
           'openid',
           'profile',
@@ -54,9 +62,12 @@ class LogtoAuthProvider extends AuthProvider {
     dioClient.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
-          final idToken = await _logtoClient.idToken;
-          if (idToken != null) {
-            options.headers['Authorization'] = 'Bearer $idToken';
+          //getaccesstoken should ideally return the cached token or issue a new refresh token for this to work, leseee
+          final accessToken = await _logtoClient.getAccessToken(
+            resource: _apiResource,
+          );
+          if (accessToken != null) {
+            options.headers['Authorization'] = 'Bearer ${accessToken.token}';
           }
           return handler.next(options);
         },
@@ -85,6 +96,12 @@ class LogtoAuthProvider extends AuthProvider {
 
   @override
   Future<String?> get idToken => _logtoClient.idToken;
+
+  @override
+  Future<String?> getAccessToken(String resource) async {
+    final token = await _logtoClient.getAccessToken(resource: resource);
+    return token?.token;
+  }
 
   @override
   void dispose() {}

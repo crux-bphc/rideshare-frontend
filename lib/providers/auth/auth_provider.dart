@@ -11,6 +11,7 @@ abstract class AuthProvider {
   Future<void> logout();
 
   Future<String?> get idToken;
+  Future<String?> getAccessToken(String resource);
   void dispose();
 }
 
@@ -96,6 +97,11 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
   Future<String?> getIdToken() async {
     final authProvider = ref.read(logtoAuthProvider);
     return await authProvider.idToken;
+  }
+
+  Future<String?> getAccessToken(String resource) async {
+    final authProvider = ref.read(logtoAuthProvider);
+    return await authProvider.getAccessToken(resource);
   }
 }
 
