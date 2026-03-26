@@ -53,24 +53,28 @@ class LogtoAuthProvider extends AuthProvider {
     dioClient = Dio();
 
     dioClient.interceptors.add(
-      LogInterceptor(requestBody: true, responseBody: true),
-    );
+    InterceptorsWrapper(
+      onRequest: (options, handler) async {
+        try {
+          final accessToken = await _logtoClient.getAccessToken(
+            resource: apiResource,
+          );
+          print('Access token: |$accessToken|');
+          print('apiResource: |$apiResource|');
+          if (accessToken != null) {
+            options.headers['Authorization'] = 'Bearer ${accessToken.token}';
+          }
+        } catch (e, stack) {
+          print('Failed to get access token: $e');
+          print(stack.toString());
+        }
+        return handler.next(options);
+      },
+    ),
+  );
 
     dioClient.interceptors.add(
-      InterceptorsWrapper(
-        onRequest: (options, handler) async {
-          try {
-            final accessToken = await _logtoClient.getAccessToken(
-              resource: apiResource,
-            );
-            if (accessToken != null) {
-              options.headers['Authorization'] = 'Bearer $accessToken';
-            }
-          } catch (e) {
-          }
-          return handler.next(options);
-        },
-      ),
+      LogInterceptor(requestBody: true, responseBody: true),
     );
 
     if (await _logtoClient.isAuthenticated) {
