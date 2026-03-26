@@ -64,7 +64,7 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
       }
       return AuthState(
         user: user,
-        isAuthenticated: user != null ? true : false,
+        isAuthenticated: user != null,
       );
     });
   }
@@ -88,7 +88,7 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
       return AuthState(
         user: user,
         isAuthenticated: true,
-        needsPhoneNumber: true,
+        needsPhoneNumber: false,
       );
     });
   }
