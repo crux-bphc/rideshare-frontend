@@ -16,7 +16,7 @@ class LogtoAuthProvider extends AuthProvider {
   static const postLogoutRedirectUri = 'com.crux-bphc.rideshare://callback';
 
   AuthUser? _getAuthUserFromIdToken(String? idToken) {
-    if (idToken == null) {
+    if (idToken == null || JwtDecoder.isExpired(idToken)) {
       return null;
     }
     final Map<String, dynamic> claims = JwtDecoder.decode(idToken);
@@ -31,16 +31,11 @@ class LogtoAuthProvider extends AuthProvider {
     if (appId == null || endpoint == null) {
       throw Exception('Missing CLIENT_ID or AUTH_DISCOVERY_URL in .env');
     }
-    final apiResource = dotenv.env['BACKEND_API_URL'];
-    if (apiResource == null) {
-      throw Exception('Missing BACKEND_API_URL in .env');
-    }
 
     _logtoClient = LogtoClient(
       config: LogtoConfig(
         appId: appId,
         endpoint: endpoint,
-        resources: [apiResource],
         scopes: [
           'openid',
           'profile',
@@ -53,28 +48,19 @@ class LogtoAuthProvider extends AuthProvider {
     dioClient = Dio();
 
     dioClient.interceptors.add(
-    InterceptorsWrapper(
-      onRequest: (options, handler) async {
-        try {
-          final accessToken = await _logtoClient.getAccessToken(
-            resource: apiResource,
-          );
-          print('Access token: |$accessToken|');
-          print('apiResource: |$apiResource|');
-          if (accessToken != null) {
-            options.headers['Authorization'] = 'Bearer ${accessToken.token}';
-          }
-        } catch (e, stack) {
-          print('Failed to get access token: $e');
-          print(stack.toString());
-        }
-        return handler.next(options);
-      },
-    ),
-  );
+      LogInterceptor(requestBody: true, responseBody: true),
+    );
 
     dioClient.interceptors.add(
-      LogInterceptor(requestBody: true, responseBody: true),
+      InterceptorsWrapper(
+        onRequest: (options, handler) async {
+          final idToken = await _logtoClient.idToken;
+          if (idToken != null) {
+            options.headers['Authorization'] = 'Bearer $idToken';
+          }
+          return handler.next(options);
+        },
+      ),
     );
 
     if (await _logtoClient.isAuthenticated) {
