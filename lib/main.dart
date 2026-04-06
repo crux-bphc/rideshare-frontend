@@ -1,10 +1,12 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rideshare/providers/auth/auth_provider.dart';
 import 'package:rideshare/router.dart';
 import 'package:rideshare/shared/providers/navigation_provider.dart';
+import 'package:rideshare/shared/services/fcm_service.dart';
 import 'package:rideshare/shared/theme.dart';
 import 'package:rideshare/modules/splash/splash_page.dart';
 import 'package:rideshare/shared/widgets/phone_number_input_dialog.dart';
@@ -13,6 +15,9 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
   await Firebase.initializeApp();
+  FirebaseMessaging.onBackgroundMessage(
+    firebaseMessagingBackgroundHandler,
+  );
   runApp(const ProviderScope(child: MyApp()));
 }
 
