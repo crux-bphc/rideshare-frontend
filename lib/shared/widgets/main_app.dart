@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -5,19 +6,55 @@ import 'package:rideshare/shared/providers/navigation_provider.dart';
 import 'package:rideshare/shared/theme.dart';
 
 class MainApp extends ConsumerStatefulWidget {
+  final StatefulNavigationShell navigationShell;
   final Widget? child;
 
-  const MainApp({super.key, this.child});
+  const MainApp({super.key, required this.navigationShell, this.child});
 
   @override
   ConsumerState<MainApp> createState() => _MainAppState();
 }
 
+final _navIndexProvider = Provider.family<int, StatefulNavigationShell>((
+  ref,
+  shell,
+) {
+  return shell.currentIndex;
+});
+
 class _MainAppState extends ConsumerState<MainApp> {
   @override
+  void initState() {
+    super.initState();
+    _requestNotificationPermission();
+  }
+
+  Future<void> _requestNotificationPermission() async {
+    await Future.delayed(const Duration(milliseconds: 500));
+
+    await FirebaseMessaging.instance.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final currentTab = ref.watch(navigationNotifierProvider);
-    final navigationNotifier = ref.read(navigationNotifierProvider.notifier);
+    // final currentTab = ref.watch(navigationNotifierProvider);
+    // final navigationNotifier = ref.read(navigationNotifierProvider.notifier);
+
+    ref.listen<int>(
+      _navIndexProvider(widget.navigationShell),
+      (previous, next) {
+        ref
+            .read(navigationNotifierProvider.notifier)
+            .setTab(NavigationTab.values[next]);
+      },
+    );
+
+    final currentTab =
+        NavigationTab.values[widget.navigationShell.currentIndex];
 
     return Scaffold(
       body: widget.child,
@@ -41,7 +78,6 @@ class _MainAppState extends ConsumerState<MainApp> {
                       ref,
                       NavigationTab.home,
                       currentTab,
-                      navigationNotifier,
                       Icons.home_outlined,
                       Icons.home,
                       'Home',
@@ -51,10 +87,8 @@ class _MainAppState extends ConsumerState<MainApp> {
                       ref,
                       NavigationTab.rides,
                       currentTab,
-                      navigationNotifier,
                       Icons.directions_car_filled_outlined,
                       Icons.directions_car,
-
                       'Rides',
                     ),
                     _buildNavItem(
@@ -62,7 +96,6 @@ class _MainAppState extends ConsumerState<MainApp> {
                       ref,
                       NavigationTab.inbox,
                       currentTab,
-                      navigationNotifier,
                       Icons.inbox_outlined,
                       Icons.inbox,
                       'Inbox',
@@ -72,7 +105,6 @@ class _MainAppState extends ConsumerState<MainApp> {
                       ref,
                       NavigationTab.profile,
                       currentTab,
-                      navigationNotifier,
                       Icons.account_circle_outlined,
                       Icons.account_circle,
                       'Profile',
@@ -92,7 +124,6 @@ class _MainAppState extends ConsumerState<MainApp> {
     WidgetRef ref,
     NavigationTab tab,
     NavigationTab currentTab,
-    dynamic navigationNotifier,
     IconData outlinedIcon,
     IconData filledIcon,
     String label,
@@ -101,8 +132,14 @@ class _MainAppState extends ConsumerState<MainApp> {
 
     return GestureDetector(
       onTap: () {
-        navigationNotifier.setTab(tab);
-        context.go(navigationNotifier.getCurrentRoute());
+        if (tab == NavigationTab.rides) {
+          context.go('/rides');
+          return;
+        }
+        widget.navigationShell.goBranch(
+          tab.index,
+          initialLocation: true,
+        );
       },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
