@@ -154,6 +154,11 @@ class RideService {
       } else {
         throw Exception('Failed to get bookmarked rides');
       }
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 404) {
+        return [];
+      }
+      throw Exception('Failed to get bookmarked rides: $e');
     } catch (e) {
       throw Exception('Failed to get bookmarked rides: $e');
     }
