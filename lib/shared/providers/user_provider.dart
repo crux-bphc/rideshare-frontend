@@ -12,7 +12,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'user_provider.g.dart';
 
 final userServiceProvider = Provider<UserService>((ref) {
-  final dio = ref.watch(logtoAuthProvider).dioClient;
+  final logtoProvider = ref.watch(logtoAuthProvider);
+  final dio = logtoProvider.dioClient;
   return UserService(dio);
 });
 
@@ -47,23 +48,28 @@ class UserNotifier extends _$UserNotifier {
 @Riverpod(keepAlive: true)
 Future<User?> profileUserDetails(Ref ref) async {
   final authState = ref.watch(authNotifierProvider);
-  if (authState.value?.user?.email != null) {
-    try {
-      return await ref
-          .read(userServiceProvider)
-          .getUserDetails(authState.value!.user!.email!);
-    } catch (e) {
-      debugPrint('Error fetching user details: $e');
-      return null;
-    }
+  final isAuthenticated = authState.value?.isAuthenticated ?? false;
+  final email = authState.value?.user?.email;
+  
+  if (!isAuthenticated || email == null) return null;
+  
+  try {
+    return await ref.read(userServiceProvider).getUserDetails(email);
+  } catch (e) {
+    debugPrint('Error fetching user details: $e');
+    return null;
   }
-  return null;
 }
 
 @Riverpod(keepAlive: true)
 class ProfilePastRides extends _$ProfilePastRides {
   @override
   Future<List<Ride>> build() async {
+    final authState = ref.watch(authNotifierProvider);
+    final isAuthenticated = authState.value?.isAuthenticated ?? false;
+
+    if (!isAuthenticated) return [];
+
     try {
       final rideService = ref.read(rideServiceProvider);
       final completedRides = await rideService.getCompletedRides();
