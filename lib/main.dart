@@ -28,6 +28,11 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     ref.listen<AsyncValue<AuthState>>(authNotifierProvider, (previous, next) {
       ref.read(goRouterProvider).refresh();
+
+      if (authReadyForUserApi(next)) {
+        ref.read(fcmServiceProvider).syncTokenWithBackend();
+      }
+
       final wasLoading = previous?.isLoading ?? false;
       final needsPhoneNumber = next.valueOrNull?.needsPhoneNumber ?? false;
 

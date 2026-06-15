@@ -1,16 +1,23 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rideshare/models/ride_request.dart';
+import 'package:rideshare/providers/auth/auth_provider.dart';
 import 'package:rideshare/shared/providers/rides_provider.dart';
 import 'package:rideshare/shared/providers/user_provider.dart';
 
 class RideRequestsAsyncNotifier extends AsyncNotifier<List<RideRequest>> {
   @override
   Future<List<RideRequest>> build() async {
+    final authState = ref.watch(authNotifierProvider);
+    if (!authReadyForUserApi(authState)) return [];
     final userNotifier = ref.read(userNotifierProvider.notifier);
     return await userNotifier.getRequestsReceived();
   }
 
   Future<void> refreshRequests() async {
+    if (!authReadyForUserApi(ref.read(authNotifierProvider))) {
+      state = const AsyncData([]);
+      return;
+    }
     state = const AsyncLoading();
     try {
       final userNotifier = ref.read(userNotifierProvider.notifier);
@@ -63,11 +70,17 @@ final rideRequestsAsyncProvider =
 class SentRequestsAsyncNotifier extends AsyncNotifier<List<RideRequest>> {
   @override
   Future<List<RideRequest>> build() async {
+    final authState = ref.watch(authNotifierProvider);
+    if (!authReadyForUserApi(authState)) return [];
     final userNotifier = ref.read(userNotifierProvider.notifier);
     return await userNotifier.getSentRequests();
   }
 
   Future<void> refreshRequests() async {
+    if (!authReadyForUserApi(ref.read(authNotifierProvider))) {
+      state = const AsyncData([]);
+      return;
+    }
     state = const AsyncLoading();
     try {
       final userNotifier = ref.read(userNotifierProvider.notifier);
@@ -94,5 +107,3 @@ final sentRequestsAsyncProvider =
     AsyncNotifierProvider<SentRequestsAsyncNotifier, List<RideRequest>>(() {
       return SentRequestsAsyncNotifier();
     });
-
-//using async provider for the first time was actually fun

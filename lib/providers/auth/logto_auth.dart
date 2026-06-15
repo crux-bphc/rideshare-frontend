@@ -5,6 +5,7 @@ import 'package:logto_dart_sdk/logto_dart_sdk.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rideshare/providers/auth/auth_provider.dart';
 import 'package:rideshare/providers/auth/auth_user.dart';
+import 'package:rideshare/shared/services/backend_user_context.dart';
 
 class LogtoAuthProvider extends AuthProvider {
   late final LogtoClient _logtoClient;
@@ -16,16 +17,15 @@ class LogtoAuthProvider extends AuthProvider {
   static const redirectUri = 'com.crux-bphc.rideshare://callback';
   static const postLogoutRedirectUri = 'com.crux-bphc.rideshare://callback';
   late final String _apiResource;
+  String? _sessionUserEmail;
+
+  void setSessionUserEmail(String? email) {
+    _sessionUserEmail = email?.trim().isEmpty == true ? null : email?.trim();
+  }
 
   AuthUser? _getAuthUserFromIdToken(String? idToken) {
     print('[Logto] _getAuthUserFromIdToken called with idToken: ${idToken != null ? "present" : "null"}');
     if (idToken == null) return null;
-
-    final isExpired = JwtDecoder.isExpired(idToken);
-    if (isExpired) {
-      print('[Logto] ERROR: idToken is expired');
-      return null;
-    }
 
     try {
       final Map<String, dynamic> claims = JwtDecoder.decode(idToken);
@@ -35,6 +35,34 @@ class LogtoAuthProvider extends AuthProvider {
       print('[Logto] ERROR: Failed to decode JWT - $e');
       return null;
     }
+  }
+
+  /// Restores the user from stored Logto tokens, refreshing when the ID token expired.
+  Future<AuthUser?> _resolveAuthUser() async {
+    if (!await _logtoClient.isAuthenticated) return null;
+
+    var idToken = await _logtoClient.idToken;
+    if (idToken != null && JwtDecoder.isExpired(idToken)) {
+      print('[Logto] ID token expired; refreshing via refresh token');
+      try {
+        await _logtoClient.getAccessToken(resource: _apiResource);
+        idToken = await _logtoClient.idToken;
+      } catch (e) {
+        print('[Logto] Session refresh failed: $e');
+        return null;
+      }
+    }
+
+    final user = _getAuthUserFromIdToken(idToken);
+    setSessionUserEmail(user?.email);
+    await _logTokenClaimComparison();
+    return user;
+  }
+
+  Future<void> _logTokenClaimComparison() async {
+    final idToken = await _logtoClient.idToken;
+    final accessToken = (await _logtoClient.getAccessToken(resource: _apiResource))?.token;
+    debugLogLogtoTokenClaims(idToken: idToken, accessToken: accessToken);
   }
 
   @override
@@ -107,15 +135,9 @@ class LogtoAuthProvider extends AuthProvider {
       ),
     );
 
-    final isAuthenticated = await _logtoClient.isAuthenticated;
-    print('[Logto] Is authenticated on init: $isAuthenticated');
-
-    if (isAuthenticated) {
-      final idToken = await _logtoClient.idToken;
-      return _getAuthUserFromIdToken(idToken);
-    }
-
-    return null;
+    final user = await _resolveAuthUser();
+    print('[Logto] Is authenticated on init: ${user != null}');
+    return user;
   }
 
   @override
@@ -124,22 +146,15 @@ class LogtoAuthProvider extends AuthProvider {
     await _logtoClient.signIn(redirectUri);
     print('[Logto] signIn completed');
 
-    final isAuthenticated = await _logtoClient.isAuthenticated;
-    print('[Logto] After signIn - isAuthenticated: $isAuthenticated');
-
-    if (isAuthenticated) {
-      final idToken = await _logtoClient.idToken;
-      final user = _getAuthUserFromIdToken(idToken);
-      print('[Logto] User extracted from token: ${user?.name ?? "null"}');
-      return user;
-    }
-
-    return null;
+    final user = await _resolveAuthUser();
+    print('[Logto] User extracted from token: ${user?.name ?? "null"}');
+    return user;
   }
 
   @override
   Future<void> logout() async {
     print('[Logto] Logout started');
+    setSessionUserEmail(null);
     await _logtoClient.signOut(postLogoutRedirectUri);
     print('[Logto] Logout completed successfully');
   }

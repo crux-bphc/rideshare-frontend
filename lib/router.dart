@@ -47,7 +47,9 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         if (!isGoingToLogin && !isGoingToSplash) return '/';
       }
 
-      if (isAuthenticated && !needsPhoneNumber && !_registrationCheckDone) {
+      if (authValue?.isUserLoadedForApi == true &&
+          !needsPhoneNumber &&
+          !_registrationCheckDone) {
         _registrationCheckDone = true;
         Future.microtask(() =>
           ref.read(authNotifierProvider.notifier).checkNeedsRegistration()

@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rideshare/providers/auth/auth_user.dart';
 import 'package:rideshare/providers/auth/logto_auth.dart';
 import 'package:rideshare/shared/providers/user_provider.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 abstract class AuthProvider {
   Dio get dioClient;
@@ -40,6 +39,16 @@ class AuthState {
       isLoggingIn: isLoggingIn ?? this.isLoggingIn,
     );
   }
+
+  bool get isUserLoadedForApi {
+    final email = user?.email;
+    return isAuthenticated && email != null && email.isNotEmpty;
+  }
+}
+
+bool authReadyForUserApi(AsyncValue<AuthState> authState) {
+  if (authState.isLoading) return false;
+  return authState.valueOrNull?.isUserLoadedForApi ?? false;
 }
 
 class AuthNotifier extends AsyncNotifier<AuthState> {
@@ -50,6 +59,7 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
     try {
       final user = await authProvider.initialise();
       print('[Auth] AuthNotifier.build() - Initialization complete, user: ${user != null ? "present" : "null"}');
+      ref.read(logtoAuthProvider).setSessionUserEmail(user?.email);
       return AuthState(user: user, isAuthenticated: user != null);
     } catch (e) {
       print('[Auth] ERROR in build: $e');
@@ -66,6 +76,7 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
       final authProvider = ref.read(logtoAuthProvider);
       final user = await authProvider.login();
       print('[Auth] AuthNotifier.login() - User returned: ${user != null ? "present (${user.name})" : "null"}');
+      ref.read(logtoAuthProvider).setSessionUserEmail(user?.email);
 
       state = AsyncValue.data(AuthState(
         user: user,
@@ -83,30 +94,16 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
     final currentState = state.valueOrNull;
     if (currentState == null || !currentState.isAuthenticated) return;
 
+    if (currentState.user?.email == null) {
+      print('[Auth] checkNeedsRegistration - no email in token');
+      return;
+    }
+
     try {
-      final logto = ref.read(logtoAuthProvider);
-      final email = currentState.user?.email;
+      final profile = await ref.read(profileUserDetailsProvider.future);
+      print('[Auth] checkNeedsRegistration - profile loaded: ${profile != null}');
 
-      if (email == null) {
-        print('[Auth] checkNeedsRegistration - no email in token');
-        return;
-      }
-
-      final baseUrl = dotenv.env['API_RESOURCE'];
-      if (baseUrl == null || baseUrl.isEmpty) {
-        print('[Auth] checkNeedsRegistration - API_BASE_URL is not set in .env');
-        return;
-      }
-      final cleanBase = baseUrl.endsWith('/') ? baseUrl.substring(0, baseUrl.length - 1) : baseUrl;
-      final response = await logto.dioClient.get(
-        '$cleanBase/user/email/',
-        queryParameters: {'email': email},
-      );
-
-      final userEmail = response.data?['email'];
-      print('[Auth] checkNeedsRegistration - userEmail: ${userEmail ?? "null"}');
-
-      if (userEmail == null) {
+      if (profile == null) {
         state = AsyncValue.data(
           currentState.copyWith(
             isAuthenticated: false,
@@ -125,6 +122,7 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
     state = await AsyncValue.guard(() async {
       final authProvider = ref.read(logtoAuthProvider);
       await authProvider.logout();
+      authProvider.setSessionUserEmail(null);
       print('[Auth] AuthNotifier.logout() - Logout successful');
       return AuthState(user: null, isAuthenticated: false);
     });
@@ -136,6 +134,8 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
   ) async {
     final userService = ref.read(userServiceProvider);
     await userService.createUser(phoneNumber, user.name!);
+    ref.invalidate(profileUserDetailsProvider);
+    ref.read(logtoAuthProvider).setSessionUserEmail(user.email);
     state = AsyncValue.data(
       AuthState(user: user, isAuthenticated: true, needsPhoneNumber: false),
     );

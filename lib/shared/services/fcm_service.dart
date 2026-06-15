@@ -1,11 +1,12 @@
 import 'dart:io';
 
-import 'package:dio/dio.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rideshare/providers/auth/logto_auth.dart';
+import 'package:rideshare/shared/services/firebase_messaging_permissions.dart';
 
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -17,7 +18,8 @@ final fcmServiceProvider = Provider<FcmService>((ref) {
 });
 
 class FcmService {
-  bool _initialized = false;
+  bool _listenersReady = false;
+  Future<void>? _setupInFlight;
   final Ref ref;
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   final FlutterLocalNotificationsPlugin _localNotifications =
@@ -32,14 +34,18 @@ class FcmService {
 
   FcmService(this.ref);
 
-  Future<void> initialize() async {
-    if (_initialized) return;
-    _initialized = true;
-    final settings = await _firebaseMessaging.requestPermission(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
+  Future<void> ensureMessagingReady() {
+    if (_listenersReady) return Future.value();
+    _setupInFlight ??= _ensureMessagingReadyImpl().whenComplete(() {
+      _setupInFlight = null;
+    });
+    return _setupInFlight!;
+  }
+
+  Future<void> _ensureMessagingReadyImpl() async {
+    if (_listenersReady) return;
+
+    final settings = await FirebaseMessagingPermissions.request();
 
     if (settings.authorizationStatus != AuthorizationStatus.authorized &&
         settings.authorizationStatus != AuthorizationStatus.provisional) {
@@ -55,10 +61,14 @@ class FcmService {
     }
 
     await _initializeLocalNotifications();
-
-    await _registerToken();
-
     _setupListeners();
+    _listenersReady = true;
+  }
+
+  /// Registers the device FCM token with the backend (safe to call after each login/session restore).
+  Future<void> syncTokenWithBackend() async {
+    await ensureMessagingReady();
+    await _registerToken();
   }
 
   Future<void> _initializeLocalNotifications() async {
@@ -86,31 +96,21 @@ class FcmService {
 
   Future<void> sendFcmTokenToBackend(String fcmToken) async {
     final authProvider = ref.read(logtoAuthProvider);
-    final idToken = await authProvider.idToken;
+    final baseUrl = dotenv.env['BACKEND_API_URL'];
 
-    if (idToken == null) {
-      print('Error: ID Token not available. Cannot send FCM token.');
+    if (baseUrl == null || baseUrl.isEmpty) {
+      print('Error: BACKEND_API_URL not available. Cannot send FCM token.');
       return;
     }
 
     try {
       await authProvider.dioClient.post(
-        '/user/tokens',
+        '${baseUrl}user/tokens',
         data: {'token': fcmToken},
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $idToken',
-          },
-        ),
       );
       print('FCM token sent to backend successfully.');
-    } on DioException catch (e) {
-      print('Error sending FCM token to backend: ${e.message}');
-      if (e.response != null) {
-        print('Backend response: ${e.response?.data}');
-      }
     } catch (e) {
-      print('An unexpected error occurred: $e');
+      print('Error sending FCM token to backend: $e');
     }
   }
 

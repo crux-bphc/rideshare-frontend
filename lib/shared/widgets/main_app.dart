@@ -1,4 +1,3 @@
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -23,22 +22,6 @@ final _navIndexProvider = Provider.family<int, StatefulNavigationShell>((
 });
 
 class _MainAppState extends ConsumerState<MainApp> {
-  @override
-  void initState() {
-    super.initState();
-    _requestNotificationPermission();
-  }
-
-  Future<void> _requestNotificationPermission() async {
-    await Future.delayed(const Duration(milliseconds: 500));
-
-    await FirebaseMessaging.instance.requestPermission(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     // final currentTab = ref.watch(navigationNotifierProvider);

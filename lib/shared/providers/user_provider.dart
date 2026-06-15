@@ -35,11 +35,15 @@ class UserNotifier extends _$UserNotifier {
   }
 
   Future<List<RideRequest>> getRequestsReceived() async {
+    final auth = ref.read(authNotifierProvider).valueOrNull;
+    if (auth?.user?.email == null) return [];
     final userService = ref.watch(userServiceProvider);
     return userService.getRequestsReceived();
   }
 
   Future<List<RideRequest>> getSentRequests() async {
+    final auth = ref.read(authNotifierProvider).valueOrNull;
+    if (auth?.user?.email == null) return [];
     final userService = ref.watch(userServiceProvider);
     return userService.getRequestsSent();
   }
@@ -48,10 +52,8 @@ class UserNotifier extends _$UserNotifier {
 @Riverpod(keepAlive: true)
 Future<User?> profileUserDetails(Ref ref) async {
   final authState = ref.watch(authNotifierProvider);
-  final isAuthenticated = authState.value?.isAuthenticated ?? false;
-  final email = authState.value?.user?.email;
-  
-  if (!isAuthenticated || email == null) return null;
+  if (!authReadyForUserApi(authState)) return null;
+  final email = authState.value!.user!.email!;
   
   try {
     return await ref.read(userServiceProvider).getUserDetails(email);
@@ -66,9 +68,7 @@ class ProfilePastRides extends _$ProfilePastRides {
   @override
   Future<List<Ride>> build() async {
     final authState = ref.watch(authNotifierProvider);
-    final isAuthenticated = authState.value?.isAuthenticated ?? false;
-
-    if (!isAuthenticated) return [];
+    if (!authReadyForUserApi(authState)) return [];
 
     try {
       final rideService = ref.read(rideServiceProvider);

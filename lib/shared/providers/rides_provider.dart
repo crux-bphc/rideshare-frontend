@@ -124,9 +124,8 @@ class RidesNotifier extends _$RidesNotifier {
 @riverpod
 Future<List<Ride>> upcomingRides(Ref ref) async {
   final authState = ref.watch(authNotifierProvider);
-  final isAuthenticated = authState.value?.isAuthenticated ?? false;
-  if (!isAuthenticated) return [];
-  
+  if (!authReadyForUserApi(authState)) return [];
+
   final rideService = ref.watch(rideServiceProvider);
   return rideService.getUpcomingRides();
 }
@@ -134,9 +133,8 @@ Future<List<Ride>> upcomingRides(Ref ref) async {
 @riverpod
 Future<List<Ride>> bookmarkedRides(Ref ref) async {
   final authState = ref.watch(authNotifierProvider);
-  final isAuthenticated = authState.value?.isAuthenticated ?? false;
-  if (!isAuthenticated) return [];
-  
+  if (!authReadyForUserApi(authState)) return [];
+
   final rideService = ref.watch(rideServiceProvider);
   return rideService.getBookmarkedRides();
 }
