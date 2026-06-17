@@ -5,8 +5,8 @@ import 'package:logto_dart_sdk/logto_dart_sdk.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rideshare/providers/auth/auth_provider.dart';
 import 'package:rideshare/providers/auth/auth_user.dart';
-import 'package:rideshare/shared/services/backend_user_context.dart';
 
+/// Logto auth: **access token** on all [dioClient] API calls; **ID token** only for [AuthUser] profile claims.
 class LogtoAuthProvider extends AuthProvider {
   late final LogtoClient _logtoClient;
 
@@ -17,27 +17,23 @@ class LogtoAuthProvider extends AuthProvider {
   static const redirectUri = 'com.crux-bphc.rideshare://callback';
   static const postLogoutRedirectUri = 'com.crux-bphc.rideshare://callback';
   late final String _apiResource;
-  String? _sessionUserEmail;
 
-  void setSessionUserEmail(String? email) {
-    _sessionUserEmail = email?.trim().isEmpty == true ? null : email?.trim();
-  }
-
+  /// Builds [AuthUser] from OIDC **ID token** claims (not used for API Authorization).
   AuthUser? _getAuthUserFromIdToken(String? idToken) {
     print('[Logto] _getAuthUserFromIdToken called with idToken: ${idToken != null ? "present" : "null"}');
     if (idToken == null) return null;
 
     try {
       final Map<String, dynamic> claims = JwtDecoder.decode(idToken);
-      print('[Logto] JWT claims decoded successfully: sub=${claims['sub']}, email=${claims['email']}');
+      print('[Logto] ID token claims (profile): sub=${claims['sub']}, email=${claims['email']}');
       return AuthUser.fromJwtClaims(claims);
     } catch (e) {
-      print('[Logto] ERROR: Failed to decode JWT - $e');
+      print('[Logto] ERROR: Failed to decode ID token - $e');
       return null;
     }
   }
 
-  /// Restores the user from stored Logto tokens, refreshing when the ID token expired.
+  /// Restores profile from stored tokens; refreshes session when the ID token is expired.
   Future<AuthUser?> _resolveAuthUser() async {
     if (!await _logtoClient.isAuthenticated) return null;
 
@@ -53,16 +49,29 @@ class LogtoAuthProvider extends AuthProvider {
       }
     }
 
-    final user = _getAuthUserFromIdToken(idToken);
-    setSessionUserEmail(user?.email);
-    await _logTokenClaimComparison();
-    return user;
+    return _getAuthUserFromIdToken(idToken);
   }
 
-  Future<void> _logTokenClaimComparison() async {
-    final idToken = await _logtoClient.idToken;
-    final accessToken = (await _logtoClient.getAccessToken(resource: _apiResource))?.token;
-    debugLogLogtoTokenClaims(idToken: idToken, accessToken: accessToken);
+  /// Access token for [API_RESOURCE]; refreshed by Logto when expired.
+  @override
+  Future<String?> getAccessTokenForApi() async {
+    final accessTokenObj =
+        await _logtoClient.getAccessToken(resource: _apiResource);
+    return accessTokenObj?.token;
+  }
+
+  Future<void> _attachApiAuthorization(RequestOptions options) async {
+    try {
+      final accessToken = await getAccessTokenForApi();
+      if (accessToken == null || accessToken.isEmpty) {
+        print('[Logto] ✗ access token is null/empty for ${options.path}');
+        return;
+      }
+
+      options.headers['Authorization'] = 'Bearer $accessToken';
+    } catch (e) {
+      print('[Logto] ✗ ERROR retrieving access token in interceptor: $e');
+    }
   }
 
   @override
@@ -105,19 +114,7 @@ class LogtoAuthProvider extends AuthProvider {
       InterceptorsWrapper(
         onRequest: (options, handler) async {
           print('[Logto] DIO Request START - Path: ${options.path}');
-          try {
-            final accessTokenObj = await _logtoClient.getAccessToken(resource: _apiResource);
-            final accessToken = accessTokenObj?.token;
-            print('[Logto] accessToken retrieved: ${accessToken != null ? "YES" : "NULL"}');
-            if (accessToken != null && accessToken.isNotEmpty) {
-              options.headers['Authorization'] = 'Bearer $accessToken';
-              print('[Logto] ✓ Authorization header set with access token');
-            } else {
-              print('[Logto] ✗ accessToken is null/empty');
-            }
-          } catch (e) {
-            print('[Logto] ✗ ERROR retrieving access token in interceptor: $e');
-          }
+          await _attachApiAuthorization(options);
           return handler.next(options);
         },
         onResponse: (response, handler) {
@@ -147,25 +144,20 @@ class LogtoAuthProvider extends AuthProvider {
     print('[Logto] signIn completed');
 
     final user = await _resolveAuthUser();
-    print('[Logto] User extracted from token: ${user?.name ?? "null"}');
+    print('[Logto] User extracted from ID token: ${user?.name ?? "null"}');
     return user;
   }
 
   @override
   Future<void> logout() async {
     print('[Logto] Logout started');
-    setSessionUserEmail(null);
     await _logtoClient.signOut(postLogoutRedirectUri);
     print('[Logto] Logout completed successfully');
   }
 
+  /// OIDC ID token — profile/session only; do not send to the CabShare API.
   @override
   Future<String?> get idToken => _logtoClient.idToken;
-
-  Future<String?> getAccessToken() async {
-  final accessTokenObj = await _logtoClient.getAccessToken(resource: _apiResource);
-  return accessTokenObj?.token;
-}
 
   @override
   void dispose() {}

@@ -9,7 +9,10 @@ abstract class AuthProvider {
   Future<AuthUser?> initialise();
   Future<AuthUser?> login();
   Future<void> logout();
+  /// OIDC ID token for in-app profile claims only — not for backend API Authorization.
   Future<String?> get idToken;
+  /// Resource access token for `Authorization: Bearer` on backend API requests.
+  Future<String?> getAccessTokenForApi();
   void dispose();
 }
 
@@ -59,7 +62,6 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
     try {
       final user = await authProvider.initialise();
       print('[Auth] AuthNotifier.build() - Initialization complete, user: ${user != null ? "present" : "null"}');
-      ref.read(logtoAuthProvider).setSessionUserEmail(user?.email);
       return AuthState(user: user, isAuthenticated: user != null);
     } catch (e) {
       print('[Auth] ERROR in build: $e');
@@ -76,7 +78,6 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
       final authProvider = ref.read(logtoAuthProvider);
       final user = await authProvider.login();
       print('[Auth] AuthNotifier.login() - User returned: ${user != null ? "present (${user.name})" : "null"}');
-      ref.read(logtoAuthProvider).setSessionUserEmail(user?.email);
 
       state = AsyncValue.data(AuthState(
         user: user,
@@ -122,7 +123,6 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
     state = await AsyncValue.guard(() async {
       final authProvider = ref.read(logtoAuthProvider);
       await authProvider.logout();
-      authProvider.setSessionUserEmail(null);
       print('[Auth] AuthNotifier.logout() - Logout successful');
       return AuthState(user: null, isAuthenticated: false);
     });
@@ -135,15 +135,9 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
     final userService = ref.read(userServiceProvider);
     await userService.createUser(phoneNumber, user.name!);
     ref.invalidate(profileUserDetailsProvider);
-    ref.read(logtoAuthProvider).setSessionUserEmail(user.email);
     state = AsyncValue.data(
       AuthState(user: user, isAuthenticated: true, needsPhoneNumber: false),
     );
-  }
-
-  Future<String?> getIdToken() async {
-    final authProvider = ref.read(logtoAuthProvider);
-    return await authProvider.idToken;
   }
 }
 
