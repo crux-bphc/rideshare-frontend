@@ -1,16 +1,34 @@
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:rideshare/providers/auth/auth_provider.dart';
 import 'package:rideshare/providers/auth/logto_auth.dart';
 import 'package:rideshare/shared/services/firebase_messaging_permissions.dart';
+
+const AndroidNotificationChannel _androidNotificationChannel =
+    AndroidNotificationChannel(
+      'default_channel',
+      'Notifications',
+      importance: Importance.max,
+    );
+
+final FlutterLocalNotificationsPlugin _backgroundLocalNotifications =
+    FlutterLocalNotificationsPlugin();
 
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
+  await _setupLocalNotifications(_backgroundLocalNotifications);
+  await _showLocalNotification(
+    plugin: _backgroundLocalNotifications,
+    message: message,
+  );
 }
 
 final fcmServiceProvider = Provider<FcmService>((ref) {
@@ -19,18 +37,12 @@ final fcmServiceProvider = Provider<FcmService>((ref) {
 
 class FcmService {
   bool _listenersReady = false;
+  bool _localNotificationsInitialized = false;
   Future<void>? _setupInFlight;
   final Ref ref;
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   final FlutterLocalNotificationsPlugin _localNotifications =
       FlutterLocalNotificationsPlugin();
-
-  static const AndroidNotificationChannel _androidChannel =
-      AndroidNotificationChannel(
-        'default_channel',
-        'Notifications',
-        importance: Importance.max,
-      );
 
   FcmService(this.ref);
 
@@ -49,6 +61,9 @@ class FcmService {
 
     if (settings.authorizationStatus != AuthorizationStatus.authorized &&
         settings.authorizationStatus != AuthorizationStatus.provisional) {
+      debugPrint(
+        'FCM permission not granted: ${settings.authorizationStatus.name}',
+      );
       return;
     }
 
@@ -72,45 +87,53 @@ class FcmService {
   }
 
   Future<void> _initializeLocalNotifications() async {
-    const androidSettings = AndroidInitializationSettings(
-      '@mipmap/ic_launcher',
-    );
-
-    const settings = InitializationSettings(android: androidSettings);
-
-    await _localNotifications.initialize(settings);
-
-    await _localNotifications
-        .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin
-        >()
-        ?.createNotificationChannel(_androidChannel);
+    if (_localNotificationsInitialized) return;
+    _localNotificationsInitialized = true;
+    await _setupLocalNotifications(_localNotifications);
   }
 
   Future<void> _registerToken() async {
     final token = await _firebaseMessaging.getToken();
     if (token != null) {
+      debugPrint('FCM device token acquired: $token');
       await sendFcmTokenToBackend(token);
+      return;
     }
+
+    debugPrint('FCM device token is null.');
   }
 
   Future<void> sendFcmTokenToBackend(String fcmToken) async {
     final authProvider = ref.read(logtoAuthProvider);
-    final baseUrl = dotenv.env['BACKEND_API_URL'];
+    final email = ref.read(authNotifierProvider).valueOrNull?.user?.email;
+    final backendApiUrl = dotenv.env['BACKEND_API_URL'];
 
-    if (baseUrl == null || baseUrl.isEmpty) {
-      print('Error: BACKEND_API_URL not available. Cannot send FCM token.');
+    if (email == null || email.isEmpty) {
+      debugPrint('FCM token not sent: user email is unavailable.');
+      return;
+    }
+
+    if (backendApiUrl == null || backendApiUrl.isEmpty) {
+      debugPrint('FCM token not sent: BACKEND_API_URL is missing.');
       return;
     }
 
     try {
       await authProvider.dioClient.post(
-        '${baseUrl}user/tokens',
-        data: {'token': fcmToken},
+        _buildBackendUrl(backendApiUrl, 'user/tokens'),
+        data: {
+          'email': email,
+          'token': fcmToken,
+        },
       );
-      print('FCM token sent to backend successfully.');
+      debugPrint('FCM token sent to backend successfully.');
+    } on DioException catch (e) {
+      debugPrint('Error sending FCM token to backend: ${e.message}');
+      if (e.response != null) {
+        debugPrint('Backend response: ${e.response?.data}');
+      }
     } catch (e) {
-      print('Error sending FCM token to backend: $e');
+      debugPrint('An unexpected error occurred while sending FCM token: $e');
     }
   }
 
@@ -131,26 +154,65 @@ class FcmService {
   }
 
   void _handleForegroundMessage(RemoteMessage message) {
-    final notification = message.notification;
-    if (notification == null) return;
-
-    _localNotifications.show(
-      message.hashCode,
-      notification.title,
-      notification.body,
-      NotificationDetails(
-        android: AndroidNotificationDetails(
-          _androidChannel.id,
-          _androidChannel.name,
-          importance: Importance.max,
-          priority: Priority.high,
-        ),
-      ),
-      payload: message.data.isNotEmpty ? message.data.toString() : null,
+    _showLocalNotification(
+      plugin: _localNotifications,
+      message: message,
     );
   }
 
   void _handleMessageTap(RemoteMessage message) {
-    print('User tapped on notification: ${message.messageId}');
+    debugPrint('User tapped on notification: ${message.messageId}');
   }
+}
+
+String _buildBackendUrl(String baseUrl, String path) {
+  final normalizedBaseUrl = baseUrl.endsWith('/') ? baseUrl : '$baseUrl/';
+  return '$normalizedBaseUrl$path';
+}
+
+Future<void> _setupLocalNotifications(
+  FlutterLocalNotificationsPlugin plugin,
+) async {
+  const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+  const iosSettings = DarwinInitializationSettings();
+  const settings = InitializationSettings(
+    android: androidSettings,
+    iOS: iosSettings,
+  );
+
+  await plugin.initialize(settings);
+
+  await plugin
+      .resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin
+      >()
+      ?.createNotificationChannel(_androidNotificationChannel);
+}
+
+Future<void> _showLocalNotification({
+  required FlutterLocalNotificationsPlugin plugin,
+  required RemoteMessage message,
+}) async {
+  final title = message.notification?.title ?? message.data['title'] as String?;
+  final body = message.notification?.body ?? message.data['body'] as String?;
+
+  if (title == null && body == null) {
+    return;
+  }
+
+  await plugin.show(
+    message.hashCode,
+    title ?? 'Ride request',
+    body ?? '',
+    NotificationDetails(
+      android: AndroidNotificationDetails(
+        _androidNotificationChannel.id,
+        _androidNotificationChannel.name,
+        importance: Importance.max,
+        priority: Priority.high,
+      ),
+      iOS: const DarwinNotificationDetails(),
+    ),
+    payload: message.data.isNotEmpty ? message.data.toString() : null,
+  );
 }
