@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:rideshare/models/ride.dart';
 import 'package:rideshare/models/user.dart';
+import 'package:rideshare/shared/util/string_utils.dart';
 
 class RideService {
   final Dio _dio;
@@ -30,8 +31,8 @@ class RideService {
           "departureEndTime": departureEndTime.toIso8601String(),
           "comments": comments ?? '',
           "maxMemberCount": seats,
-          "rideStartLocation": rideStart,
-          "rideEndLocation": rideEnd,
+          "rideStartLocation": rideStart.capitalizeWords(),
+          "rideEndLocation": rideEnd.capitalizeWords(),
         },
       );
     } catch (e) {
@@ -56,8 +57,8 @@ class RideService {
           "departureEndTime": departureEndTime.toIso8601String(),
           "comments": comments ?? '',
           "maxMemberCount": seats,
-          "rideStartLocation": rideStart,
-          "rideEndLocation": rideEnd,
+          "rideStartLocation": rideStart.capitalizeWords(),
+          "rideEndLocation": rideEnd.capitalizeWords(),
         },
       );
     } catch (e) {
@@ -76,8 +77,8 @@ class RideService {
         final response = await _dio.get(
           '${dotenv.env['BACKEND_API_URL']}rides/search/',
           queryParameters: {
-            "searchStartLocation": startLocation,
-            "searchEndLocation": endLocation,
+            "searchStartLocation": startLocation.capitalizeWords(),
+            "searchEndLocation": endLocation.capitalizeWords(),
             "by": to?.toIso8601String(),
           },
         );
@@ -92,8 +93,8 @@ class RideService {
         final response = await _dio.get(
           '${dotenv.env['BACKEND_API_URL']}rides/search/',
           queryParameters: {
-            "searchStartLocation": startLocation,
-            "searchEndLocation": endLocation,
+            "searchStartLocation": startLocation.capitalizeWords(),
+            "searchEndLocation": endLocation.capitalizeWords(),
             "from": from.toIso8601String(),
           },
         );

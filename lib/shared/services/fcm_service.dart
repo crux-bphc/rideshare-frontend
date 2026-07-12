@@ -154,6 +154,7 @@ class FcmService {
   }
 
   void _handleForegroundMessage(RemoteMessage message) {
+    print(message.data);
     _showLocalNotification(
       plugin: _localNotifications,
       message: message,
@@ -195,6 +196,10 @@ Future<void> _showLocalNotification({
 }) async {
   final title = message.notification?.title ?? message.data['title'] as String?;
   final body = message.notification?.body ?? message.data['body'] as String?;
+  final senderName = message.data['senderName'] as String?; // add this
+
+  final displayTitle = title ?? (senderName != null ? '$senderName sent a ride request' : 'New ride request');
+  final displayBody = body ?? '';
 
   if (title == null && body == null) {
     return;

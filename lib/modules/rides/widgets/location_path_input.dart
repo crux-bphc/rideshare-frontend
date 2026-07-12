@@ -292,6 +292,7 @@ class _LocationInputRow extends StatelessWidget {
           child: TextField(
             controller: controller,
             focusNode: focusNode,
+            textCapitalization: TextCapitalization.words,
             style: const TextStyle(color: Colors.white),
             decoration: InputDecoration(
               hintText: hint,
