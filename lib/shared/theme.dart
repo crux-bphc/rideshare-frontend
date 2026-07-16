@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppColors {
@@ -35,6 +36,22 @@ final _theme = ThemeData.from(
 
 final ThemeData appTheme = _theme.copyWith(
   textTheme: GoogleFonts.ralewayTextTheme(_theme.textTheme),
+  appBarTheme: AppBarTheme(
+    backgroundColor: AppColors.surface,
+    elevation: 0,
+    centerTitle: false,
+    toolbarHeight: 64,
+    titleTextStyle: GoogleFonts.raleway(
+      fontSize: 20,
+      fontWeight: FontWeight.w700,
+      color: AppColors.textPrimary,
+    ),
+    systemOverlayStyle: const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.light,
+      statusBarBrightness: Brightness.dark,
+    ),
+  ),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
       backgroundColor: AppColors.button,
@@ -45,20 +62,6 @@ final ThemeData appTheme = _theme.copyWith(
       padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 16),
       textStyle: GoogleFonts.raleway(fontWeight: FontWeight.w700, fontSize: 16),
       iconSize: 24,
-    ),
-  ),
-  appBarTheme: AppBarTheme(
-    backgroundColor: AppColors.surface,
-    foregroundColor: AppColors.textPrimary,
-    elevation: 0,
-    scrolledUnderElevation: 0,
-    titleTextStyle: GoogleFonts.raleway(
-      fontWeight: FontWeight.bold,
-      fontSize: 24,
-      color: AppColors.textPrimary,
-    ),
-    iconTheme: const IconThemeData(
-      color: AppColors.textPrimary,
     ),
   ),
 );

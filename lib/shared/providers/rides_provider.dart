@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rideshare/models/user.dart';
+import 'package:rideshare/providers/auth/auth_provider.dart';
 import 'package:rideshare/providers/auth/logto_auth.dart';
 import 'package:rideshare/models/ride.dart';
 import 'package:rideshare/shared/services/ride_service.dart';
@@ -113,16 +114,27 @@ class RidesNotifier extends _$RidesNotifier {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() => build());
   }
+
+  Future<List<String>?> getRecommendations(String input) async {
+    final rideService = ref.watch(rideServiceProvider);
+    return rideService.getRecommendations(input);
+  }
 }
 
 @riverpod
 Future<List<Ride>> upcomingRides(Ref ref) async {
+  final authState = ref.watch(authNotifierProvider);
+  if (!authReadyForUserApi(authState)) return [];
+
   final rideService = ref.watch(rideServiceProvider);
   return rideService.getUpcomingRides();
 }
 
 @riverpod
 Future<List<Ride>> bookmarkedRides(Ref ref) async {
+  final authState = ref.watch(authNotifierProvider);
+  if (!authReadyForUserApi(authState)) return [];
+
   final rideService = ref.watch(rideServiceProvider);
   return rideService.getBookmarkedRides();
 }

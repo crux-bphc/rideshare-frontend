@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:rideshare/providers/auth/auth_provider.dart';
 import 'package:rideshare/shared/services/ride_service.dart';
 import 'package:rideshare/shared/providers/rides_provider.dart';
 
@@ -8,6 +9,8 @@ class BookmarksController extends AsyncNotifier<Set<int>> {
   @override
   Future<Set<int>> build() async {
     _service = ref.read(rideServiceProvider);
+    final authState = ref.watch(authNotifierProvider);
+    if (!authReadyForUserApi(authState)) return {};
 
     final rides = await _service.getBookmarkedRides();
     return rides.map((r) => r.id).toSet();

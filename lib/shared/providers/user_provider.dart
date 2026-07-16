@@ -12,7 +12,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'user_provider.g.dart';
 
 final userServiceProvider = Provider<UserService>((ref) {
-  final dio = ref.watch(logtoAuthProvider).dioClient;
+  final logtoProvider = ref.watch(logtoAuthProvider);
+  final dio = logtoProvider.dioClient;
   return UserService(dio);
 });
 
@@ -34,11 +35,15 @@ class UserNotifier extends _$UserNotifier {
   }
 
   Future<List<RideRequest>> getRequestsReceived() async {
+    final auth = ref.read(authNotifierProvider).valueOrNull;
+    if (auth?.user?.email == null) return [];
     final userService = ref.watch(userServiceProvider);
     return userService.getRequestsReceived();
   }
 
   Future<List<RideRequest>> getSentRequests() async {
+    final auth = ref.read(authNotifierProvider).valueOrNull;
+    if (auth?.user?.email == null) return [];
     final userService = ref.watch(userServiceProvider);
     return userService.getRequestsSent();
   }
@@ -47,23 +52,24 @@ class UserNotifier extends _$UserNotifier {
 @Riverpod(keepAlive: true)
 Future<User?> profileUserDetails(Ref ref) async {
   final authState = ref.watch(authNotifierProvider);
-  if (authState.value?.user?.email != null) {
-    try {
-      return await ref
-          .read(userServiceProvider)
-          .getUserDetails(authState.value!.user!.email!);
-    } catch (e) {
-      debugPrint('Error fetching user details: $e');
-      return null;
-    }
+  if (!authReadyForUserApi(authState)) return null;
+  final email = authState.value!.user!.email!;
+  
+  try {
+    return await ref.read(userServiceProvider).getUserDetails(email);
+  } catch (e) {
+    debugPrint('Error fetching user details: $e');
+    return null;
   }
-  return null;
 }
 
 @Riverpod(keepAlive: true)
 class ProfilePastRides extends _$ProfilePastRides {
   @override
   Future<List<Ride>> build() async {
+    final authState = ref.watch(authNotifierProvider);
+    if (!authReadyForUserApi(authState)) return [];
+
     try {
       final rideService = ref.read(rideServiceProvider);
       final completedRides = await rideService.getCompletedRides();

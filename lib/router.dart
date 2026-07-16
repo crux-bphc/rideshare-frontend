@@ -16,29 +16,50 @@ import 'package:rideshare/modules/rides/your_rides/your_rides_screen.dart';
 import 'package:rideshare/modules/rides/ride_details/ride_details_screen.dart';
 import 'package:rideshare/models/ride.dart';
 
+bool _registrationCheckDone = false;
+
 final goRouterProvider = Provider<GoRouter>((ref) {
+  final notifier = RouterNotifier(ref);
+  
   return GoRouter(
     navigatorKey: navigatorKey,
+    refreshListenable: notifier,
     redirect: (context, state) {
       final authState = ref.read(authNotifierProvider);
       final location = state.matchedLocation;
-
+      final authValue = authState.valueOrNull;
       if (authState.isLoading && location != '/splash') {
         return '/splash';
       }
-      final isAuthenticated = authState.valueOrNull?.isAuthenticated ?? false;
+
+      final isAuthenticated = authValue?.isAuthenticated ?? false;
+      final needsPhoneNumber = authValue?.needsPhoneNumber ?? false;
+      final isLoggingIn = authValue?.isLoggingIn ?? false;
       final isGoingToSplash = location == '/splash';
       final isGoingToLogin = location == '/';
+      if (isLoggingIn) return null;
+
+      if (needsPhoneNumber) return '/register';
 
       if (isAuthenticated) {
-        if (isGoingToSplash || isGoingToLogin) {
-          return '/home';
-        }
+        if (isGoingToSplash || isGoingToLogin) return '/home';
       } else {
-        if (!isGoingToLogin && !isGoingToSplash) {
-          return '/';
-        }
+        if (!isGoingToLogin && !isGoingToSplash) return '/';
       }
+
+      if (authValue?.isUserLoadedForApi == true &&
+          !needsPhoneNumber &&
+          !_registrationCheckDone) {
+        _registrationCheckDone = true;
+        Future.microtask(() =>
+          ref.read(authNotifierProvider.notifier).checkNeedsRegistration()
+        );
+      }
+
+      if (!isAuthenticated) {
+        _registrationCheckDone = false;
+      }
+
       return null;
     },
     routes: [
@@ -61,7 +82,12 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         },
       ),
       StatefulShellRoute.indexedStack(
-        builder: (context, state, child) => MainApp(child: child),
+        builder: (context, state, navigationShell) {
+          return MainApp(
+            navigationShell: navigationShell,
+            child: navigationShell,
+          );
+        },
         branches: [
           StatefulShellBranch(
             routes: [
@@ -184,6 +210,13 @@ final goRouterProvider = Provider<GoRouter>((ref) {
     ],
   );
 });
+
+class RouterNotifier extends ChangeNotifier {
+  RouterNotifier(this._ref) {
+    _ref.listen(authNotifierProvider, (_, __) => notifyListeners());
+  }
+  final Ref _ref;
+}
 
 CustomTransitionPage<void> _buildPageWithFadeTransition({
   required String path,

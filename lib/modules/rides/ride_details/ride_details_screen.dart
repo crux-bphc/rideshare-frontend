@@ -11,6 +11,7 @@ import 'package:rideshare/shared/providers/rides_provider.dart';
 import 'package:rideshare/shared/providers/user_provider.dart';
 import 'package:rideshare/shared/theme.dart';
 import 'package:intl/intl.dart';
+import 'package:rideshare/shared/util/string_utils.dart';
 
 class RideDetailsScreen extends ConsumerWidget {
   final Ride ride;
@@ -174,13 +175,13 @@ class RideDetailsScreen extends ConsumerWidget {
                         RouteIcon(
                           icon: Icons.location_on,
                           iconColor: AppColors.button,
-                          label: ride.rideStartLocation ?? 'N/A',
+                          label: ride.rideStartLocation?.capitalizeWords() ?? 'N/A',
                         ),
                         const SizedBox(height: 24),
                         RouteIcon(
                           icon: Icons.location_on,
                           iconColor: AppColors.button,
-                          label: ride.rideEndLocation ?? 'N/A',
+                          label: ride.rideEndLocation?.capitalizeWords() ?? 'N/A',
                         ),
                       ],
                     ),

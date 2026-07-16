@@ -8,6 +8,7 @@ Future<TimeOfDay?> showCustomTimePicker(
   return showTimePicker(
     context: context,
     initialTime: initialTime ?? TimeOfDay.now(),
+    initialEntryMode: TimePickerEntryMode.input,
     builder: (context, child) {
       return _TimePickerTheme(child: child!);
     },
@@ -31,7 +32,6 @@ class _TimePickerTheme extends StatelessWidget {
           secondary: AppColors.textPrimary,
         ),
 
-        // Theme specifically for TimePicker
         timePickerTheme: TimePickerThemeData(
           backgroundColor: AppColors.surface,
           hourMinuteTextColor: AppColors.primary,
