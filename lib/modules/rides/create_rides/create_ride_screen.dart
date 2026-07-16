@@ -82,7 +82,6 @@ class _CreateRideScreenState extends ConsumerState<CreateRideScreen> {
             if (searchDestinationLocation != null) {
               destinationLocationController.text = searchDestinationLocation;
             }
-            ref.read(arrivalTimeProvider.notifier).setTime(null);
           }
         }
       }
