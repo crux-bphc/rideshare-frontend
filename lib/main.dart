@@ -33,10 +33,11 @@ class MyApp extends ConsumerWidget {
         ref.read(fcmServiceProvider).syncTokenWithBackend();
       }
 
-      final wasLoading = previous?.isLoading ?? false;
+      final wasMissingPhoneNumber =
+          previous?.valueOrNull?.needsPhoneNumber ?? false;
       final needsPhoneNumber = next.valueOrNull?.needsPhoneNumber ?? false;
 
-      if (wasLoading && needsPhoneNumber) {
+      if (!wasMissingPhoneNumber && needsPhoneNumber) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           final currentContext = navigatorKey.currentContext;
           if (currentContext != null) {

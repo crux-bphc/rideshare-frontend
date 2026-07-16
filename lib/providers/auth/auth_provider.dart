@@ -9,8 +9,10 @@ abstract class AuthProvider {
   Future<AuthUser?> initialise();
   Future<AuthUser?> login();
   Future<void> logout();
+
   /// OIDC ID token for in-app profile claims only — not for backend API Authorization.
   Future<String?> get idToken;
+
   /// Resource access token for `Authorization: Bearer` on backend API requests.
   Future<String?> getAccessTokenForApi();
   void dispose();
@@ -51,7 +53,9 @@ class AuthState {
 
 bool authReadyForUserApi(AsyncValue<AuthState> authState) {
   if (authState.isLoading) return false;
-  return authState.valueOrNull?.isUserLoadedForApi ?? false;
+  final authValue = authState.valueOrNull;
+  return authValue?.isUserLoadedForApi == true &&
+      authValue?.needsPhoneNumber == false;
 }
 
 class AuthNotifier extends AsyncNotifier<AuthState> {
@@ -61,7 +65,9 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
     final authProvider = ref.read(logtoAuthProvider);
     try {
       final user = await authProvider.initialise();
-      print('[Auth] AuthNotifier.build() - Initialization complete, user: ${user != null ? "present" : "null"}');
+      print(
+        '[Auth] AuthNotifier.build() - Initialization complete, user: ${user != null ? "present" : "null"}',
+      );
       return AuthState(user: user, isAuthenticated: user != null);
     } catch (e) {
       print('[Auth] ERROR in build: $e');
@@ -77,14 +83,18 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
     try {
       final authProvider = ref.read(logtoAuthProvider);
       final user = await authProvider.login();
-      print('[Auth] AuthNotifier.login() - User returned: ${user != null ? "present (${user.name})" : "null"}');
+      print(
+        '[Auth] AuthNotifier.login() - User returned: ${user != null ? "present (${user.name})" : "null"}',
+      );
 
-      state = AsyncValue.data(AuthState(
-        user: user,
-        isAuthenticated: user != null,
-        needsPhoneNumber: false,
-        isLoggingIn: false,
-      ));
+      state = AsyncValue.data(
+        AuthState(
+          user: user,
+          isAuthenticated: user != null,
+          needsPhoneNumber: false,
+          isLoggingIn: false,
+        ),
+      );
     } catch (e) {
       print('[Auth] ERROR in login: $e');
       state = AsyncValue.data(current.copyWith(isLoggingIn: false));
@@ -102,12 +112,13 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
 
     try {
       final profile = await ref.read(profileUserDetailsProvider.future);
-      print('[Auth] checkNeedsRegistration - profile loaded: ${profile != null}');
+      print(
+        '[Auth] checkNeedsRegistration - profile loaded: ${profile != null}',
+      );
 
       if (profile == null) {
         state = AsyncValue.data(
           currentState.copyWith(
-            isAuthenticated: false,
             needsPhoneNumber: true,
           ),
         );

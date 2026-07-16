@@ -20,7 +20,7 @@ bool _registrationCheckDone = false;
 
 final goRouterProvider = Provider<GoRouter>((ref) {
   final notifier = RouterNotifier(ref);
-  
+
   return GoRouter(
     navigatorKey: navigatorKey,
     refreshListenable: notifier,
@@ -39,8 +39,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       final isGoingToLogin = location == '/';
       if (isLoggingIn) return null;
 
-      if (needsPhoneNumber) return '/register';
-
       if (isAuthenticated) {
         if (isGoingToSplash || isGoingToLogin) return '/home';
       } else {
@@ -51,8 +49,9 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           !needsPhoneNumber &&
           !_registrationCheckDone) {
         _registrationCheckDone = true;
-        Future.microtask(() =>
-          ref.read(authNotifierProvider.notifier).checkNeedsRegistration()
+        Future.microtask(
+          () =>
+              ref.read(authNotifierProvider.notifier).checkNeedsRegistration(),
         );
       }
 
