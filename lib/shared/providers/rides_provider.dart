@@ -72,6 +72,7 @@ class RidesNotifier extends _$RidesNotifier {
       rideId,
     );
     ref.invalidate(upcomingRidesProvider);
+    ref.invalidate(bookmarkedRidesProvider);
   }
 
   Future<void> sendRequest(int rideId) async {
@@ -97,6 +98,7 @@ class RidesNotifier extends _$RidesNotifier {
     final rideService = ref.watch(rideServiceProvider);
     await rideService.deleteRide(rideId);
     ref.invalidate(upcomingRidesProvider);
+    ref.invalidate(bookmarkedRidesProvider);
   }
 
   Future<void> deleteRequest(String rideId) async {
