@@ -40,6 +40,8 @@ class _CreateRideScreenState extends ConsumerState<CreateRideScreen> {
   @override
   void initState() {
     super.initState();
+    startLocationController.addListener(() => setState(() {}));
+    destinationLocationController.addListener(() => setState(() {}));
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         if (widget.isEditing && widget.ride != null) {

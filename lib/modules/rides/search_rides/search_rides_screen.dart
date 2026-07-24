@@ -71,7 +71,7 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
       final departureTime = ref.read(departureTimeProvider);
       final arrivalTime = ref.read(arrivalTimeProvider);
       timeError = (departureTime == null && arrivalTime == null)
-          ? "Select Departure or Arrival Time"
+          ? "Select Departure Window"
           : null;
 
       seatsError = null;
@@ -79,7 +79,7 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
       if (departureTime != null &&
           arrivalTime != null &&
           departureTime.isAfter(arrivalTime)) {
-        timeError = "Departure time cannot be after arrival time";
+        timeError = "Start Time cannot be after End Time";
       }
     });
     if (startLocationError == null &&
