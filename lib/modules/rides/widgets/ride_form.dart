@@ -72,16 +72,28 @@ class _RideFormState extends ConsumerState<RideForm> {
       ref.read(departureTimeProvider.notifier).setTime(picked);
       final currentArrivalTime = ref.read(arrivalTimeProvider);
 
-      if (currentArrivalTime != null && !picked.isBefore(currentArrivalTime)) {
-        final departureMinutes = picked.hour * 60 + picked.minute;
-        final newArrivalMinutes = departureMinutes + 30;
-        final newArrivalHour = (newArrivalMinutes ~/ 60) % 24;
-        final newArrivalMinute = newArrivalMinutes % 60;
-        final newArrivalTime = TimeOfDay(
-          hour: newArrivalHour,
-          minute: newArrivalMinute,
-        );
-        ref.read(arrivalTimeProvider.notifier).setTime(newArrivalTime);
+      if (currentArrivalTime != null) {
+        int startMins = picked.hour * 60 + picked.minute;
+        int endMins = currentArrivalTime.hour * 60 + currentArrivalTime.minute;
+        
+        bool isValid = false;
+        if (endMins < startMins) {
+          int duration = endMins + 24 * 60 - startMins;
+          isValid = duration > 0 && duration <= 180; // midnight rider provider case
+        } else {
+          isValid = endMins > startMins;
+        }
+
+        if (!isValid) {
+          final newArrivalMinutes = startMins + 30;
+          final newArrivalHour = (newArrivalMinutes ~/ 60) % 24;
+          final newArrivalMinute = newArrivalMinutes % 60;
+          final newArrivalTime = TimeOfDay(
+            hour: newArrivalHour,
+            minute: newArrivalMinute,
+          );
+          ref.read(arrivalTimeProvider.notifier).setTime(newArrivalTime);
+        }
       }
     }
   }
@@ -102,16 +114,30 @@ class _RideFormState extends ConsumerState<RideForm> {
       initialTime: initialTime,
     );
     if (picked != null) {
-      if (departureTime != null && !departureTime.isBefore(picked)) {
-        final departureMinutes = departureTime.hour * 60 + departureTime.minute;
-        final newArrivalMinutes = departureMinutes + 30;
-        final newArrivalHour = (newArrivalMinutes ~/ 60) % 24;
-        final newArrivalMinute = newArrivalMinutes % 60;
-        final newArrivalTime = TimeOfDay(
-          hour: newArrivalHour,
-          minute: newArrivalMinute,
-        );
-        ref.read(arrivalTimeProvider.notifier).setTime(newArrivalTime);
+      if (departureTime != null) {
+        int startMins = departureTime.hour * 60 + departureTime.minute;
+        int endMins = picked.hour * 60 + picked.minute;
+        
+        bool isValid = false;
+        if (endMins < startMins) {
+          int duration = endMins + 24 * 60 - startMins;
+          isValid = duration > 0 && duration <= 180;
+        } else {
+          isValid = endMins > startMins;
+        }
+
+        if (!isValid) {
+          final newArrivalMinutes = startMins + 30;
+          final newArrivalHour = (newArrivalMinutes ~/ 60) % 24;
+          final newArrivalMinute = newArrivalMinutes % 60;
+          final newArrivalTime = TimeOfDay(
+            hour: newArrivalHour,
+            minute: newArrivalMinute,
+          );
+          ref.read(arrivalTimeProvider.notifier).setTime(newArrivalTime);
+        } else {
+          ref.read(arrivalTimeProvider.notifier).setTime(picked);
+        }
       } else {
         ref.read(arrivalTimeProvider.notifier).setTime(picked);
       }

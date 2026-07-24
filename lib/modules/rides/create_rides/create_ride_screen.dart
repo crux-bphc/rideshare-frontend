@@ -109,7 +109,7 @@ class _CreateRideScreenState extends ConsumerState<CreateRideScreen> {
             .read(ridesNotifierProvider.notifier)
             .editRide(
               combineDateAndTime(rideDate, departureTime!)!,
-              combineDateAndTime(rideDate, arrivalTime!)!,
+              combineArrivalDateAndTime(rideDate, departureTime, arrivalTime!)!,
               null,
               seats,
               startLocationController.text,
@@ -121,7 +121,7 @@ class _CreateRideScreenState extends ConsumerState<CreateRideScreen> {
             .read(ridesNotifierProvider.notifier)
             .createRide(
               combineDateAndTime(rideDate, departureTime!)!,
-              combineDateAndTime(rideDate, arrivalTime!)!,
+              combineArrivalDateAndTime(rideDate, departureTime, arrivalTime!)!,
               null,
               seats,
               startLocationController.text,
@@ -199,12 +199,25 @@ class _CreateRideScreenState extends ConsumerState<CreateRideScreen> {
     final rideDate = ref.watch(selectedDateProvider);
     final departureTime = ref.watch(departureTimeProvider);
     final arrivalTime = ref.watch(arrivalTimeProvider);
+    
+    bool isValidTime = false;
+    if (departureTime != null && arrivalTime != null) {
+      int startMins = departureTime.hour * 60 + departureTime.minute;
+      int endMins = arrivalTime.hour * 60 + arrivalTime.minute;
+      if (endMins < startMins) {
+        int duration = endMins + 24 * 60 - startMins;
+        isValidTime = duration > 0 && duration <= 180;
+      } else {
+        isValidTime = endMins > startMins;
+      }
+    }
+
     return rideDate != null &&
         departureTime != null &&
         arrivalTime != null &&
         startLocationController.text.trim().isNotEmpty &&
         destinationLocationController.text.trim().isNotEmpty &&
-        departureTime.isBefore(arrivalTime);
+        isValidTime;
   }
 
   Future<void> _deleteRide() async {

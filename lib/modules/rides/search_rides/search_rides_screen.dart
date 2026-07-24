@@ -49,7 +49,7 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
             startLocationController.text,
             destinationLocationController.text,
             combineDateAndTime(rideDate, departureTime),
-            combineDateAndTime(rideDate, arrivalTime),
+            combineArrivalDateAndTime(rideDate, departureTime, arrivalTime),
           );
     } catch (e) {
       return [];
@@ -76,10 +76,21 @@ class _SearchRidesScreenState extends ConsumerState<SearchRidesScreen> {
 
       seatsError = null;
 
-      if (departureTime != null &&
-          arrivalTime != null &&
-          departureTime.isAfter(arrivalTime)) {
-        timeError = "Start Time cannot be after End Time";
+      if (departureTime != null && arrivalTime != null) {
+        int startMins = departureTime.hour * 60 + departureTime.minute;
+        int endMins = arrivalTime.hour * 60 + arrivalTime.minute;
+        
+        bool isValid = false;
+        if (endMins < startMins) {
+          int duration = endMins + 24 * 60 - startMins;
+          isValid = duration > 0 && duration <= 180;
+        } else {
+          isValid = endMins > startMins;
+        }
+        
+        if (!isValid) {
+          timeError = "Arrival time must be valid (max 3 hrs if overnight)";
+        }
       }
     });
     if (startLocationError == null &&

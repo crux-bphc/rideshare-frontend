@@ -15,6 +15,26 @@ DateTime? combineDateAndTime(DateTime? date, TimeOfDay? time) {
   }
 }
 
+int getDurationMinutes(TimeOfDay start, TimeOfDay end) {
+  int startMinutes = start.hour * 60 + start.minute;
+  int endMinutes = end.hour * 60 + end.minute;
+  if (endMinutes < startMinutes) {
+    endMinutes += 24 * 60;
+  }
+  return endMinutes - startMinutes;
+}
+
+DateTime? combineArrivalDateAndTime(DateTime? date, TimeOfDay? departure, TimeOfDay? arrival) {
+  if (date == null || departure == null || arrival == null) return null;
+  DateTime arrivalDateTime = combineDateAndTime(date, arrival)!;
+  int startMinutes = departure.hour * 60 + departure.minute;
+  int endMinutes = arrival.hour * 60 + arrival.minute;
+  if (endMinutes < startMinutes) {
+    arrivalDateTime = arrivalDateTime.add(const Duration(days: 1));
+  }
+  return arrivalDateTime;
+}
+
 String formatDate(DateTime? date) {
   if (date == null) return "";
   return "${date.day}/${date.month}/${date.year}";
